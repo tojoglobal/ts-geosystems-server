@@ -1,0 +1,37 @@
+{
+  "name": "ts-geosystems-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "Kolida",
+    "Sokkia",
+    "Topcon",
+    "Hi-Target",
+    "Leica",
+    "Total Station",
+    "Auto Level",
+    "Theodolite"
+  ],
+  "author": "swapnil ahmmed shishir",
+  "license": "ISC",
+  "description": "ts-geosystems-server side code ",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.0",
+    "nodemon": "^3.1.9",
+    "uuid": "^11.1.0"
+  }
+}
