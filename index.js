@@ -3,11 +3,14 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import bodyParser from "body-parser";
+import adminRoute from "./routes/adminRoute.js";
+import { EventEmitter } from "events";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+EventEmitter.defaultMaxListeners = 20;
 
 // if handle your project file system use this
 app.use(express.static("public"));
@@ -31,6 +34,9 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Router set up
+app.use(adminRoute);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
