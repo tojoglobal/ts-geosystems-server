@@ -1,0 +1,30 @@
+name: 🚀 Deploy to cPanel via FTP
+
+on:
+  push:
+    branches: [main] # or your default branch
+
+jobs:
+  ftp-deploy:
+    name: 📦 Deploy using FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: 📂 Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          #   port: ${{ secrets.FTP_PORT }}
+          local-dir: ./ # root of repo
+          #   server-dir: ${{ secrets.FTP_PATH }}
+          exclude: |
+            **/.git*
+            **/.github*
+            node_modules/
+            .env
