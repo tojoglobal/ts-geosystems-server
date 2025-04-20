@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  return res.send(" <h1>Welcome to the TOJO News Server</h1>");
+  return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
 });
 
 const PORT = process.env.PORT || 8080;
