@@ -9,7 +9,7 @@ import { verifyAdmin } from "../middleware/verifyAdmin.js";
 const adminRoute = express.Router();
 // admin login
 adminRoute.post("/api/adminlogin", adminLoginInfo);
-router.get("/dashboard", verifyAdmin, (req, res) => {
+adminRoute.get("/dashboard", verifyAdmin, (req, res) => {
   res.status(200).json({ message: `Welcome Admin ${req.admin.email}` });
 });
 adminRoute.post("/api/registerAdmin", registerAdmin);

@@ -1,4 +1,4 @@
-import bcrycpt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../Utils/db.js";
 
@@ -9,7 +9,8 @@ const registerAdmin = async (req, res) => {
       return res.status(400).json({ Error: "email and Password are required" });
     }
     // hash the password before the saving
-    const hashedPassword = await bcrycpt.hash(passsword, 10);
+    const hashedPassword = await bcrypt.hash(passsword, 10);
+
     // insert admin data into the datbase
     await db.query("INSERT INTO admins (email , password , type) VALUES (?)", [
       email,
@@ -21,18 +22,21 @@ const registerAdmin = async (req, res) => {
   }
 };
 
+// hash the password before the saving
 const adminLoginInfo = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return req.status(400).json({
         loginStatus: false,
         Error: "Email and password are required",
       });
     }
-    const [result] = await db.query("SELECT * FROM admin WHERE email = ?", [
+    const [result] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
       email,
     ]);
+
     //   check the admin exists
     if (result.length === 0) {
       return res
@@ -40,7 +44,8 @@ const adminLoginInfo = async (req, res) => {
         .json({ loginStatus: false, Error: "wrong email and passsword" });
     }
     const admin = result[0];
-    const isPasswordCorrect = await bcrycpt.compare(password, admin.passsword);
+    const isPasswordCorrect = await bcrypt.compare(password, admin.password);
+
     if (!isPasswordCorrect) {
       return res
         .status(401)
@@ -52,6 +57,7 @@ const adminLoginInfo = async (req, res) => {
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
+
     res.cookie("admin_token", token, {
       httpOnly: true,
       secure: true, // only in production (use with HTTPS)
@@ -97,7 +103,7 @@ const adminCreate = async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrycpt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert the new admin
     await db.query(
@@ -135,7 +141,7 @@ const adminUpdate = async (req, res) => {
     if (photo) updates.photo = photo;
     if (role_id) updates.role_id = role_id;
     if (email_token) updates.email_token = email_token;
-    if (password) updates.password = await bcrycpt.hash(password, 10);
+    if (password) updates.password = await bcrypt.hash(password, 10);
 
     // Dynamically build the query
     const updateFields = Object.keys(updates)
