@@ -60,14 +60,14 @@ const adminLoginInfo = async (req, res) => {
 
     res.cookie("admin_token", token, {
       httpOnly: true,
-      secure: true, // only in production (use with HTTPS)
-      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "Strict",
+      sameSite: "Lax",
       maxAge: 86400000,
     });
-
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({ success: true, message: "Login successful" });
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({ success: false, error: "Something went wrong" });
   }
 };
 

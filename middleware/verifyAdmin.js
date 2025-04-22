@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 
 export const verifyAdmin = (req, res, next) => {
   const token = req.cookies.admin_token;
+  console.log(req.cookies);
+
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
