@@ -63,7 +63,7 @@ const adminLoginInfo = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      // sameSite: "Lax",
+      sameSite: "None",
       maxAge: 86400000,
     });
     res.status(200).json({ success: true, message: "Login successful" });
