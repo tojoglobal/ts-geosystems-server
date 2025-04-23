@@ -4,6 +4,7 @@ import {
   adminLoginInfo,
   adminUpdate,
   registerAdmin,
+  adminEmailInfo,
 } from "../controllers/adminLogin.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
 const adminRoute = express.Router();
@@ -15,5 +16,6 @@ adminRoute.get("/api/dashboard", verifyAdmin, (req, res) => {
 adminRoute.post("/api/registerAdmin", registerAdmin);
 adminRoute.put("/admin/update/:id", adminUpdate);
 adminRoute.put("/admin/create", adminCreate);
+adminRoute.get("/admin/login", adminEmailInfo);
 
 export default adminRoute;

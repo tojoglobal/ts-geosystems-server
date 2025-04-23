@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../Utils/db.js";
+import { log } from "console";
 
 const registerAdmin = async (req, res) => {
   try {
@@ -163,4 +164,30 @@ const adminUpdate = async (req, res) => {
   }
 };
 
-export { adminLoginInfo, adminCreate, adminUpdate, registerAdmin };
+const adminEmailInfo = async (req, res) => {
+  try {
+    const { email } = req.query;
+    console.log(email);
+
+    if (!email) {
+      return res.status(400).json({ Error: "Email is required" });
+    }
+    const [result] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
+      email,
+    ]);
+    if (result.length === 0) {
+      return res.status(404).json({ Error: "Admin not found" });
+    }
+    return res.status(200).json({ message: "Admin found", data: result[0] });
+  } catch (error) {
+    return res.status(500).json({ Error: "Something went wrong" });
+  }
+};
+
+export {
+  adminLoginInfo,
+  adminCreate,
+  adminUpdate,
+  registerAdmin,
+  adminEmailInfo,
+};
