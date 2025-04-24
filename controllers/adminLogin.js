@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../Utils/db.js";
-import { log } from "console";
 
 const registerAdmin = async (req, res) => {
   try {
@@ -24,26 +23,30 @@ const registerAdmin = async (req, res) => {
 };
 
 // hash the password before the saving
-const adminLoginInfo = async (req, res) => {
+const loginInfo = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email, password);
 
     if (!email || !password) {
-      return req.status(400).json({
+      return res.status(400).json({
         loginStatus: false,
         Error: "Email and password are required",
       });
     }
+
     const [result] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
       email,
     ]);
+    console.log(result);
 
-    //   check the admin exists
+    // Check if the admin exists
     if (result.length === 0) {
       return res
         .status(401)
-        .json({ loginStatus: false, Error: "wrong email and passsword" });
+        .json({ loginStatus: false, Error: "Wrong email or password" });
     }
+
     const admin = result[0];
     const isPasswordCorrect = await bcrypt.compare(password, admin.password);
 
@@ -52,22 +55,32 @@ const adminLoginInfo = async (req, res) => {
         .status(401)
         .json({ loginStatus: false, Error: "Wrong password" });
     }
-    //Generate jwt token
+
+    // Determine the role based on `role_id`
+    const role = admin.role_id === 0 ? "admin" : "moderator";
+
+    // Generate JWT token
     const token = jwt.sign(
-      { id: admin.id, email: admin.email, role: "admin" },
+      { id: admin.id, email: admin.email, role }, // Include role in the token
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
 
+    // Set the token as a cookie
     res.cookie("admin_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      sameSite: "None",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: 86400000,
     });
-    res.status(200).json({ success: true, message: "Login successful" });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      role, // Return the role for frontend usage if needed
+    });
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
 };
@@ -184,10 +197,4 @@ const adminEmailInfo = async (req, res) => {
   }
 };
 
-export {
-  adminLoginInfo,
-  adminCreate,
-  adminUpdate,
-  registerAdmin,
-  adminEmailInfo,
-};
+export { loginInfo, adminCreate, adminUpdate, registerAdmin, adminEmailInfo };

@@ -5,6 +5,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import adminRoute from "./routes/adminRoute.js";
 import { EventEmitter } from "events";
+import ProductsRoute from "./routes/productsRoute.js";
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,7 @@ EventEmitter.defaultMaxListeners = 20;
 
 // if handle your project file system use this
 app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
 const localhostPort1 = 5173;
 const localhostPort2 = 5174;
@@ -37,6 +39,8 @@ app.use(bodyParser.json());
 
 // Router set up
 app.use(adminRoute);
+// product
+app.use(ProductsRoute);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
