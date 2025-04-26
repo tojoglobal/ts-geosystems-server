@@ -38,3 +38,16 @@ CREATE TABLE subcategories (
   status TINYINT DEFAULT 1,
   FOREIGN KEY (main_category_id) REFERENCES categories(id)
 );
+
+
+/* brand crete code */
+CREATE TABLE brands (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  brands_name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL,
+  photo VARCHAR(255),
+  status TINYINT(1) DEFAULT 1,
+  is_populer TINYINT(1) DEFAULT 0,
+  home_page_show TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

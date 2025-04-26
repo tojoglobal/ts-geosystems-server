@@ -7,6 +7,7 @@ import adminRoute from "./routes/adminRoute.js";
 import { EventEmitter } from "events";
 import ProductsRoute from "./routes/productsRoute.js";
 import categoryRoute from "./routes/categoryRoutes.js";
+import brandsRoute from "./routes/brandsRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -45,6 +46,8 @@ app.use(adminRoute);
 app.use(ProductsRoute);
 // category
 app.use("/api", categoryRoute);
+// brands
+app.use("/api", brandsRoute);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
