@@ -5,36 +5,38 @@ import path from "path";
 
 // Product upload route
 export const productAdd = async (req, res) => {
-  console.log(req.body);
   try {
     const {
       productName,
       price,
+      priceShowHide,
       category,
       subCategory,
       sku,
       condition,
       productOptions,
+      productOptionShowHide,
       softwareOptions,
       brandName,
       productOverview,
       videoUrls,
       warrantyInfo,
     } = req.body;
-
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
     const sql = `
             INSERT INTO products 
-            (product_name, price, category, sub_category, sku, product_condition, product_options, software_options, brand_name, product_overview, video_urls, warranty_info, image_urls)
-            VALUES (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            (product_name, price, priceShowHide, category, sub_category, sku, product_condition, product_options, productOptionShowHide, software_options, brand_name, product_overview, video_urls, warranty_info, image_urls)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?)`;
     const [result] = await db.query(sql, [
       productName,
       price,
+      priceShowHide,
       category,
       subCategory,
       sku,
       condition,
       productOptions,
+      productOptionShowHide,
       softwareOptions,
       brandName,
       productOverview,
@@ -162,11 +164,13 @@ export const updateProductById = async (req, res) => {
   const {
     productName,
     price,
+    priceShowHide,
     category,
     subCategory,
     sku,
     condition,
     productOptions,
+    productOptionShowHide,
     softwareOptions,
     brandName,
     productOverview,
@@ -188,16 +192,18 @@ export const updateProductById = async (req, res) => {
     // Update product details
     const sql = `
             UPDATE products 
-            SET product_name=?, price=?, category=?, sub_category=?, sku=?, product_condition=?, product_options=?, software_options=?, brand_name=?, product_overview=?, video_urls=?, warranty_info=?
+            SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, sku=?, product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, brand_name=?, product_overview=?, video_urls=?, warranty_info=?
             WHERE id=?`;
     await db.query(sql, [
       productName,
       price,
+      priceShowHide,
       category,
       subCategory,
       sku,
       condition,
       productOptions,
+      productOptionShowHide,
       softwareOptions,
       brandName,
       productOverview,

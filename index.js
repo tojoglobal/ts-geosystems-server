@@ -8,6 +8,7 @@ import { EventEmitter } from "events";
 import ProductsRoute from "./routes/productsRoute.js";
 import categoryRoute from "./routes/categoryRoutes.js";
 import brandsRoute from "./routes/brandsRoutes.js";
+import SoftwareRoute from "./routes/SoftwareRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -27,7 +28,7 @@ const allowedOrigins = [
   `http://localhost:${localhostPort1}`,
   `http://localhost:${localhostPort2}`,
   `http://localhost:${localhostPort3}`,
-  // here all acces domain name
+  `https://tsgb.site`,
 ];
 app.use(
   cors({
@@ -48,6 +49,8 @@ app.use(ProductsRoute);
 app.use("/api", categoryRoute);
 // brands
 app.use("/api", brandsRoute);
+// Software routes
+app.use("/api", SoftwareRoute);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");

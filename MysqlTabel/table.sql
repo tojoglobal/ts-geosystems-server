@@ -51,3 +51,17 @@ CREATE TABLE brands (
   home_page_show TINYINT(1) DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+/* softwares crete code */
+CREATE TABLE softwares (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  softwar_name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL,
+  softwarlink VARCHAR(255) NOT NULL,
+  photo VARCHAR(255), 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+

@@ -2,85 +2,75 @@ import fs from "fs/promises";
 import path from "path";
 import db from "../Utils/db.js";
 
-// GET all brands
-export const getBrands = async (req, res) => {
+// GET all softwares
+export const getSoftwares = async (req, res) => {
   try {
-    const [brands] = await db.query("SELECT * FROM brands ORDER BY id DESC");
-    res.json(brands);
+    const [softwares] = await db.query(
+      "SELECT * FROM softwares ORDER BY id DESC"
+    );
+    res.json(softwares);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// CREATE a new brand
-export const createBrand = async (req, res) => {
+// CREATE a new software
+export const createSoftware = async (req, res) => {
   try {
     const body = { ...req.body };
-    const { brands_name, status, is_populer, home_page_show } = body;
+    const { softwar_name, softwarlink } = body;
     const photo = req.file ? req.file.filename : null;
-    const slug = brands_name
+    const slug = softwar_name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    console.log("body", body, photo);
-
     const sql = `
-      INSERT INTO brands (brands_name, slug, photo, status, is_populer, home_page_show)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO softwares (softwar_name, slug, softwarlink, photo)
+      VALUES (?, ?, ?, ?)
     `;
-    const values = [
-      brands_name,
-      slug,
-      photo,
-      status,
-      is_populer,
-      home_page_show,
-    ];
+    const values = [softwar_name, slug, softwarlink, photo];
 
     const [result] = await db.query(sql, values);
 
-    res.json({ message: "Brand created successfully" });
+    res.json({ message: "Software created successfully" });
   } catch (error) {
-    console.log("Error in createBrand:", error);
-
+    console.error("Error in createSoftware:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// UPDATE a brand
-export const updateBrand = async (req, res) => {
+// UPDATE a software
+export const updateSoftware = async (req, res) => {
   try {
     const { id } = req.params;
-    const { brands_name, status, is_populer, home_page_show } = req.body;
+    const { softwar_name, softwarlink } = req.body;
     const newPhoto = req.file ? req.file.filename : null;
-    const slug = brands_name
+    const slug = softwar_name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
     // Get old photo
-    const [rows] = await db.query("SELECT photo FROM brands WHERE id = ?", [
+    const [rows] = await db.query("SELECT photo FROM softwares WHERE id = ?", [
       id,
     ]);
     const oldPhoto = rows[0]?.photo;
 
-    let updateFields =
-      "brands_name=?, slug=?, status=?, is_populer=?, home_page_show=?";
-    let values = [brands_name, slug, status, is_populer, home_page_show];
+    let updateFields = "softwar_name=?, slug=?, softwarlink=?";
+    let values = [softwar_name, slug, softwarlink];
 
     if (newPhoto) {
       updateFields += ", photo=?";
       values.push(newPhoto);
     } else {
-      // If no new photo uploaded, keep the old photo
       updateFields += ", photo=?";
       values.push(oldPhoto);
     }
 
     values.push(id);
 
-    const sql = `UPDATE brands SET ${updateFields} WHERE id = ?`;
+    const sql = `UPDATE softwares SET ${updateFields} WHERE id = ?`;
     await db.query(sql, values);
 
     // If new photo uploaded, delete old photo
@@ -93,23 +83,26 @@ export const updateBrand = async (req, res) => {
       }
     }
 
-    res.json({ message: "Brand updated successfully" });
+    res.json({ message: "Software updated successfully" });
   } catch (error) {
+    console.error("Error in updateSoftware:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// DELETE a brand
-export const deleteBrand = async (req, res) => {
+// DELETE a software
+export const deleteSoftware = async (req, res) => {
   try {
     const { id } = req.params;
     // Get photo
-    const [rows] = await db.query("SELECT photo FROM brands WHERE id = ?", [
+    const [rows] = await db.query("SELECT photo FROM softwares WHERE id = ?", [
       id,
     ]);
     const photo = rows[0]?.photo;
-    // Delete brand
-    await db.query("DELETE FROM brands WHERE id = ?", [id]);
+
+    // Delete software
+    await db.query("DELETE FROM softwares WHERE id = ?", [id]);
+
     // Delete photo file
     if (photo) {
       const imagePath = path.join("uploads", photo);
@@ -120,8 +113,9 @@ export const deleteBrand = async (req, res) => {
       }
     }
 
-    res.json({ message: "Brand deleted successfully" });
+    res.json({ message: "Software deleted successfully" });
   } catch (error) {
+    console.error("Error in deleteSoftware:", error);
     res.status(500).json({ error: error.message });
   }
 };
