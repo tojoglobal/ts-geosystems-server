@@ -29,6 +29,7 @@ const allowedOrigins = [
   `http://localhost:${localhostPort2}`,
   `http://localhost:${localhostPort3}`,
   `https://tsgb.site`,
+  `https://www.tsgb.site`,
 ];
 app.use(
   cors({

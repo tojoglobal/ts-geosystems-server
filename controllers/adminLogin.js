@@ -70,7 +70,7 @@ const loginInfo = async (req, res) => {
     res.cookie("admin_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      // sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       // domain: ".tsgb.site",
       maxAge: 86400000,
     });
