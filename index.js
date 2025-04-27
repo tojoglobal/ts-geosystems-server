@@ -24,13 +24,17 @@ app.use("/uploads", express.static("uploads"));
 const localhostPort1 = 5173;
 const localhostPort2 = 5174;
 const localhostPort3 = 3000;
+
 const allowedOrigins = [
   `http://localhost:${localhostPort1}`,
   `http://localhost:${localhostPort2}`,
   `http://localhost:${localhostPort3}`,
   `https://tsgb.site`,
   `https://www.tsgb.site`,
+  `https://admin.tsgb.site`, // ✅ add this
+  `https://www.admin.tsgb.site`, // ✅ if you have www.admin also
 ];
+
 app.use(
   cors({
     origin: allowedOrigins,
