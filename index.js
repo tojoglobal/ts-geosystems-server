@@ -10,6 +10,7 @@ import categoryRoute from "./routes/categoryRoutes.js";
 import brandsRoute from "./routes/brandsRoutes.js";
 import SoftwareRoute from "./routes/SoftwareRoutes.js";
 import HomePageControlRoute from "./routes/HomepageRoute.js";
+import GoogleReviewRoute from "./routes/GoogleReview.js";
 
 dotenv.config();
 const app = express();
@@ -58,6 +59,8 @@ app.use("/api", categoryRoute);
 app.use("/api", brandsRoute);
 // Software routes
 app.use("/api", SoftwareRoute);
+// google review
+app.use("/api", GoogleReviewRoute);
 
 // Home page contoll
 app.use("/api", HomePageControlRoute);
