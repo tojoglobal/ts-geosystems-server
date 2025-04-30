@@ -72,4 +72,11 @@ CREATE TABLE homepage_control (
 );
 
 
+/* home page contoll table */
+CREATE TABLE homepage_control (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  components JSON NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
