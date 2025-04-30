@@ -63,5 +63,13 @@ CREATE TABLE softwares (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+/* Homepage Control Table */
+CREATE TABLE homepage_control (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  components JSON NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 
