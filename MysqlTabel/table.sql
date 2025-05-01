@@ -89,3 +89,24 @@ CREATE TABLE contact_messages (
   message TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+/* orders table  */
+
+CREATE TABLE orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255),
+  shipping_name VARCHAR(255),
+  shipping_address TEXT,
+  shipping_city VARCHAR(255),
+  shipping_zip VARCHAR(50),
+  shipping_phone VARCHAR(50),
+  shipping_comments TEXT,
+  billing_address TEXT,
+  payment_method VARCHAR(50),
+  items JSON,
+  total DECIMAL(10,2),
+  status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

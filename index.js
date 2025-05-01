@@ -11,6 +11,8 @@ import brandsRoute from "./routes/brandsRoutes.js";
 import SoftwareRoute from "./routes/SoftwareRoutes.js";
 import HomePageControlRoute from "./routes/HomepageRoute.js";
 import GoogleReviewRoute from "./routes/GoogleReview.js";
+import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
+import ordersRoute from "./routes/ordersRoute.js";
 
 dotenv.config();
 const app = express();
@@ -61,6 +63,10 @@ app.use("/api", brandsRoute);
 app.use("/api", SoftwareRoute);
 // google review
 app.use("/api", GoogleReviewRoute);
+// ssl commer
+app.use("/api", SSLCommerzPaymentRoute);
+// order route
+app.use("/api", ordersRoute);
 
 // Home page contoll
 app.use("/api", HomePageControlRoute);

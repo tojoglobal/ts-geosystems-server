@@ -1,4 +1,3 @@
-import e from "express";
 import db from "../Utils/db.js";
 import fs from "fs";
 import path from "path";
@@ -231,5 +230,35 @@ export const updateProductById = async (req, res) => {
   } catch (error) {
     console.error("Error in updateProductById:", error);
     res.status(500).send("Failed to update product");
+  }
+};
+
+export const getProductByIdQuery = async (req, res) => {
+  const { ids } = req.query;
+  if (!ids) {
+    return res.status(400).json({ error: "Missing 'ids' query parameter" });
+  }
+
+  // Split and clean the ids
+  const idArray = ids
+    .split(",")
+    .map((id) => parseInt(id.trim()))
+    .filter(Boolean);
+
+  if (idArray.length === 0) {
+    return res.status(400).json({ error: "No valid product IDs provided" });
+  }
+
+  try {
+    const placeholders = idArray.map(() => "?").join(", ");
+    const [rows] = await db.execute(
+      `SELECT * FROM products WHERE id IN (${placeholders})`,
+      idArray
+    );
+
+    res.json({ products: rows });
+  } catch (err) {
+    console.error("Error fetching products by IDs:", err);
+    res.status(500).json({ error: "Server error while fetching products" });
   }
 };

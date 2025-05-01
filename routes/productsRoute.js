@@ -6,6 +6,7 @@ import {
   getproductById,
   deleteImage,
   updateProductById,
+  getProductByIdQuery,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -36,5 +37,7 @@ ProductsRoute.put("/api/products/:id/reviews/:reviewId", (req, res) => {
     message: `Update review with ID: ${req.params.reviewId} for product with ID: ${req.params.id}`,
   });
 });
+
+ProductsRoute.get("/api/productsids/", getProductByIdQuery);
 
 export default ProductsRoute;
