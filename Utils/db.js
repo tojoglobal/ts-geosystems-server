@@ -30,10 +30,9 @@ const dbConfig = {
   keepAliveInitialDelay: 10000,
 };
 
-const pool = mysql.createPool(dbConfig);
+const db = mysql.createPool(dbConfig);
 
-pool
-  .getConnection()
+db.getConnection()
   .then((conn) => {
     console.log("✅ MySQL connected successfully");
     conn.release();
@@ -42,4 +41,4 @@ pool
     console.error("❌ MySQL connection error:", err);
   });
 
-export default pool;
+export default db;

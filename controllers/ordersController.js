@@ -1,3 +1,5 @@
+import db from "../Utils/db.js";
+
 export const postOrder = async (req, res) => {
   try {
     const {
@@ -11,6 +13,7 @@ export const postOrder = async (req, res) => {
       shippingComments,
       billingAddress,
       paymentMethod,
+      paymentStatus,
       items,
       total,
     } = req.body;
@@ -18,8 +21,8 @@ export const postOrder = async (req, res) => {
     await db.query(
       `INSERT INTO orders 
       (order_id, email, shipping_name, shipping_address, shipping_city, shipping_zip,
-       shipping_phone, shipping_comments, billing_address, payment_method, items, total) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       shipping_phone, shipping_comments, billing_address, payment_method, paymentStatus, items, total) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`,
       [
         order_id,
         email,
@@ -31,8 +34,10 @@ export const postOrder = async (req, res) => {
         shippingComments,
         billingAddress,
         paymentMethod,
+        paymentStatus,
         JSON.stringify(items),
         total,
+        "pending",
       ]
     );
 

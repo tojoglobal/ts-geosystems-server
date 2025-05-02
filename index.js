@@ -13,6 +13,7 @@ import HomePageControlRoute from "./routes/HomepageRoute.js";
 import GoogleReviewRoute from "./routes/GoogleReview.js";
 import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
 import ordersRoute from "./routes/ordersRoute.js";
+import promoRoutes from "./routes/promoRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -67,6 +68,8 @@ app.use("/api", GoogleReviewRoute);
 app.use("/api", SSLCommerzPaymentRoute);
 // order route
 app.use("/api", ordersRoute);
+// promo codes
+app.use("/api", promoRoutes);
 
 // Home page contoll
 app.use("/api", HomePageControlRoute);
