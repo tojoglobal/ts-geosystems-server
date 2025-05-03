@@ -11,7 +11,7 @@ GoogleReviewRoute.get("/reviews", async (req, res) => {
       `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=reviews,rating&key=${GOOGLE_API_KEY}`
     );
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
 
     res.json(data.result.reviews || []);
   } catch (error) {

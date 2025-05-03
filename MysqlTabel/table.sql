@@ -85,7 +85,6 @@ CREATE TABLE contact_messages (
 
 
 /* orders table  */
-
 CREATE TABLE orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
   order_id VARCHAR(255) NOT NULL UNIQUE,
@@ -98,8 +97,25 @@ CREATE TABLE orders (
   shipping_comments TEXT,
   billing_address TEXT,
   payment_method VARCHAR(50),
+  paymentStatus VARCHAR(50),
   items JSON,
   total DECIMAL(10,2),
   status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+/* PromoCodes */
+CREATE TABLE promo_codes (
+  id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255),
+  code_name VARCHAR(255),
+  no_of_times INT NOT NULL DEFAULT 0,
+  discount DOUBLE NOT NULL DEFAULT 0,
+  status TINYINT(4) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  type VARCHAR(255),
+  PRIMARY KEY (id)
+);
+

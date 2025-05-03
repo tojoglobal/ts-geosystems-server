@@ -7,8 +7,8 @@ import {
 
 const ordersRoute = express.Router();
 
-ordersRoute.post("/", postOrder);
+ordersRoute.post("/orderdata", postOrder);
 ordersRoute.put("/:order_id/status", UpdateOrderStatus);
-ordersRoute.get("/", getOrderData);
+ordersRoute.get("/orderinfo", getOrderData);
 
 export default ordersRoute;
