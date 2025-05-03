@@ -11,6 +11,7 @@ export const productAdd = async (req, res) => {
       priceShowHide,
       category,
       subCategory,
+      tax,
       sku,
       condition,
       productOptions,
@@ -24,7 +25,7 @@ export const productAdd = async (req, res) => {
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
     const sql = `
             INSERT INTO products 
-            (product_name, price, priceShowHide, category, sub_category, sku, product_condition, product_options, productOptionShowHide, software_options, brand_name, product_overview, video_urls, warranty_info, image_urls)
+            (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, product_options, productOptionShowHide, software_options, brand_name, product_overview, video_urls, warranty_info, image_urls)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?)`;
     const [result] = await db.query(sql, [
       productName,
@@ -32,6 +33,7 @@ export const productAdd = async (req, res) => {
       priceShowHide,
       category,
       subCategory,
+      tax,
       sku,
       condition,
       productOptions,
@@ -166,6 +168,7 @@ export const updateProductById = async (req, res) => {
     priceShowHide,
     category,
     subCategory,
+    tax,
     sku,
     condition,
     productOptions,
@@ -191,7 +194,7 @@ export const updateProductById = async (req, res) => {
     // Update product details
     const sql = `
             UPDATE products 
-            SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, sku=?, product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, brand_name=?, product_overview=?, video_urls=?, warranty_info=?
+            SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, brand_name=?, product_overview=?, video_urls=?, warranty_info=?
             WHERE id=?`;
     await db.query(sql, [
       productName,
@@ -199,6 +202,7 @@ export const updateProductById = async (req, res) => {
       priceShowHide,
       category,
       subCategory,
+      tax,
       sku,
       condition,
       productOptions,

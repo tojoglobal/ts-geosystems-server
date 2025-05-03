@@ -14,6 +14,7 @@ import GoogleReviewRoute from "./routes/GoogleReview.js";
 import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
 import ordersRoute from "./routes/ordersRoute.js";
 import promoRoutes from "./routes/promoRoutes.js";
+import TaxesRoutes from "./routes/taxesRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -70,6 +71,8 @@ app.use("/api", SSLCommerzPaymentRoute);
 app.use("/api", ordersRoute);
 // promo codes
 app.use("/api", promoRoutes);
+// taxes route
+app.use("/api", TaxesRoutes);
 
 // Home page contoll
 app.use("/api", HomePageControlRoute);

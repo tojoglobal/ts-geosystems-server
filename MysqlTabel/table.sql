@@ -126,3 +126,12 @@ CREATE TABLE promo_codes (
   PRIMARY KEY (id)
 );
 
+/* taxes table */
+CREATE TABLE taxes (
+    id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+    value DOUBLE NULL,
+    status TINYINT(4) NULL DEFAULT 0,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
