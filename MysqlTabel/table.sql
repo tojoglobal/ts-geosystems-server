@@ -63,6 +63,7 @@ CREATE TABLE softwares (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 /* Homepage Control Table */
 CREATE TABLE homepage_control (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -71,14 +72,6 @@ CREATE TABLE homepage_control (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-/* home page contoll table */
-CREATE TABLE homepage_control (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  components JSON NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
 
 CREATE TABLE contact_messages (
   id INT AUTO_INCREMENT PRIMARY KEY,
