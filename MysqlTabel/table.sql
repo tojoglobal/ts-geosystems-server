@@ -85,25 +85,28 @@ CREATE TABLE contact_messages (
 
 
 /* orders table  */
+
 CREATE TABLE orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  order_id VARCHAR(255) NOT NULL UNIQUE,
+  order_id VARCHAR(255),
   email VARCHAR(255),
   shipping_name VARCHAR(255),
   shipping_address TEXT,
-  shipping_city VARCHAR(255),
-  shipping_zip VARCHAR(50),
-  shipping_phone VARCHAR(50),
+  shipping_city VARCHAR(100),
+  shipping_zip VARCHAR(20),
+  shipping_phone VARCHAR(20),
   shipping_comments TEXT,
   billing_address TEXT,
   payment_method VARCHAR(50),
   paymentStatus VARCHAR(50),
   items JSON,
-  total DECIMAL(10,2),
-  status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  total DECIMAL(10, 2),
+  status VARCHAR(50),
+  payment_info TEXT,
+  promo_code VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 /* PromoCodes */
 CREATE TABLE promo_codes (
@@ -139,23 +142,24 @@ CREATE TABLE taxes (
     updated_at TIMESTAMP NULL
 );
 
-CREATE TABLE hire (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    infoBox TEXT NOT NULL,
-    imageUrl VARCHAR(512),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+/* promo_order_usage */
+CREATE TABLE promo_order_usage (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_transaction_id VARCHAR(100) NOT NULL,
+    promo_code VARCHAR(50) NOT NULL,
+    used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE service (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    info_after_images TEXT NOT NULL,
-    image_grid VARCHAR(255),
-    image_banner VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+
+
+/* maka new row in the tabel  */
+ALTER TABLE (tableName)
+ADD COLUMN (columName) (dataType)
+
+ /* Delete a Table */
+ DROP TABLE IF EXISTS (tableName );
+ 
+
+ /* Rename a Table */
+ RENAME TABLE old_table_name TO new_table_name;
+

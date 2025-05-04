@@ -15,14 +15,16 @@ export const postOrder = async (req, res) => {
       paymentMethod,
       paymentStatus,
       items,
+      coupon,
       total,
     } = req.body;
 
     await db.query(
       `INSERT INTO orders 
-      (order_id, email, shipping_name, shipping_address, shipping_city, shipping_zip,
-       shipping_phone, shipping_comments, billing_address, payment_method, paymentStatus, items, total) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`,
+  (order_id, email, shipping_name, shipping_address, shipping_city, shipping_zip,
+   shipping_phone, shipping_comments, billing_address, payment_method, paymentStatus, 
+   items, total, status, payment_info, promo_code) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, // ✅ 16 placeholders
       [
         order_id,
         email,
@@ -38,6 +40,8 @@ export const postOrder = async (req, res) => {
         JSON.stringify(items),
         total,
         "pending",
+        null,
+        coupon || null,
       ]
     );
 

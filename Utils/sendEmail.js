@@ -1,29 +1,26 @@
-// const nodemailer = require("nodemailer");
+import dotenv from "dotenv";
+dotenv.config();
 import nodemailer from "nodemailer";
 
-const sendEmail = async ({ to, subject, html }) => {
+const transporter = nodemailer.createTransport({
+  host: "mail.tsgb.site",
+  port: 587, // use 587 if 465 doesn't work
+  secure: false, // true for 465, false for 587
+  auth: {
+    user: process.env.EMAIL_USER, // tsgbsite@tsgb.site
+    pass: process.env.EMAIL_PASS, // real password
+  },
+});
+export default async function sendEmail({ to, subject, html }) {
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
     await transporter.sendMail({
-      from: `"Your Shop Name" <${process.env.EMAIL_USER}>`,
+      from: `"TSGB" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
-
-    console.log("Thank-you email sent");
+    console.log("✅ Email sent to", to);
   } catch (error) {
-    console.error("Failed to send email:", error);
+    console.error("❌ Failed to send email:", error);
   }
-};
-
-export default sendEmail;
+}
