@@ -15,6 +15,9 @@ import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
 import ordersRoute from "./routes/ordersRoute.js";
 import promoRoutes from "./routes/promoRoutes.js";
 import TaxesRoutes from "./routes/taxesRoutes.js";
+import serviceRoute from "./routes/serviceRoute.js";
+import contactUsRoute from "./routes/contactUsRoute.js";
+import hireRoute from "./routes/hireRoute.js";
 
 dotenv.config();
 const app = express();
@@ -73,6 +76,12 @@ app.use("/api", ordersRoute);
 app.use("/api", promoRoutes);
 // taxes route
 app.use("/api", TaxesRoutes);
+// service route ..
+app.use("/api", serviceRoute);
+// contact route
+app.use("/api", contactUsRoute);
+// hire route
+app.use("/api", hireRoute);
 
 // Home page contoll
 app.use("/api", HomePageControlRoute);

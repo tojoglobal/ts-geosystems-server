@@ -1,9 +1,12 @@
 import express from "express";
-import { getContactUs, updateContactUs } from "../controllers/contactUsController";
+import {
+  getContactUs,
+  updateContactUs,
+} from "../controllers/contactUsController.js";
 
-const router = express.Router();
+const contactUsRoute = express.Router();
 
-router.get("/admin-contact-us", getContactUs);
-router.put("/admin-contact-us", updateContactUs);
+contactUsRoute.get("/admin-contact-us", getContactUs);
+contactUsRoute.put("/admin-contact-us", updateContactUs);
 
-export default router;
+export default contactUsRoute;

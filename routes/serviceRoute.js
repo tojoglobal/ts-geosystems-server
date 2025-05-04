@@ -5,9 +5,9 @@ import {
 } from "../controllers/serviceController.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
-const router = express.Router();
+const serviceRoute = express.Router();
 
-router.get("/service", getServiceContent);
-router.put("/service", verifyAdmin, updateServiceContent);
+serviceRoute.get("/service", getServiceContent);
+serviceRoute.put("/service", verifyAdmin, updateServiceContent);
 
-export default router;
+export default serviceRoute;
