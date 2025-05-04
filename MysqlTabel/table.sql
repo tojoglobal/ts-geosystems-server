@@ -148,3 +148,9 @@ CREATE TABLE taxes (
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL
 );
+
+CREATE TABLE hire (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL
+);
