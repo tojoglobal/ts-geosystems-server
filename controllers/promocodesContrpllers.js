@@ -4,8 +4,8 @@ export const postPromocodes = async (req, res) => {
   const { title, code_name, no_of_times, discount, status, type } = req.body;
   try {
     const [result] = await db.query(
-      `INSERT INTO promo_codes (title, code_name, no_of_times, discount, status, type, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      `INSERT INTO promo_codes (title, code_name, no_of_times,uses_time, discount, status, type, created_at, updated_at)
+       VALUES (?, ?, ?,0, ?, ?, ?, NOW(), NOW())`,
       [title, code_name, no_of_times, discount, status, type]
     );
     res.status(201).json({ id: result.insertId });
@@ -44,5 +44,41 @@ export const deltePromocodes = async (req, res) => {
     res.json({ message: "Promo code deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const applyPromocode = async (req, res) => {
+  const { code_name } = req.body;
+
+  console.log(code_name);
+
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM promo_codes WHERE code_name = ?",
+      [code_name]
+    );
+
+    if (rows.length === 0)
+      return res.status(404).json({ message: "Invalid code" });
+
+    const promo = rows[0];
+
+    if (promo.uses_time >= promo.no_of_times) {
+      return res
+        .status(400)
+        .json({ message: "Promo code usage limit reached" });
+    }
+
+    if (promo.status !== 1) {
+      return res.status(400).json({ message: "Promo code is inactive" });
+    }
+
+    return res.json({
+      code_name: promo.code_name,
+      discount: promo.discount,
+      type: promo.type, // 'flat' or 'percentage'
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err });
   }
 };
