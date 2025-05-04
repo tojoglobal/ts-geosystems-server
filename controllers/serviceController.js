@@ -1,59 +1,136 @@
 import db from "../Utils/db.js";
+import fs from "fs";
+import path from "path";
 
-// Get service content (always returns one record)
-export const getServiceContent = async (req, res) => {
+export const getService = async (req, res) => {
   try {
-    const [services] = await db.query("SELECT * FROM services LIMIT 1");
+    const [serviceContent] = await db.query("SELECT * FROM service LIMIT 1");
 
-    if (services.length === 0) {
-      // Initialize with default content if empty
-      return res.json({
-        title: "Surveying Equipment Service",
-        description: "Default service description...",
-        image1: "default-image1.jpg",
-        image2: "default-image2.jpg",
+    if (serviceContent.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Service content not found",
       });
     }
 
-    res.json(services[0]);
+    const { title, description, info_after_images, image_grid, image_banner } =
+      serviceContent[0];
+    res.status(200).json({
+      success: true,
+      data: { title, description, info_after_images, image_grid, image_banner },
+    });
   } catch (error) {
     console.error("Error fetching service content:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// Update service content (upsert operation)
-export const updateServiceContent = async (req, res) => {
+export const updateService = async (req, res) => {
   try {
-    const { title, description, image1, image2 } = req.body;
+    const {
+      title,
+      description,
+      info_after_images,
+      oldImageGrid,
+      oldImageBanner,
+    } = req.body;
 
-    // Validation
-    if (!title || !description) {
+    let image_grid = oldImageGrid;
+    let image_banner = oldImageBanner;
+
+    // Handle grid image upload
+    if (req.files["imageGrid"]?.[0]) {
+      const gridFile = req.files["imageGrid"][0];
+      const gridExtension = path.extname(gridFile.originalname).toLowerCase();
+      const gridFilename = `service-grid-${Date.now()}${gridExtension}`;
+      const gridPath = path.join("uploads", "service", gridFilename);
+
+      fs.renameSync(gridFile.path, gridPath);
+      image_grid = `/uploads/service/${gridFilename}`;
+
+      // Clean up old grid image if it exists
+      if (oldImageGrid && fs.existsSync(path.join("public", oldImageGrid))) {
+        fs.unlinkSync(path.join("public", oldImageGrid));
+      }
+    }
+
+    // Handle banner image upload
+    if (req.files["imageBanner"]?.[0]) {
+      const bannerFile = req.files["imageBanner"][0];
+      const bannerExtension = path
+        .extname(bannerFile.originalname)
+        .toLowerCase();
+      const bannerFilename = `service-banner-${Date.now()}${bannerExtension}`;
+      const bannerPath = path.join("uploads", "service", bannerFilename);
+
+      fs.renameSync(bannerFile.path, bannerPath);
+      image_banner = `/uploads/service/${bannerFilename}`;
+
+      // Clean up old banner image if it exists
+      if (
+        oldImageBanner &&
+        fs.existsSync(path.join("public", oldImageBanner))
+      ) {
+        fs.unlinkSync(path.join("public", oldImageBanner));
+      }
+    }
+
+    if (!title || !description || !info_after_images) {
       return res.status(400).json({
-        error: "Title and description are required",
+        message: "Title, description and info after images are required",
       });
     }
 
-    // Upsert query (insert or update)
-    const [result] = await db.query(
-      `
-      INSERT INTO services (id, title, description, image1, image2)
-      VALUES (1, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-      title = VALUES(title),
-      description = VALUES(description),
-      image1 = VALUES(image1),
-      image2 = VALUES(image2)
-    `,
-      [title, description, image1, image2]
-    );
+    // Check if any record exists
+    const [existing] = await db.query("SELECT id FROM service LIMIT 1");
+
+    if (existing.length === 0) {
+      // Insert new record
+      await db.query(
+        "INSERT INTO service (title, description, info_after_images, image_grid, image_banner) VALUES (?, ?, ?, ?, ?)",
+        [title, description, info_after_images, image_grid, image_banner]
+      );
+    } else {
+      // Update existing record
+      await db.query(
+        "UPDATE service SET title = ?, description = ?, info_after_images = ?, image_grid = ?, image_banner = ? WHERE id = ?",
+        [
+          title,
+          description,
+          info_after_images,
+          image_grid,
+          image_banner,
+          existing[0].id,
+        ]
+      );
+    }
 
     res.json({
       success: true,
       message: "Service content updated successfully",
+      image_grid,
+      image_banner,
     });
   } catch (error) {
     console.error("Error updating service content:", error);
-    res.status(500).json({ error: error.message });
+
+    // Clean up uploaded files if error occurs
+    if (
+      req.files["imageGrid"]?.[0] &&
+      fs.existsSync(req.files["imageGrid"][0].path)
+    ) {
+      fs.unlinkSync(req.files["imageGrid"][0].path);
+    }
+    if (
+      req.files["imageBanner"]?.[0] &&
+      fs.existsSync(req.files["imageBanner"][0].path)
+    ) {
+      fs.unlinkSync(req.files["imageBanner"][0].path);
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
