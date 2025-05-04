@@ -1,26 +1,61 @@
 import db from "../Utils/db.js";
+import fs from "fs";
+import path from "path";
 
 export const getHire = async (req, res) => {
   try {
-    const [services] = await db.query("SELECT * FROM hire LIMIT 1");
-    if (services.length === 0) {
-      return res.status(404).json({ message: "Hire content not found" });
+    const [hireContent] = await db.query("SELECT * FROM hire LIMIT 1");
+
+    if (hireContent.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Hire content not found",
+      });
     }
-    res.json(services[0]);
+
+    // Send only necessary data
+    const { title, description, infoBox, imageUrl } = hireContent[0];
+    res.status(200).json({
+      success: true,
+      data: { title, description, infoBox, imageUrl },
+    });
   } catch (error) {
-    console.error("Error fetching service content:", error);
+    console.error("Error fetching hire content:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 export const updateHire = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, infoBox } = req.body;
+    let imageUrl = req.body.imageUrl;
 
-    if (!title || !description) {
-      return res
-        .status(400)
-        .json({ message: "Title and description are required" });
+    // If a new image was uploaded
+    if (req.file) {
+      const fileExtension = path.extname(req.file.originalname).toLowerCase();
+      const newFilename = `hire-banner-${Date.now()}${fileExtension}`;
+      const newPath = path.join("uploads", "hire", newFilename);
+
+      // Rename/move the file
+      fs.renameSync(req.file.path, newPath);
+
+      // Set the new image URL
+      imageUrl = `/uploads/hire/${newFilename}`;
+
+      // Clean up the old image if it exists
+      if (
+        req.body.oldImageUrl &&
+        !req.body.oldImageUrl.includes("banner-hire-page-a.jpg") &&
+        fs.existsSync(path.join("public", req.body.oldImageUrl))
+      ) {
+        fs.unlinkSync(path.join("public", req.body.oldImageUrl));
+      }
+    }
+
+    if (!title || !description || !infoBox) {
+      return res.status(400).json({
+        message: "Title, description and info box are required",
+      });
     }
 
     // Check if any record exists
@@ -28,21 +63,34 @@ export const updateHire = async (req, res) => {
 
     if (existing.length === 0) {
       // If no record exists, insert new record
-      await db.query("INSERT INTO hire (title, description) VALUES (?, ?)", [
-        title,
-        description,
-      ]);
+      await db.query(
+        "INSERT INTO hire (title, description, infoBox, imageUrl) VALUES (?, ?, ?, ?)",
+        [title, description, infoBox, imageUrl]
+      );
     } else {
       // If record exists, update it
       await db.query(
-        "UPDATE hire SET title = ?, description = ? WHERE id = ?",
-        [title, description, existing[0].id]
+        "UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ? WHERE id = ?",
+        [title, description, infoBox, imageUrl, existing[0].id]
       );
     }
 
-    res.json({ message: "Hire content updated successfully" });
+    res.json({
+      success: true,
+      message: "Hire content updated successfully",
+      imageUrl,
+    });
   } catch (error) {
     console.error("Error updating hire content:", error);
-    res.status(500).json({ error: error.message });
+
+    // Clean up the uploaded file if something went wrong
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
