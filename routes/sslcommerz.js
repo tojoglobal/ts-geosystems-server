@@ -2,7 +2,7 @@ import express from "express";
 import SSLCommerzPayment from "sslcommerz-lts";
 import dotenv from "dotenv";
 import db from "../Utils/db.js";
-import sendEmail from "../Utils/sendEmail.js";
+// import sendEmail from "../Utils/sendEmail.js";
 dotenv.config();
 
 const SSLCommerzPaymentRoute = express.Router();
