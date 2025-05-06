@@ -174,6 +174,8 @@ CREATE TABLE service (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+
+/* about us tabel  */
 CREATE TABLE about_us (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section1_title VARCHAR(255) NOT NULL,
