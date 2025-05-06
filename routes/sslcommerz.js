@@ -265,11 +265,12 @@ SSLCommerzPaymentRoute.post("/payment/ssl-payment/ipn", async (req, res) => {
 });
 
 // Fetch order details by ID
-SSLCommerzPaymentRoute.get("/orderdata/:order_id", async (req, res) => {
+SSLCommerzPaymentRoute.get("/orderdata", async (req, res) => {
   try {
-    const { order_id } = req.params;
+    const { orderId } = req.query;
+
     const [order] = await db.query("SELECT * FROM orders WHERE order_id = ?", [
-      order_id,
+      orderId,
     ]);
 
     if (!order || order.length === 0) {
