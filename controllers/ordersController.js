@@ -56,7 +56,10 @@ export const UpdateOrderStatus = async (req, res) => {
   const { order_id } = req.params;
   const { status } = req.body;
 
-  if (!["pending", "completed", "cancelled"].includes(status)) {
+  // ✅ Include "shipping" as valid status
+  const validStatuses = ["pending", "completed", "cancelled", "shipping"];
+
+  if (!validStatuses.includes(status)) {
     return res.status(400).json({ error: "Invalid status" });
   }
 
@@ -65,9 +68,9 @@ export const UpdateOrderStatus = async (req, res) => {
       status,
       order_id,
     ]);
-    res.json({ message: "Status updated successfully" });
+    res.status(200).json({ message: "Status updated successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Error updating order status:", err);
     res.status(500).json({ error: "Failed to update status" });
   }
 };
@@ -77,7 +80,9 @@ export const getOrderData = async (req, res) => {
     const [orders] = await db.query(
       "SELECT * FROM orders ORDER BY created_at DESC"
     );
-    res.json(orders);
+    res
+      .status(200)
+      .json({ message: true, totalOrder: orders?.length, data: orders });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch orders" });

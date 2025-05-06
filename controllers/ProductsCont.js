@@ -54,7 +54,7 @@ export const productAdd = async (req, res) => {
     res.status(500).send("Failed to upload product");
   }
 };
-
+// get a product
 export const getProducts = async (req, res) => {
   try {
     const sql = `SELECT * FROM products`;
@@ -69,7 +69,7 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
+// get a delete product
 export const deleteProducts = async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,6 +112,7 @@ export const getproductById = async (req, res) => {
   }
 };
 
+// delete Image
 export const deleteImage = async (req, res) => {
   const { imageUrl, id } = req.body;
 
@@ -160,6 +161,7 @@ export const deleteImage = async (req, res) => {
   }
 };
 
+// updatet product
 export const updateProductById = async (req, res) => {
   const { id } = req.params;
   const {
@@ -237,6 +239,7 @@ export const updateProductById = async (req, res) => {
   }
 };
 
+// get product by id Query
 export const getProductByIdQuery = async (req, res) => {
   const { ids } = req.query;
   if (!ids) {

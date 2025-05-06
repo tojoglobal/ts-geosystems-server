@@ -190,18 +190,18 @@ SSLCommerzPaymentRoute.post("/ssl-payment/success", async (req, res) => {
         );
       }
       // Send thank-you email
-      await sendEmail({
-        to: order.customer_email,
-        subject: "Thank you for your order!",
-        html: `
-          <h2>Hi ${order.customer_name},</h2>
-          <p>Thank you for your order <strong>${tran_id}</strong>.</p>
-          <p><strong>Total:</strong> ${order.total_amount} BDT</p>
-          <p>We’ll notify you when your items ship.</p>
-          <br />
-          <p>Best regards,<br/>Your Shop Team</p>
-        `,
-      });
+      // await sendEmail({
+      //   to: order.customer_email,
+      //   subject: "Thank you for your order!",
+      //   html: `
+      //     <h2>Hi ${order.customer_name},</h2>
+      //     <p>Thank you for your order <strong>${tran_id}</strong>.</p>
+      //     <p><strong>Total:</strong> ${order.total_amount} BDT</p>
+      //     <p>We’ll notify you when your items ship.</p>
+      //     <br />
+      //     <p>Best regards,<br/>Your Shop Team</p>
+      //   `,
+      // });
     }
 
     res.redirect(`${redirect_url}/thank-you?order_id=${tran_id}`);
