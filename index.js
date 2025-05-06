@@ -18,6 +18,7 @@ import TaxesRoutes from "./routes/taxesRoutes.js";
 import serviceRoute from "./routes/serviceRoute.js";
 import contactUsRoute from "./routes/contactUsRoute.js";
 import hireRoute from "./routes/hireRoute.js";
+import aboutUsRoute from "./routes/aboutUsRoute.js";
 
 dotenv.config();
 const app = express();
@@ -82,6 +83,8 @@ app.use("/api", serviceRoute);
 app.use("/api", contactUsRoute);
 // hire route
 app.use("/api", hireRoute);
+// aboutUs route
+app.use("/api", aboutUsRoute);
 
 // Home page contoll
 app.use("/api", HomePageControlRoute);

@@ -163,3 +163,39 @@ ADD COLUMN (columName) (dataType)
  /* Rename a Table */
  RENAME TABLE old_table_name TO new_table_name;
 
+CREATE TABLE service (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    info_after_images TEXT NOT NULL,
+    image_grid VARCHAR(255),
+    image_banner VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE about_us (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    section1_title VARCHAR(255) NOT NULL,
+    section1_description TEXT NOT NULL,
+    section2_title VARCHAR(255) NOT NULL,
+    section2_points JSON NOT NULL,
+    section3_title VARCHAR(255) NOT NULL,
+    section3_description TEXT NOT NULL,
+    section4_title VARCHAR(255),
+    section4_description TEXT,
+    section5_title VARCHAR(255),
+    section5_description TEXT,
+    section6_title VARCHAR(255),
+    section6_description TEXT,
+    section7_title VARCHAR(255),
+    section7_description TEXT,
+    section8_title VARCHAR(255),
+    section8_description TEXT,
+    section9_title VARCHAR(255),
+    section9_description TEXT,
+    who_we_serve_image VARCHAR(512),
+    bottom_section_image VARCHAR(512),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
