@@ -4,23 +4,23 @@ import db from "../Utils/db.js";
 export const getHomepageControl = async (req, res) => {
   try {
     const [result] = await db.query("SELECT * FROM homepage_control LIMIT 1");
-    
+
     if (result.length > 0) {
       res.json({
         success: true,
-        components: JSON.parse(result[0].components)
+        components: JSON.parse(result[0].components),
       });
     } else {
       res.json({
         success: false,
-        message: "No homepage control settings found"
+        message: "No homepage control settings found",
       });
     }
   } catch (error) {
     console.error("Error in getHomepageControl:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
@@ -29,10 +29,12 @@ export const getHomepageControl = async (req, res) => {
 export const updateHomepageControl = async (req, res) => {
   try {
     const { components } = req.body;
-    
+
     // Check if record exists
-    const [existing] = await db.query("SELECT id FROM homepage_control LIMIT 1");
-    
+    const [existing] = await db.query(
+      "SELECT id FROM homepage_control LIMIT 1"
+    );
+
     if (existing.length > 0) {
       // Update existing record
       await db.query(
@@ -49,13 +51,13 @@ export const updateHomepageControl = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Homepage control settings updated successfully"
+      message: "Homepage control settings updated successfully",
     });
   } catch (error) {
     console.error("Error in updateHomepageControl:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
