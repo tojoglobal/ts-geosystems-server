@@ -82,9 +82,9 @@ app.use("/api", serviceRoute);
 app.use("/api", contactUsRoute);
 // hire route
 app.use("/api", hireRoute);
-
 // Home page contoll
 app.use("/api", HomePageControlRoute);
+
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
 });
