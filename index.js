@@ -20,6 +20,7 @@ import contactUsRoute from "./routes/contactUsRoute.js";
 import hireRoute from "./routes/hireRoute.js";
 import aboutUsRoute from "./routes/aboutUsRoute.js";
 import userRoutes from "./routes/userRoutes.js";
+import promo_product_banner_02 from "./routes/HomePageRoutes/promo_product_banner_02Routes.js";
 
 dotenv.config();
 const app = express();
@@ -90,6 +91,8 @@ app.use("/api", aboutUsRoute);
 app.use("/api", HomePageControlRoute);
 // user contoll
 app.use("/api", userRoutes);
+// Home page api
+app.use("/api", promo_product_banner_02);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
