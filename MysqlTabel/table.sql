@@ -219,3 +219,13 @@ CREATE TABLE users (
     city VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+/* home page banner (promo_product_banner_02) image dynamic table  */
+
+CREATE TABLE promo_product_banner_02_image (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  photourl VARCHAR(255) NOT NULL,
+  `order` INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
