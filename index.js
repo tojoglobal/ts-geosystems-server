@@ -19,6 +19,7 @@ import serviceRoute from "./routes/serviceRoute.js";
 import contactUsRoute from "./routes/contactUsRoute.js";
 import hireRoute from "./routes/hireRoute.js";
 import aboutUsRoute from "./routes/aboutUsRoute.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -85,9 +86,10 @@ app.use("/api", contactUsRoute);
 app.use("/api", hireRoute);
 // aboutUs route
 app.use("/api", aboutUsRoute);
-
 // Home page contoll
 app.use("/api", HomePageControlRoute);
+// user contoll
+app.use("/api", userRoutes);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");

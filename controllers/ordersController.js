@@ -88,3 +88,34 @@ export const getOrderData = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
+
+export const deleteOrder = async (req, res) => {
+  const { order_id } = req.params;
+  try {
+    const [result] = await db.query("DELETE FROM orders WHERE order_id = ?", [
+      order_id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting order:", err);
+    res.status(500).json({ error: "Failed to delete order" });
+  }
+};
+
+
+export const getLatestOrders = async (req, res) => {
+  try {
+    const [orders] = await db.query(
+      "SELECT * FROM orders ORDER BY created_at DESC LIMIT 6"
+    );
+    res.status(200).json({ message: true, data: orders });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch latest orders" });
+  }
+};
