@@ -53,21 +53,23 @@ export const addNewUser = async (req, res) => {
         city,
       ]
     );
-
     // Create JWT token
     const payload = { email };
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "24h" },
       (err, token) => {
-        if (err) throw err;
+        if (err) {
+          console.error("Error generating JWT:", err.message);
+          return res.status(500).json({ message: "Error generating token" });
+        }
         res.status(201).json({ token });
       }
     );
   } catch (err) {
     console.error("Error registering user:", err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({ message: "Server error" });
   }
 };
 
