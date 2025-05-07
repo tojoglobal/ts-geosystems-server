@@ -77,12 +77,36 @@ export const UpdateOrderStatus = async (req, res) => {
 
 export const getOrderData = async (req, res) => {
   try {
-    const [orders] = await db.query(
-      "SELECT * FROM orders ORDER BY created_at DESC"
+    // Get pagination parameters from query
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    // Get total count of orders
+    const [countResult] = await db.query(
+      "SELECT COUNT(*) as total FROM orders"
     );
-    res
-      .status(200)
-      .json({ message: true, totalOrder: orders?.length, data: orders });
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+
+    // Get paginated orders
+    const [orders] = await db.query(
+      "SELECT * FROM orders ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      [limit, offset]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch orders" });
