@@ -5,19 +5,17 @@ import db from "../../Utils/db.js";
 export const getUploadImages = async (req, res) => {
   try {
     const [result] = await db.execute(
-      "SELECT * FROM promo_product_banner_02_image"
+      "SELECT * FROM Feature_highlight_banner_03_left_01_image"
     );
     res.status(200).send({
       message: "Image send done ",
       total: result.length,
       data: result,
     });
-  } catch (error) {
-    res.status(500).json({ error: "failed the fetch data" });
-  }
+  } catch (error) {}
 };
 
-export const uploadImages = async (req, res) => {
+export const featureUploadImages = async (req, res) => {
   try {
     const images = req.files;
     const uploaded = [];
@@ -26,7 +24,7 @@ export const uploadImages = async (req, res) => {
       const { filename } = images[i];
       const url = `/uploads/${filename}`;
       const [result] = await db.execute(
-        "INSERT INTO promo_product_banner_02_image (photourl, `order`) VALUES (?, ?)",
+        "INSERT INTO Feature_highlight_banner_03_left_01_image (photourl, `order`) VALUES (?, ?)",
         [url, i]
       );
       uploaded.push({ id: result.insertId, url, order: i });
@@ -39,12 +37,12 @@ export const uploadImages = async (req, res) => {
   }
 };
 
-export const deleteImage = async (req, res) => {
+export const featureDeleteImage = async (req, res) => {
   const id = req.params.id;
 
   try {
     const [rows] = await db.execute(
-      "SELECT photourl FROM promo_product_banner_02_image WHERE id = ?",
+      "SELECT photourl FROM Feature_highlight_banner_03_left_01_image WHERE id = ?",
       [id]
     );
     if (rows.length === 0)
@@ -58,9 +56,10 @@ export const deleteImage = async (req, res) => {
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
 
-    await db.execute("DELETE FROM promo_product_banner_02_image WHERE id = ?", [
-      id,
-    ]);
+    await db.execute(
+      "DELETE FROM Feature_highlight_banner_03_left_01_image WHERE id = ?",
+      [id]
+    );
     res.json({ message: "Image deleted" });
   } catch (error) {
     console.error("Delete error:", error);
@@ -68,13 +67,13 @@ export const deleteImage = async (req, res) => {
   }
 };
 
-export const updateImageOrder = async (req, res) => {
+export const featureUpdateImageOrder = async (req, res) => {
   const { images } = req.body;
 
   try {
     for (const { id, order } of images) {
       await db.execute(
-        "UPDATE promo_product_banner_02_image SET `order` = ? WHERE id = ?",
+        "UPDATE Feature_highlight_banner_03_left_01_image SET `order` = ? WHERE id = ?",
         [order, id]
       );
     }

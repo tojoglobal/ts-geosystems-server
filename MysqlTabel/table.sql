@@ -223,9 +223,34 @@ CREATE TABLE users (
 
 /* home page banner (promo_product_banner_02) image dynamic table  */
 
-CREATE TABLE promo_product_banner_02_image (
+CREATE TABLE Feature_highlight_banner_03_left_01_image (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   photourl VARCHAR(255) NOT NULL,
   `order` INT DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+/* 
+Home page single images create
+ */
+CREATE TABLE home_page_single_images (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  uniqueName VARCHAR(255) NOT NULL UNIQUE,
+  imageUrl TEXT NOT NULL,
+  createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+/*  slide  images update */
+
+CREATE TABLE slides (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  slide_number INT NOT NULL,
+  product_name VARCHAR(255),
+  product_link TEXT,
+  product_description TEXT,
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

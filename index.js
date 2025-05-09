@@ -21,6 +21,9 @@ import hireRoute from "./routes/hireRoute.js";
 import aboutUsRoute from "./routes/aboutUsRoute.js";
 import userRoutes from "./routes/userRoutes.js";
 import promo_product_banner_02 from "./routes/HomePageRoutes/promo_product_banner_02Routes.js";
+import Feature_highlight_banner_03_left_01 from "./routes/HomePageRoutes/Feature_highlight_banner_03_left_01Routes.js";
+import homepage_single_images from "./routes/HomePageRoutes/homepage-single-images-Routes.js";
+import SlideRoutes from "./routes/HomePageRoutes/SlideRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -93,6 +96,12 @@ app.use("/api", HomePageControlRoute);
 app.use("/api", userRoutes);
 // Home page api
 app.use("/api", promo_product_banner_02);
+// Home page Feature_highlight_banner_03_left_01_image
+app.use("/api", Feature_highlight_banner_03_left_01);
+// Home page Feature_highlight_banner_03_left_01_image
+app.use("/api", homepage_single_images);
+// home mainSlide
+app.use("/api", SlideRoutes);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
