@@ -105,43 +105,43 @@ export const updateAboutUs = async (req, res) => {
     let bottom_section_image = req.body.old_bottom_section_image || null;
 
     // Handle file uploads
-   if (req.files) {
-     if (req.files.who_we_serve_image) {
-       const file = req.files.who_we_serve_image[0];
-       const fileExtension = path.extname(file.originalname).toLowerCase();
-       const newFilename = `who-we-serve-${Date.now()}${fileExtension}`;
-       const newPath = path.join("uploads", "about-us", newFilename);
+    if (req.files) {
+      if (req.files.who_we_serve_image) {
+        const file = req.files.who_we_serve_image[0];
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        const newFilename = `who-we-serve-${Date.now()}${fileExtension}`;
+        const newPath = path.join("uploads", "about-us", newFilename);
 
-       fs.renameSync(file.path, newPath);
-       who_we_serve_image = `/uploads/about-us/${newFilename}`;
+        fs.renameSync(file.path, newPath);
+        who_we_serve_image = `/uploads/about-us/${newFilename}`;
 
-       // Delete old image if it exists
-       if (
-         req.body.old_who_we_serve_image &&
-         fs.existsSync(path.join("public", req.body.old_who_we_serve_image))
-       ) {
-         fs.unlinkSync(path.join("public", req.body.old_who_we_serve_image));
-       }
-     }
+        // Delete old image if it exists
+        if (
+          req.body.old_who_we_serve_image &&
+          fs.existsSync(path.join("public", req.body.old_who_we_serve_image))
+        ) {
+          fs.unlinkSync(path.join("public", req.body.old_who_we_serve_image));
+        }
+      }
 
-     if (req.files.bottom_section_image) {
-       const file = req.files.bottom_section_image[0];
-       const fileExtension = path.extname(file.originalname).toLowerCase();
-       const newFilename = `bottom-section-${Date.now()}${fileExtension}`;
-       const newPath = path.join("uploads", "about-us", newFilename);
+      if (req.files.bottom_section_image) {
+        const file = req.files.bottom_section_image[0];
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        const newFilename = `bottom-section-${Date.now()}${fileExtension}`;
+        const newPath = path.join("uploads", "about-us", newFilename);
 
-       fs.renameSync(file.path, newPath);
-       bottom_section_image = `/uploads/about-us/${newFilename}`;
+        fs.renameSync(file.path, newPath);
+        bottom_section_image = `/uploads/about-us/${newFilename}`;
 
-       // Delete old image if it exists
-       if (
-         req.body.old_bottom_section_image &&
-         fs.existsSync(path.join("public", req.body.old_bottom_section_image))
-       ) {
-         fs.unlinkSync(path.join("public", req.body.old_bottom_section_image));
-       }
-     }
-   }
+        // Delete old image if it exists
+        if (
+          req.body.old_bottom_section_image &&
+          fs.existsSync(path.join("public", req.body.old_bottom_section_image))
+        ) {
+          fs.unlinkSync(path.join("public", req.body.old_bottom_section_image));
+        }
+      }
+    }
 
     const aboutData = {
       section1_title,
