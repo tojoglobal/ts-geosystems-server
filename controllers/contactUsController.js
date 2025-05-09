@@ -27,6 +27,7 @@ export const getContactUs = async (req, res) => {
       phoneNumbers: formatArray(data.phoneNumbers),
       emails: formatArray(data.emails),
       officeAddresses: formatArray(data.officeAddresses),
+      socialLinks: data.socialLinks ? JSON.parse(data.socialLinks) : null,
     };
 
     res.json(response);
@@ -39,8 +40,7 @@ export const getContactUs = async (req, res) => {
 // PUT update public admin contact info
 export const updateContactUs = async (req, res) => {
   try {
-    const { phoneNumbers, emails, officeAddresses } = req.body;
-
+    const { phoneNumbers, emails, officeAddresses, socialLinks } = req.body;
     // Input validation
     if (
       !Array.isArray(phoneNumbers) ||
@@ -55,22 +55,27 @@ export const updateContactUs = async (req, res) => {
       phoneNumbers: phoneNumbers.map((p) => p.value),
       emails: emails.map((e) => e.value),
       officeAddresses: officeAddresses.map((a) => a.value),
+      socialLinks: socialLinks ? JSON.stringify(socialLinks) : null,
     };
+
+    console.log("Prepared contactData:", contactData); // Debug log
 
     // Upsert operation
     await db.query(
       `
-      INSERT INTO contact_us (id, phoneNumbers, emails, officeAddresses) 
-      VALUES (1, ?, ?, ?)
+      INSERT INTO contact_us (id, phoneNumbers, emails, officeAddresses, socialLinks) 
+      VALUES (1, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         phoneNumbers = VALUES(phoneNumbers),
         emails = VALUES(emails),
-        officeAddresses = VALUES(officeAddresses)
-    `,
+        officeAddresses = VALUES(officeAddresses),
+        socialLinks = VALUES(socialLinks)
+      `,
       [
         JSON.stringify(contactData.phoneNumbers),
         JSON.stringify(contactData.emails),
         JSON.stringify(contactData.officeAddresses),
+        contactData.socialLinks,
       ]
     );
 
