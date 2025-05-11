@@ -10,7 +10,6 @@ import categoryRoute from "./routes/categoryRoutes.js";
 import brandsRoute from "./routes/brandsRoutes.js";
 import SoftwareRoute from "./routes/SoftwareRoutes.js";
 import HomePageControlRoute from "./routes/HomepageRoute.js";
-import GoogleReviewRoute from "./routes/GoogleReview.js";
 import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
 import ordersRoute from "./routes/ordersRoute.js";
 import promoRoutes from "./routes/promoRoutes.js";
@@ -24,6 +23,9 @@ import promo_product_banner_02 from "./routes/HomePageRoutes/promo_product_banne
 import Feature_highlight_banner_03_left_01 from "./routes/HomePageRoutes/Feature_highlight_banner_03_left_01Routes.js";
 import homepage_single_images from "./routes/HomePageRoutes/homepage-single-images-Routes.js";
 import SlideRoutes from "./routes/HomePageRoutes/SlideRoutes.js";
+import authorRoutes from "./routes/authorRoutes.js";
+import blogTypeRoutes from "./routes/blogTypeRoutes.js";
+import BlogRoutes from "./routes/BlogRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -72,8 +74,6 @@ app.use("/api", categoryRoute);
 app.use("/api", brandsRoute);
 // Software routes
 app.use("/api", SoftwareRoute);
-// google review
-app.use("/api", GoogleReviewRoute);
 // ssl commer
 app.use("/api", SSLCommerzPaymentRoute);
 // order route
@@ -102,6 +102,12 @@ app.use("/api", Feature_highlight_banner_03_left_01);
 app.use("/api", homepage_single_images);
 // home mainSlide
 app.use("/api", SlideRoutes);
+// author
+app.use("/api", authorRoutes);
+// blogTypeRoutes routes
+app.use("/api", blogTypeRoutes);
+// blog routs
+app.use("/api", BlogRoutes);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
