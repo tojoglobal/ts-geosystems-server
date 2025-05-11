@@ -13,11 +13,24 @@ export const getHire = async (req, res) => {
       });
     }
 
-    // Send only necessary data
+    // Parse the links JSON if it exists
+    let links = null;
+    if (hireContent[0].links) {
+      try {
+        links =
+          typeof hireContent[0].links === "string"
+            ? JSON.parse(hireContent[0].links)
+            : hireContent[0].links;
+      } catch (e) {
+        console.error("Error parsing links:", e);
+        links = null;
+      }
+    }
+
     const { title, description, infoBox, imageUrl } = hireContent[0];
     res.status(200).json({
       success: true,
-      data: { title, description, infoBox, imageUrl },
+      data: { title, description, infoBox, imageUrl, links },
     });
   } catch (error) {
     console.error("Error fetching hire content:", error);
@@ -29,6 +42,17 @@ export const updateHire = async (req, res) => {
   try {
     const { title, description, infoBox } = req.body;
     let imageUrl = req.body.imageUrl;
+    let links = req.body.links;
+
+    // Parse the links if it's a string
+    if (typeof links === "string") {
+      try {
+        links = JSON.parse(links);
+      } catch (e) {
+        console.error("Error parsing links:", e);
+        links = null;
+      }
+    }
 
     // If a new image was uploaded
     if (req.file) {
@@ -36,13 +60,9 @@ export const updateHire = async (req, res) => {
       const newFilename = `hire-banner-${Date.now()}${fileExtension}`;
       const newPath = path.join("uploads", "hire", newFilename);
 
-      // Rename/move the file
       fs.renameSync(req.file.path, newPath);
-
-      // Set the new image URL
       imageUrl = `/uploads/hire/${newFilename}`;
 
-      // Clean up the old image if it exists
       if (
         req.body.oldImageUrl &&
         !req.body.oldImageUrl.includes("banner-hire-page-a.jpg") &&
@@ -58,20 +78,21 @@ export const updateHire = async (req, res) => {
       });
     }
 
+    // Stringify the links object for database storage
+    const linksString = links ? JSON.stringify(links) : null;
+
     // Check if any record exists
     const [existing] = await db.query("SELECT id FROM hire LIMIT 1");
 
     if (existing.length === 0) {
-      // If no record exists, insert new record
       await db.query(
-        "INSERT INTO hire (title, description, infoBox, imageUrl) VALUES (?, ?, ?, ?)",
-        [title, description, infoBox, imageUrl]
+        "INSERT INTO hire (title, description, infoBox, imageUrl, links) VALUES (?, ?, ?, ?, ?)",
+        [title, description, infoBox, imageUrl, linksString]
       );
     } else {
-      // If record exists, update it
       await db.query(
-        "UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ? WHERE id = ?",
-        [title, description, infoBox, imageUrl, existing[0].id]
+        "UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ?, links = ? WHERE id = ?",
+        [title, description, infoBox, imageUrl, linksString, existing[0].id]
       );
     }
 
@@ -83,7 +104,6 @@ export const updateHire = async (req, res) => {
   } catch (error) {
     console.error("Error updating hire content:", error);
 
-    // Clean up the uploaded file if something went wrong
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
