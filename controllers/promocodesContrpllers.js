@@ -1,5 +1,6 @@
 import db from "../Utils/db.js";
 
+// create the
 export const postPromocodes = async (req, res) => {
   const { title, code_name, no_of_times, discount, status, type } = req.body;
   try {
@@ -14,6 +15,7 @@ export const postPromocodes = async (req, res) => {
   }
 };
 
+// get the promocode
 export const getPromocodes = async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM promo_codes ORDER BY id DESC");
@@ -23,6 +25,7 @@ export const getPromocodes = async (req, res) => {
   }
 };
 
+//update the promocode
 export const putPromocodes = async (req, res) => {
   const { id } = req.params;
   const { title, code_name, no_of_times, discount, status, type } = req.body;
@@ -37,6 +40,7 @@ export const putPromocodes = async (req, res) => {
   }
 };
 
+// admin delete the promo codes
 export const deltePromocodes = async (req, res) => {
   const { id } = req.params;
   try {
@@ -47,11 +51,9 @@ export const deltePromocodes = async (req, res) => {
   }
 };
 
+// when apply the promocode
 export const applyPromocode = async (req, res) => {
   const { code_name } = req.body;
-
-  console.log(code_name);
-
   try {
     const [rows] = await db.query(
       "SELECT * FROM promo_codes WHERE code_name = ?",

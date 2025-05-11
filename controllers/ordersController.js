@@ -16,6 +16,7 @@ export const postOrder = async (req, res) => {
       paymentStatus,
       items,
       coupon,
+      shipping_cost,
       total,
     } = req.body;
 
@@ -23,8 +24,8 @@ export const postOrder = async (req, res) => {
       `INSERT INTO orders 
   (order_id, email, shipping_name, shipping_address, shipping_city, shipping_zip,
    shipping_phone, shipping_comments, billing_address, payment_method, paymentStatus, 
-   items, total, status, payment_info, promo_code) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, // ✅ 16 placeholders
+   items, total, status, shipping_cost, payment_info, promo_code) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, // ✅ 17 placeholders
       [
         order_id,
         email,
@@ -40,6 +41,7 @@ export const postOrder = async (req, res) => {
         JSON.stringify(items),
         total,
         "pending",
+        shipping_cost,
         null,
         coupon || null,
       ]
@@ -130,7 +132,6 @@ export const deleteOrder = async (req, res) => {
     res.status(500).json({ error: "Failed to delete order" });
   }
 };
-
 
 export const getLatestOrders = async (req, res) => {
   try {
