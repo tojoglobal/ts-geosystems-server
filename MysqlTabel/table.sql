@@ -122,13 +122,14 @@ CREATE TABLE promo_codes (
   PRIMARY KEY (id)
 );
 
-
+-- Certificate tracking added in this table
 CREATE TABLE contact_us (
     id INT PRIMARY KEY AUTO_INCREMENT,
     phoneNumbers JSON NOT NULL,
     emails JSON NOT NULL,
     officeAddresses JSON NOT NULL,
-    socialLinks JSON DEFAULT NULL
+    socialLinks JSON DEFAULT NULL,
+    certificate_description TEXT DEFAULT NULL
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
