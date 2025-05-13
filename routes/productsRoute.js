@@ -7,6 +7,7 @@ import {
   deleteImage,
   updateProductById,
   getProductByIdQuery,
+  getProductsByCategory,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -22,6 +23,10 @@ ProductsRoute.put(
 ProductsRoute.delete("/api/products/:id", deleteProducts);
 ProductsRoute.post("/api/products/delete-image", deleteImage);
 ProductsRoute.get("/api/products/:id", getproductById);
+// category/:subcategory wise data// Add this with your other routes
+ProductsRoute.get("/api/category-products/:category", getProductsByCategory);
+ProductsRoute.get("/api/category-products/:category/:subcategory", getProductsByCategory);
+
 ProductsRoute.get("/api/products/:id/reviews", (req, res) => {
   res
     .status(200)

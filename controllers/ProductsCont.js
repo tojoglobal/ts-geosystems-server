@@ -278,3 +278,47 @@ export const getProductByIdQuery = async (req, res) => {
     res.status(500).json({ error: "Server error while fetching products" });
   }
 };
+
+// Get products by category/subcategory
+export const getProductsByCategory = async (req, res) => {
+  try {
+    const { category, subcategory } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+    // Base SQL and params
+    let baseQuery = `SELECT * FROM products WHERE JSON_EXTRACT(category, '$.cat') = ?`;
+    let countQuery = `SELECT COUNT(*) AS total FROM products WHERE JSON_EXTRACT(category, '$.cat') = ?`;
+    const queryParams = [category];
+    const countParams = [category];
+
+    // If subcategory exists and isn't 'shop-all', filter by it
+    if (subcategory && subcategory !== "shop-all") {
+      baseQuery += ` AND JSON_EXTRACT(sub_category, '$.slug') = ?`;
+      countQuery += ` AND JSON_EXTRACT(sub_category, '$.slug') = ?`;
+      queryParams.push(subcategory);
+      countParams.push(subcategory);
+    }
+
+    // Add pagination
+    baseQuery += ` LIMIT ? OFFSET ?`;
+    queryParams.push(limit, offset);
+
+    // Fetch data
+    const [products] = await db.query(baseQuery, queryParams);
+    const [[countResult]] = await db.query(countQuery, countParams);
+
+    // Response
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error in getProductsByCategory:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
