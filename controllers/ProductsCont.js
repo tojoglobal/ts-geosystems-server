@@ -21,12 +21,15 @@ export const productAdd = async (req, res) => {
       productOverview,
       videoUrls,
       warrantyInfo,
+      clearance,
     } = req.body;
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
-    const sql = `
-            INSERT INTO products 
-            (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, product_options, productOptionShowHide, software_options, brand_name, product_overview, video_urls, warranty_info, image_urls)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?)`;
+    const sql = `INSERT INTO products 
+      (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, 
+       product_options, productOptionShowHide, software_options, brand_name, product_overview, 
+       video_urls, warranty_info, image_urls, clearance)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`; // Fixed missing parenthesis
+
     const [result] = await db.query(sql, [
       productName,
       price,
@@ -44,6 +47,7 @@ export const productAdd = async (req, res) => {
       videoUrls,
       warrantyInfo,
       JSON.stringify(imageUrls),
+      clearance || false,
     ]);
     res.status(200).json({
       success: true,
@@ -180,6 +184,7 @@ export const updateProductById = async (req, res) => {
     productOverview,
     videoUrls,
     warrantyInfo,
+    clearance,
   } = req.body;
 
   try {
@@ -195,9 +200,12 @@ export const updateProductById = async (req, res) => {
 
     // Update product details
     const sql = `
-            UPDATE products 
-            SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, brand_name=?, product_overview=?, video_urls=?, warranty_info=?
-            WHERE id=?`;
+      UPDATE products 
+      SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, 
+          product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
+          brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?
+      WHERE id=?`;
+
     await db.query(sql, [
       productName,
       price,
@@ -214,7 +222,8 @@ export const updateProductById = async (req, res) => {
       productOverview,
       videoUrls,
       warrantyInfo,
-      id,
+      clearance || false,
+      id, // Moved to the end as it's the WHERE clause parameter
     ]);
 
     // Handle new images if provided
