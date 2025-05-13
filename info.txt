@@ -1,0 +1,11 @@
+// when user do the order this time need a items product another table count the this product how much time is order  this countant value shoew the recommand product ( order Time ) , product id , product category , 
+
+
+// totla earning: order complete and paid done this totola amonut show .
+
+//total orders : today , 1 weeks , 1 year , all order , 
+
+// today visitor : every user track the ip address or if any user visitng the webisite more than 1 minit genarated the uniqueId ,
+
+// Sales Statistics : Product Pending , Product Cancelled, Product Delivered
+

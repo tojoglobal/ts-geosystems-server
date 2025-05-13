@@ -138,7 +138,6 @@ export const deleteImage = async (req, res) => {
     const updatedImageUrls = existingImageUrls.filter(
       (url) => url !== imageUrl
     );
-    console.log("Updated Image URLs:", updatedImageUrls);
 
     // Step 3: Delete the file from the filesystem
     const baseName = imageUrl.replace("/uploads/", ""); // Extract base file name
@@ -149,18 +148,15 @@ export const deleteImage = async (req, res) => {
         console.error("Failed to delete file:", err);
         return res.status(500).json({ message: "Failed to delete file." });
       }
-
       // Step 4: Update the database with the new image URLs
       await db.query("UPDATE products SET image_urls = ? WHERE id = ?", [
         JSON.stringify(updatedImageUrls), // Convert array back to JSON for storage
         id,
       ]);
 
-      console.log("Image deleted and database updated successfully.");
       res.json({ message: "Image deleted and product updated successfully." });
     });
   } catch (error) {
-    console.error("Error in deleteImage:", error);
     res.status(500).json({ message: "Failed to delete image." });
   }
 };
