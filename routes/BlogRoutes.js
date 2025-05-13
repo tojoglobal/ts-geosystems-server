@@ -11,7 +11,7 @@ const BlogRoutes = express.Router();
 
 BlogRoutes.post("/blogs/", upload.any(), creataBlogPost);
 // blog post update
-BlogRoutes.put("/blogs/:id", upload.any(), updateBlogPost);
+BlogRoutes.put("/updatedblogs/:id", upload.any(), updateBlogPost);
 
 // GET all blogs
 BlogRoutes.get("/blogs", getAllBlogPsot);

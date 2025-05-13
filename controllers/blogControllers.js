@@ -44,33 +44,54 @@ export const updateBlogPost = async (req, res) => {
     const blogId = req.params.id;
     const { title, author, blogType, content, tags } = req.body;
 
+    // Parse tags safely (it may come as stringified array)
+    const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
+
     const images = [];
 
-    req.files.forEach((file, index) => {
-      images.push({
-        filePath: `/uploads/${file.filename}`,
-        show: req.body[`images[${index}][show]`] === "true",
-        order: parseInt(req.body[`images[${index}][order]`]),
-      });
-    });
+    for (let i = 0; i < 4; i++) {
+      const fileField = `images[${i}][file]`;
+      const existingUrlField = `images[${i}][existingUrl]`; // optional if you're sending existing image path
+      const showField = `images[${i}][show]`;
+      const orderField = `images[${i}][order]`;
 
-    const sql = `UPDATE blogs
-                     SET title = ?, author = ?, blog_type = ?, content = ?, tags = ?, images = ?
-                     WHERE id = ?`;
+      const file = req.files.find((f) => f.fieldname === fileField);
+      const filePath = file
+        ? `/uploads/${file.filename}`
+        : req.body[existingUrlField] || ""; // fallback to existing image if not replaced
 
-    await db.query(sql, [
+      const show =
+        req.body[showField] === "true" || req.body[showField] === true;
+      const order = parseInt(req.body[orderField]);
+
+      if (filePath) {
+        images.push({
+          filePath,
+          show,
+          order,
+        });
+      }
+    }
+
+    const updateSql = `
+      UPDATE blogs
+      SET title = ?, author = ?, blog_type = ?, content = ?, tags = ?, images = ?
+      WHERE id = ?
+    `;
+
+    await db.query(updateSql, [
       title,
       author,
       blogType,
       content,
-      tags,
+      JSON.stringify(parsedTags),
       JSON.stringify(images),
       blogId,
     ]);
 
     res.status(200).json({ message: "Blog updated successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating blog post:", error);
     res.status(500).json({ message: "Error updating blog post" });
   }
 };
