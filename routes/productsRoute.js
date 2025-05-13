@@ -8,6 +8,7 @@ import {
   updateProductById,
   getProductByIdQuery,
   getProductsByCategory,
+  getClearanceProducts,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -44,5 +45,6 @@ ProductsRoute.put("/api/products/:id/reviews/:reviewId", (req, res) => {
 });
 
 ProductsRoute.get("/api/productsids/", getProductByIdQuery);
+ProductsRoute.get("/api/clearance", getClearanceProducts);
 
 export default ProductsRoute;

@@ -327,3 +327,34 @@ export const getProductsByCategory = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// Get clearance products
+export const getClearanceProducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+    // Get total count
+    const [countResult] = await db.query(
+      "SELECT COUNT(*) AS total FROM products WHERE clearance = 1"
+    );
+
+    // Get paginated products
+    const [products] = await db.query(
+      "SELECT * FROM products WHERE clearance = 1 LIMIT ? OFFSET ?",
+      [limit, offset]
+    );
+
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult[0].total,
+      totalPages: Math.ceil(countResult[0].total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error in getClearanceProducts:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
