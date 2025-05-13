@@ -21,12 +21,15 @@ export const productAdd = async (req, res) => {
       productOverview,
       videoUrls,
       warrantyInfo,
+      clearance,
     } = req.body;
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
-    const sql = `
-            INSERT INTO products 
-            (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, product_options, productOptionShowHide, software_options, brand_name, product_overview, video_urls, warranty_info, image_urls)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?)`;
+    const sql = `INSERT INTO products 
+      (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, 
+       product_options, productOptionShowHide, software_options, brand_name, product_overview, 
+       video_urls, warranty_info, image_urls, clearance)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`; // Fixed missing parenthesis
+
     const [result] = await db.query(sql, [
       productName,
       price,
@@ -44,6 +47,7 @@ export const productAdd = async (req, res) => {
       videoUrls,
       warrantyInfo,
       JSON.stringify(imageUrls),
+      clearance || false,
     ]);
     res.status(200).json({
       success: true,
@@ -180,6 +184,7 @@ export const updateProductById = async (req, res) => {
     productOverview,
     videoUrls,
     warrantyInfo,
+    clearance,
   } = req.body;
 
   try {
@@ -195,9 +200,12 @@ export const updateProductById = async (req, res) => {
 
     // Update product details
     const sql = `
-            UPDATE products 
-            SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, brand_name=?, product_overview=?, video_urls=?, warranty_info=?
-            WHERE id=?`;
+      UPDATE products 
+      SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, 
+          product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
+          brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?
+      WHERE id=?`;
+
     await db.query(sql, [
       productName,
       price,
@@ -214,7 +222,8 @@ export const updateProductById = async (req, res) => {
       productOverview,
       videoUrls,
       warrantyInfo,
-      id,
+      clearance || false,
+      id, // Moved to the end as it's the WHERE clause parameter
     ]);
 
     // Handle new images if provided
@@ -267,5 +276,49 @@ export const getProductByIdQuery = async (req, res) => {
   } catch (err) {
     console.error("Error fetching products by IDs:", err);
     res.status(500).json({ error: "Server error while fetching products" });
+  }
+};
+
+// Get products by category/subcategory
+export const getProductsByCategory = async (req, res) => {
+  try {
+    const { category, subcategory } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+    // Base SQL and params
+    let baseQuery = `SELECT * FROM products WHERE JSON_EXTRACT(category, '$.cat') = ?`;
+    let countQuery = `SELECT COUNT(*) AS total FROM products WHERE JSON_EXTRACT(category, '$.cat') = ?`;
+    const queryParams = [category];
+    const countParams = [category];
+
+    // If subcategory exists and isn't 'shop-all', filter by it
+    if (subcategory && subcategory !== "shop-all") {
+      baseQuery += ` AND JSON_EXTRACT(sub_category, '$.slug') = ?`;
+      countQuery += ` AND JSON_EXTRACT(sub_category, '$.slug') = ?`;
+      queryParams.push(subcategory);
+      countParams.push(subcategory);
+    }
+
+    // Add pagination
+    baseQuery += ` LIMIT ? OFFSET ?`;
+    queryParams.push(limit, offset);
+
+    // Fetch data
+    const [products] = await db.query(baseQuery, queryParams);
+    const [[countResult]] = await db.query(countQuery, countParams);
+
+    // Response
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error in getProductsByCategory:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
