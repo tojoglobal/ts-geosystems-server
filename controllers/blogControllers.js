@@ -75,12 +75,34 @@ export const updateBlogPost = async (req, res) => {
   }
 };
 
-export const getAllBlogPsot = async (req, res) => {
+export const getAllBlogPost = async (req, res) => {
   try {
+    // Get page and limit from query parameters, default to page 1 and 6 items per page
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const offset = (page - 1) * limit;
+
+    // Get total count of blogs
+    const [countResult] = await db.query("SELECT COUNT(*) as total FROM blogs");
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+
+    // Get paginated blogs
     const [rows] = await db.query(
-      "SELECT * FROM blogs ORDER BY created_at DESC"
+      "SELECT * FROM blogs ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      [limit, offset]
     );
-    res.status(200).json({ success: true, blogs: rows });
+
+    res.status(200).json({
+      success: true,
+      blogs: rows,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+      },
+    });
   } catch (err) {
     res.status(500).json({
       success: false,

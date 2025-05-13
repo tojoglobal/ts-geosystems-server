@@ -2,7 +2,7 @@ import express from "express";
 import { upload } from "../middleware/UploadFile.js";
 import {
   creataBlogPost,
-  getAllBlogPsot,
+  getAllBlogPost,
   specificBlog,
   updateBlogPost,
 } from "../controllers/blogControllers.js";
@@ -14,7 +14,7 @@ BlogRoutes.post("/blogs/", upload.any(), creataBlogPost);
 BlogRoutes.put("/blogs/:id", upload.any(), updateBlogPost);
 
 // GET all blogs
-BlogRoutes.get("/blogs", getAllBlogPsot);
+BlogRoutes.get("/blogs", getAllBlogPost);
 
 // GET a specific blog post by ID
 BlogRoutes.get("/blogs/:id", specificBlog);
