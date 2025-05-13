@@ -287,29 +287,34 @@ export const getProductsByCategory = async (req, res) => {
     const limit = parseInt(req.query.limit) || 8;
     const offset = (page - 1) * limit;
 
-    // Base SQL and params
-    let baseQuery = `SELECT * FROM products WHERE JSON_EXTRACT(category, '$.cat') = ?`;
-    let countQuery = `SELECT COUNT(*) AS total FROM products WHERE JSON_EXTRACT(category, '$.cat') = ?`;
+    // Base SQL query
+    let baseQuery = `
+      SELECT * FROM products 
+      WHERE JSON_EXTRACT(category, '$.cat') = ?
+    `;
+    let countQuery = `
+      SELECT COUNT(*) AS total FROM products 
+      WHERE JSON_EXTRACT(category, '$.cat') = ?
+    `;
     const queryParams = [category];
     const countParams = [category];
 
-    // If subcategory exists and isn't 'shop-all', filter by it
+    // Apply subcategory filtering if not 'shop-all'
     if (subcategory && subcategory !== "shop-all") {
-      baseQuery += ` AND JSON_EXTRACT(sub_category, '$.slug') = ?`;
-      countQuery += ` AND JSON_EXTRACT(sub_category, '$.slug') = ?`;
+      baseQuery += " AND JSON_EXTRACT(sub_category, '$.slug') = ?";
+      countQuery += " AND JSON_EXTRACT(sub_category, '$.slug') = ?";
       queryParams.push(subcategory);
       countParams.push(subcategory);
     }
 
-    // Add pagination
-    baseQuery += ` LIMIT ? OFFSET ?`;
+    // Add pagination to the main query
+    baseQuery += " LIMIT ? OFFSET ?";
     queryParams.push(limit, offset);
 
-    // Fetch data
+    // Execute queries
     const [products] = await db.query(baseQuery, queryParams);
     const [[countResult]] = await db.query(countQuery, countParams);
 
-    // Response
     res.status(200).json({
       success: true,
       products,
