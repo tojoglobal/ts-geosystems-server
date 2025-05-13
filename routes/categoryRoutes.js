@@ -5,6 +5,7 @@ import {
   addCategory,
   addSubCategory,
   getCategory,
+  getCateWithSubcateWithData,
   getSubcategory,
   updateCategory,
   updateSubCategory,
@@ -21,5 +22,9 @@ categoryRoute.put(
 );
 categoryRoute.get("/category", getCategory);
 categoryRoute.get("/subcategory", getSubcategory);
+categoryRoute.get(
+  "/category-with-subcategories/:id",
+  getCateWithSubcateWithData
+);
 
 export default categoryRoute;

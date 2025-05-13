@@ -268,3 +268,47 @@ export const updateSubCategory = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// for Used Surveying Equipment all
+export const getCateWithSubcateWithData = async (req, res) => {
+  try {
+    const id = req.params.id || 2; // fallback if no id passed
+
+    // Get the category by ID
+    const [categoryRows] = await db.query(
+      "SELECT * FROM categories WHERE id = ?",
+      [id]
+    );
+
+    if (categoryRows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    const category = categoryRows[0];
+
+    // Get subcategories
+    const [subcategories] = await db.query(
+      "SELECT * FROM subcategories WHERE main_category_id = ?",
+      [category.id]
+    );
+
+    // Match products with this category slug_name in JSON string
+    const slug = category.slug_name;
+    const [products] = await db.query(
+      "SELECT * FROM products WHERE category LIKE ?",
+      [`%"cat":"${slug}"%`]
+    );
+
+    res.status(200).json({
+      success: true,
+      // category,
+      subcategories,
+      products,
+    });
+  } catch (error) {
+    console.error("Error in getCategoryWithSubcategories:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
