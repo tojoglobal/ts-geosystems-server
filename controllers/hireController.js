@@ -27,10 +27,11 @@ export const getHire = async (req, res) => {
       }
     }
 
-    const { title, description, infoBox, imageUrl } = hireContent[0];
+    const { title, description, infoBox, imageUrl, show_buttons } =
+      hireContent[0];
     res.status(200).json({
       success: true,
-      data: { title, description, infoBox, imageUrl, links },
+      data: { title, description, infoBox, imageUrl, links, show_buttons },
     });
   } catch (error) {
     console.error("Error fetching hire content:", error);
@@ -40,7 +41,7 @@ export const getHire = async (req, res) => {
 
 export const updateHire = async (req, res) => {
   try {
-    const { title, description, infoBox } = req.body;
+    const { title, description, infoBox, show_buttons } = req.body;
     let imageUrl = req.body.imageUrl;
     let links = req.body.links;
 
@@ -86,13 +87,28 @@ export const updateHire = async (req, res) => {
 
     if (existing.length === 0) {
       await db.query(
-        "INSERT INTO hire (title, description, infoBox, imageUrl, links) VALUES (?, ?, ?, ?, ?)",
-        [title, description, infoBox, imageUrl, linksString]
+        "INSERT INTO hire (title, description, infoBox, imageUrl, links, show_buttons) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          title,
+          description,
+          infoBox,
+          imageUrl,
+          linksString,
+          show_buttons === "true",
+        ]
       );
     } else {
       await db.query(
-        "UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ?, links = ? WHERE id = ?",
-        [title, description, infoBox, imageUrl, linksString, existing[0].id]
+        "UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ?, links = ?, show_buttons = ? WHERE id = ?",
+        [
+          title,
+          description,
+          infoBox,
+          imageUrl,
+          linksString,
+          show_buttons === "true",
+          existing[0].id,
+        ]
       );
     }
 
