@@ -2,7 +2,7 @@ import express from "express";
 import SSLCommerzPayment from "sslcommerz-lts";
 import dotenv from "dotenv";
 import db from "../Utils/db.js";
-// import sendEmail from "../Utils/sendEmail.js";
+import sendEmail from "../Utils/sendEmail.js";
 dotenv.config();
 
 const SSLCommerzPaymentRoute = express.Router();
@@ -159,8 +159,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
 SSLCommerzPaymentRoute.post("/ssl-payment/success", async (req, res) => {
   const { tran_id, val_id, amount, card_type, status } = req.body;
 
-  console.log(tran_id);
-
   try {
     // Update payment info
     await db.query(
@@ -190,18 +188,18 @@ SSLCommerzPaymentRoute.post("/ssl-payment/success", async (req, res) => {
         );
       }
       // Send thank-you email
-      // await sendEmail({
-      //   to: order.customer_email,
-      //   subject: "Thank you for your order!",
-      //   html: `
-      //     <h2>Hi ${order.customer_name},</h2>
-      //     <p>Thank you for your order <strong>${tran_id}</strong>.</p>
-      //     <p><strong>Total:</strong> ${order.total_amount} BDT</p>
-      //     <p>We’ll notify you when your items ship.</p>
-      //     <br />
-      //     <p>Best regards,<br/>Your Shop Team</p>
-      //   `,
-      // });
+      await sendEmail({
+        to: order?.email,
+        subject: "Thank you for your order!",
+        html: `
+          <h2>Hi ${order?.shipping_name},</h2>
+          <p>Thank you for your order <strong>${tran_id}</strong>.</p>
+          <p><strong>Total:</strong> ${order?.total} BDT</p>
+          <p>We’ll notify you when your items ship.</p>
+          <br />
+          <p>Best regards,<br/>Your Shop Team</p>
+        `,
+      });
     }
 
     res.redirect(`${redirect_url}/thank-you?order_id=${tran_id}`);

@@ -26,7 +26,7 @@ const registerAdmin = async (req, res) => {
 const loginInfo = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
+    // console.log(email, password);
 
     if (!email || !password) {
       return res.status(400).json({
@@ -38,7 +38,7 @@ const loginInfo = async (req, res) => {
     const [result] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
       email,
     ]);
-    console.log(result);
+    // console.log(result);
 
     // Check if the admin exists
     if (result.length === 0) {
@@ -72,7 +72,7 @@ const loginInfo = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       // domain: ".tsgb.site",
-      maxAge: 86400000,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
     res.status(200).json({
