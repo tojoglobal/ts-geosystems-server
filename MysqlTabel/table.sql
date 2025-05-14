@@ -13,6 +13,7 @@ CREATE TABLE products (
   video_urls TEXT,
   warranty_info TEXT,
   image_urls TEXT
+  clearance TINYINT(1) DEFAULT 0;
 );
 
 /* categories */
@@ -80,7 +81,6 @@ CREATE TABLE contact_messages (
   email VARCHAR(100) NOT NULL,
   phone VARCHAR(20) NOT NULL,
   message TEXT NOT NULL,
-  status ENUM('unread', 'read') DEFAULT 'unread',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

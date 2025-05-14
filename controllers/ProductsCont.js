@@ -354,3 +354,62 @@ export const getClearanceProducts = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// Add these new controller functions
+
+// Search products with filters
+export const searchProducts = async (req, res) => {
+  try {
+    const { query, sort = 'relevance', page = 1, limit = 12 } = req.query;
+    const offset = (page - 1) * limit;
+    console.log(query);
+    let sqlQuery = `
+      SELECT * FROM products 
+      WHERE product_name LIKE ? 
+      OR JSON_EXTRACT(category, '$.cat') LIKE ? 
+      OR brand_name LIKE ?`;
+    
+    let countQuery = `
+      SELECT COUNT(*) as total FROM products 
+      WHERE product_name LIKE ? 
+      OR JSON_EXTRACT(category, '$.cat') LIKE ? 
+      OR brand_name LIKE ?`;
+    
+    const searchTerm = `%${query}%`;
+    const queryParams = [searchTerm, searchTerm, searchTerm];
+    
+    // Add sorting
+    switch(sort) {
+      case 'price_asc':
+        sqlQuery += ' ORDER BY CAST(price AS DECIMAL(10,2)) ASC';
+        break;
+      case 'price_desc':
+        sqlQuery += ' ORDER BY CAST(price AS DECIMAL(10,2)) DESC';
+        break;
+      case 'name_asc':
+        sqlQuery += ' ORDER BY product_name ASC';
+        break;
+      default: // relevance - could be enhanced with full-text search
+        sqlQuery += ' ORDER BY product_name ASC';
+    }
+    
+    // Add pagination
+    sqlQuery += ' LIMIT ? OFFSET ?';
+    queryParams.push(parseInt(limit), offset);
+    
+    // Execute queries
+    const [products] = await db.query(sqlQuery, queryParams);
+    const [[countResult]] = await db.query(countQuery, [searchTerm, searchTerm, searchTerm]);
+    
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: parseInt(page)
+    });
+  } catch (error) {
+    console.error('Error in searchProducts:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
