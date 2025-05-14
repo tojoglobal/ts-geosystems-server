@@ -137,3 +137,65 @@ export const updateCertificateDescription = async (req, res) => {
     });
   }
 };
+
+// Submit contact form
+export const submitContactForm = async (req, res) => {
+  try {
+    const { firstName, lastName, email, phone, message } = req.body;
+    // Basic validation
+    if (!firstName || !email || !message) {
+      return res.status(400).json({
+        success: false,
+        error: "First name, email, and message are required",
+      });
+    }
+
+    const [result] = await db.query(
+      "INSERT INTO contact_messages (first_name, last_name, email, phone, message) VALUES (?, ?, ?, ?, ?)",
+      [firstName, lastName, email, phone, message]
+    );
+
+    res.json({
+      success: true,
+      message: "Your message has been submitted successfully",
+      id: result.insertId,
+    });
+  } catch (error) {
+    console.error("Error submitting contact form:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to submit contact form",
+    });
+  }
+};
+
+// Get all contact messages
+export const getContactMessages = async (req, res) => {
+  try {
+    const [messages] = await db.query(
+      "SELECT * FROM contact_messages ORDER BY created_at DESC"
+    );
+    res.json({ success: true, messages });
+  } catch (error) {
+    console.error("Error fetching contact messages:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch contact messages",
+    });
+  }
+};
+
+// Delete a contact message
+export const deleteContactMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query("DELETE FROM contact_messages WHERE id = ?", [id]);
+    res.json({ success: true, message: "Message deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting contact message:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete contact message",
+    });
+  }
+};

@@ -75,12 +75,14 @@ CREATE TABLE homepage_control (
 
 CREATE TABLE contact_messages (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(100),
-  last_name VARCHAR(100),
-  email VARCHAR(100),
-  phone VARCHAR(20),
-  message TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  message TEXT NOT NULL,
+  status ENUM('unread', 'read') DEFAULT 'unread',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
