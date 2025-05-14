@@ -362,7 +362,6 @@ export const searchProducts = async (req, res) => {
   try {
     const { query, sort = 'relevance', page = 1, limit = 12 } = req.query;
     const offset = (page - 1) * limit;
-    console.log(query);
     let sqlQuery = `
       SELECT * FROM products 
       WHERE product_name LIKE ? 
