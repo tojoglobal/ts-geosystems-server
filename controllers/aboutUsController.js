@@ -1,6 +1,7 @@
 import db from "../Utils/db.js";
 import fs from "fs";
 import path from "path";
+import { deleteFileFromUploads } from "../Utils/deleteFileFromUploads.js";
 
 export const getAboutUs = async (req, res) => {
   try {
@@ -100,7 +101,7 @@ export const updateAboutUs = async (req, res) => {
       section9_title,
       section9_description,
     } = req.body;
-    
+
     let who_we_serve_image = req.body.old_who_we_serve_image || null;
     let bottom_section_image = req.body.old_bottom_section_image || null;
 
@@ -187,5 +188,65 @@ export const updateAboutUs = async (req, res) => {
       success: false,
       error: error.message,
     });
+  }
+};
+
+export const updateAboutUsImages = async (req, res) => {
+  try {
+    const [current] = await db.query(
+      "SELECT images FROM about_us_image_controls1 WHERE id = 2"
+    );
+    const existingImages = JSON.parse(current[0]?.images || "[]");
+    const updatedImages = [...existingImages];
+
+    for (let i = 0; i < 6; i++) {
+      const show = req.body[`show_${i}`] === "true";
+      const order = parseInt(req.body[`order_${i}`] || 0);
+      const section = req.body[`section_${i}`] || "";
+
+      const file = req.files?.find((f) => f.fieldname === `images[${i}][file]`);
+      const existing = existingImages[i];
+
+      let filePath = existing?.filePath || "";
+      if (file) {
+        // Delete old image if it exists
+        if (existing?.filePath) {
+          deleteFileFromUploads(existing.filePath);
+        }
+        filePath = `/uploads/${file.filename}`;
+      } else {
+        filePath = req.body[`filePath_${i}`] || filePath;
+      }
+
+      updatedImages[i] = {
+        filePath,
+        show,
+        order,
+        section,
+      };
+    }
+
+    await db.query(
+      "UPDATE about_us_image_controls1 SET images = ? WHERE id = 2",
+      [JSON.stringify(updatedImages)]
+    );
+
+    res.status(200).json({ message: "About Us images updated successfully." });
+  } catch (err) {
+    console.error("Update Error:", err);
+    res.status(500).json({ message: "Failed to update About Us images." });
+  }
+};
+
+export const getAboutUsImages = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT images FROM about_us_image_controls1 WHERE id = 2"
+    );
+    const images = JSON.parse(rows[0]?.images || "[]");
+    res.status(200).json(images);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch images" });
   }
 };

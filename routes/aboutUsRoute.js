@@ -1,11 +1,17 @@
 import express from "express";
-import { getAboutUs, updateAboutUs } from "../controllers/aboutUsController.js";
+import {
+  getAboutUs,
+  getAboutUsImages,
+  updateAboutUs,
+  updateAboutUsImages,
+} from "../controllers/aboutUsController.js";
 import multer from "multer";
+import { upload } from "../middleware/UploadFile.js";
 
-const upload = multer({
-  dest: "uploads/about-us/",
-  limits: { fileSize: 10 * 1024 * 1024 },
-});
+// const upload = multer({
+//   dest: "uploads/about-us/",
+//   limits: { fileSize: 10 * 1024 * 1024 },
+// });
 
 const aboutUsRoute = express.Router();
 
@@ -18,5 +24,8 @@ aboutUsRoute.put(
   ]),
   updateAboutUs
 );
+
+aboutUsRoute.put("/update-about-us-images", upload.any(), updateAboutUsImages);
+aboutUsRoute.get("/get-about-us-images", getAboutUsImages);
 
 export default aboutUsRoute;

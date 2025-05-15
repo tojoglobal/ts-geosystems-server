@@ -314,3 +314,32 @@ CREATE TABLE experience_center_images (
   `order` INT DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- SQL to create the about_us_image_controls table
+CREATE TABLE about_us_image_controls (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  filePath VARCHAR(255) DEFAULT '',
+  `show` BOOLEAN DEFAULT FALSE,
+  `order` INT NOT NULL,
+  section VARCHAR(50) NOT NULL UNIQUE
+);
+
+/* trade in  */
+CREATE TABLE trade_in_submissions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  company VARCHAR(255),
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  equipment VARCHAR(100) NOT NULL,
+  model VARCHAR(100) NOT NULL,
+  serialNumber VARCHAR(100),
+  software VARCHAR(255),
+  manufactureDate VARCHAR(50),
+  `condition` VARCHAR(10),
+  sellOrTrade ENUM('sell', 'tradeIn') NOT NULL,
+  comments TEXT,
+  photos JSON, -- Store file paths as JSON
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

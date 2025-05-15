@@ -39,80 +39,6 @@ export const creataBlogPost = async (req, res) => {
   }
 };
 
-// export const updateBlogPost = async (req, res) => {
-//   try {
-//     const blogId = req.params.id;
-//     const { title, author, blogType, content, tags, images } = req.body;
-//     console.log("Request Body:", req.body);
-//     // console.log("Request Files:", req.files);
-//     const parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
-
-//     // Fetch current blog data from DB to preserve untouched images
-//     const [rows] = await db.query("SELECT images FROM blogs WHERE id = ?", [
-//       blogId,
-//     ]);
-//     const existingImages = JSON.parse(rows[0]?.images || "[]");
-
-//     // console.log(images);
-
-//     const updatedImages = [...existingImages];
-//     console.log(updatedImages);
-
-//     for (let i = 0; i < 4; i++) {
-//       const fileField = `images[${i}][file]`;
-//       const existingUrlField = `images[${i}][existingUrl]`;
-//       const showField = `images[${i}][show]`;
-//       const orderField = `images[${i}][order]`;
-
-//       console.log(fileField, existingUrlField, showField, orderField);
-
-//       if (
-//         req.body[showField] !== undefined ||
-//         req.body[orderField] !== undefined ||
-//         req.body[existingUrlField] ||
-//         req.files.find((f) => f.fieldname === fileField)
-//       ) {
-//         const file = req.files.find((f) => f.fieldname === fileField);
-//         const filePath = file
-//           ? `/uploads/${file.filename}`
-//           : req.body[existingUrlField] || existingImages[i]?.filePath || "";
-
-//         const show =
-//           req.body[showField] === "true" || req.body[showField] === true;
-//         const order =
-//           parseInt(req.body[orderField]) || existingImages[i]?.order || i + 1;
-
-//         updatedImages[i] = {
-//           filePath,
-//           show,
-//           order,
-//         };
-//       }
-//     }
-
-//     const updateSql = `
-//       UPDATE blogs
-//       SET title = ?, author = ?, blog_type = ?, content = ?, tags = ?, images = ?
-//       WHERE id = ?
-//     `;
-
-//     await db.query(updateSql, [
-//       title,
-//       author,
-//       blogType,
-//       content,
-//       JSON.stringify(parsedTags),
-//       JSON.stringify(updatedImages),
-//       blogId,
-//     ]);
-
-//     res.status(200).json({ message: "Blog updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating blog post:", error);
-//     res.status(500).json({ message: "Error updating blog post" });
-//   }
-// };
-
 export const updateBlogPost = async (req, res) => {
   try {
     const blogId = req.params.id;
@@ -138,10 +64,7 @@ export const updateBlogPost = async (req, res) => {
       if (file) {
         // Delete old image if it exists
         if (existingImages[i]?.filePath) {
-          const oldImagePath = path.join("public", existingImages[i].filePath);
-          if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
-          }
+          deleteFileFromUploads(existingImages[i].filePath);
         }
 
         // Save new file path
