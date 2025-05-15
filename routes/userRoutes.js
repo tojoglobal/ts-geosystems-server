@@ -6,6 +6,7 @@ import {
 } from "../controllers/userController.js";
 import { authenticateUser } from "../middleware/authenticateUser.js";
 import db from "../Utils/db.js";
+import { socialLoginUser } from "../controllers/socialLoginUser.js";
 
 const userRoutes = express.Router();
 
@@ -46,5 +47,7 @@ userRoutes.post("/user-logout", async (req, res) => {
       .json({ message: "An error occurred during logout." });
   }
 });
+
+userRoutes.post("/social-login", socialLoginUser);
 
 export default userRoutes;
