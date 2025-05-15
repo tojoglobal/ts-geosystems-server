@@ -132,7 +132,7 @@ export const deleteImage = async (req, res) => {
     }
 
     let existingImageUrls = JSON.parse(existingRows[0].image_urls); // Parse JSON image URLs
-    console.log("Existing Image URLs:", existingImageUrls);
+    // console.log("Existing Image URLs:", existingImageUrls);
 
     // Step 2: Remove the specified image URL from the array
     const updatedImageUrls = existingImageUrls.filter(

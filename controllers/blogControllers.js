@@ -276,7 +276,7 @@ export const deleteBlogPost = async (req, res) => {
       typeof blog.images === "string" ? JSON.parse(blog.images) : [];
 
     // Step 2: Delete each image safely from uploads folder
-    console.log("Image", images);
+    // console.log("Image", images);
 
     images.forEach((img) => {
       if (img && img?.filePath) {
