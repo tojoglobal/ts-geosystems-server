@@ -26,6 +26,7 @@ import SlideRoutes from "./routes/HomePageRoutes/SlideRoutes.js";
 import authorRoutes from "./routes/authorRoutes.js";
 import blogTypeRoutes from "./routes/blogTypeRoutes.js";
 import BlogRoutes from "./routes/BlogRoutes.js";
+import experienceCenterRoutes from "./routes/HomePageRoutes/experienceCenterRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -100,6 +101,7 @@ app.use("/api", promo_product_banner_02);
 app.use("/api", Feature_highlight_banner_03_left_01);
 // Home page Feature_highlight_banner_03_left_01_image
 app.use("/api", homepage_single_images);
+app.use("/api", experienceCenterRoutes);
 // home mainSlide
 app.use("/api", SlideRoutes);
 // author
