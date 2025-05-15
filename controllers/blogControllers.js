@@ -293,3 +293,55 @@ export const deleteBlogPost = async (req, res) => {
     res.status(500).json({ message: "Failed to delete blog" });
   }
 };
+
+// for details page related blog
+export const getRelatedBlogs = async (req, res) => {
+  try {
+    const { type, excludeId } = req.query;
+    if (!type) {
+      return res.status(400).json({
+        success: false,
+        message: "Blog type is required",
+      });
+    }
+
+    // Get 3 related blogs of the same type, excluding the current one
+    const [rows] = await db.query(
+      "SELECT id, title, images, created_at FROM blogs WHERE blog_type = ? AND id != ? ORDER BY created_at DESC LIMIT 3",
+      [type, excludeId]
+    );
+
+    // Process the data to match what your frontend expects
+    const relatedArticles = rows.map((blog) => {
+      const images =
+        typeof blog.images === "string" ? JSON.parse(blog.images) : blog.images;
+      const firstImage = images.find((img) => img?.show)?.filePath || "";
+
+      return {
+        id: blog.id,
+        title: blog.title,
+        image: firstImage
+          ? `${process.env.VITE_OPEN_APIURL || ""}${firstImage}`
+          : "",
+        readTime: "5 minute read",
+        date: new Date(blog.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      relatedArticles,
+    });
+  } catch (err) {
+    console.error("Error in getRelatedBlogs:", err); // Detailed error logging
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch related blogs",
+      error: err.message,
+    });
+  }
+};

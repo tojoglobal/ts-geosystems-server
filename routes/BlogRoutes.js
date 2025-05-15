@@ -6,6 +6,7 @@ import {
   deleteBlogPost,
   specificBlog,
   updateBlogPost,
+  getRelatedBlogs,
 } from "../controllers/blogControllers.js";
 
 const BlogRoutes = express.Router();
@@ -19,7 +20,7 @@ BlogRoutes.get("/blogs", getAllBlogPost);
 
 // GET a specific blog post by ID
 BlogRoutes.get("/blogs/:id", specificBlog);
-
+BlogRoutes.get("/related", getRelatedBlogs);
 // delete the blog images
 BlogRoutes.delete("/blogs/:id", deleteBlogPost);
 
