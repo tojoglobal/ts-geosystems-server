@@ -29,8 +29,6 @@ export const getAboutUs = async (req, res) => {
           section8_description: "",
           section9_title: "Connect With Us",
           section9_description: "",
-          who_we_serve_image: null,
-          bottom_section_image: null,
         },
       });
     }
@@ -101,9 +99,6 @@ export const updateAboutUs = async (req, res) => {
       section9_description,
     } = req.body;
 
-    let who_we_serve_image = req.body.old_who_we_serve_image || null;
-    let bottom_section_image = req.body.old_bottom_section_image || null;
-
     // Handle file uploads
     if (req.files) {
       if (req.files.who_we_serve_image) {
@@ -162,8 +157,6 @@ export const updateAboutUs = async (req, res) => {
       section8_description,
       section9_title,
       section9_description,
-      who_we_serve_image,
-      bottom_section_image,
     };
 
     const [existing] = await db.query("SELECT id FROM about_us LIMIT 1");

@@ -200,8 +200,6 @@ CREATE TABLE about_us (
     section8_description TEXT,
     section9_title VARCHAR(255),
     section9_description TEXT,
-    who_we_serve_image VARCHAR(512),
-    bottom_section_image VARCHAR(512),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
