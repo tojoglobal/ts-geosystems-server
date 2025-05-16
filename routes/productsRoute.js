@@ -10,6 +10,7 @@ import {
   getProductsByCategory,
   getClearanceProducts,
   searchProducts,
+  getProductsForShopAll,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -50,5 +51,6 @@ ProductsRoute.get("/api/clearance", getClearanceProducts);
 
 // Add these new routes
 ProductsRoute.get("/api/search", searchProducts);
+ProductsRoute.get("/api/shop-all/product", getProductsForShopAll);
 
 export default ProductsRoute;

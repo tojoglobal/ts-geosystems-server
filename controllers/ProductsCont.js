@@ -276,6 +276,7 @@ export const getProductsByCategory = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 8;
     const offset = (page - 1) * limit;
+    const sortBy = req.query.sortBy || "newest";
 
     // Base SQL query
     let baseQuery = `
@@ -297,6 +298,35 @@ export const getProductsByCategory = async (req, res) => {
       countParams.push(subcategory);
     }
 
+    // Add sorting - removed 'featured' since the column doesn't exist
+    switch (sortBy) {
+      case "newest":
+        baseQuery += " ORDER BY id DESC"; // Using id DESC as proxy for newest
+        break;
+      case "price_asc":
+        baseQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) ASC";
+        break;
+      case "price_desc":
+        baseQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) DESC";
+        break;
+      case "name_asc":
+        baseQuery += " ORDER BY product_name ASC";
+        break;
+      case "name_desc":
+        baseQuery += " ORDER BY product_name DESC";
+        break;
+      case "best_selling":
+        // Fallback to newest if best selling logic not implemented
+        baseQuery += " ORDER BY id DESC";
+        break;
+      case "by_review":
+        // Fallback to newest if review logic not implemented
+        baseQuery += " ORDER BY id DESC";
+        break;
+      default:
+        baseQuery += " ORDER BY id DESC"; // Default to newest
+    }
+
     // Add pagination to the main query
     baseQuery += " LIMIT ? OFFSET ?";
     queryParams.push(limit, offset);
@@ -313,10 +343,14 @@ export const getProductsByCategory = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error in getProductsByCategory:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
-
 // Get clearance products
 export const getClearanceProducts = async (req, res) => {
   try {
@@ -402,6 +436,57 @@ export const searchProducts = async (req, res) => {
       total: countResult.total,
       totalPages: Math.ceil(countResult.total / limit),
       currentPage: parseInt(page),
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getProductsForShopAll = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+    const sortBy = req.query.sortBy || "newest";
+
+    let baseQuery = "SELECT * FROM products";
+    let countQuery = "SELECT COUNT(*) AS total FROM products";
+
+    // Add sorting
+    switch (sortBy) {
+      case "newest":
+        baseQuery += " ORDER BY id DESC";
+        break;
+      case "price_asc":
+        baseQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) ASC";
+        break;
+      case "price_desc":
+        baseQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) DESC";
+        break;
+      case "name_asc":
+        baseQuery += " ORDER BY product_name ASC";
+        break;
+      case "name_desc":
+        baseQuery += " ORDER BY product_name DESC";
+        break;
+      default:
+        baseQuery += " ORDER BY id DESC";
+    }
+
+    // Add pagination
+    baseQuery += " LIMIT ? OFFSET ?";
+    const queryParams = [limit, offset];
+
+    // Execute queries
+    const [products] = await db.query(baseQuery, queryParams);
+    const [[countResult]] = await db.query(countQuery);
+
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: page,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
