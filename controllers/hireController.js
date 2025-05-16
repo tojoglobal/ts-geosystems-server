@@ -34,7 +34,6 @@ export const getHire = async (req, res) => {
       data: { title, description, infoBox, imageUrl, links, show_buttons },
     });
   } catch (error) {
-    console.error("Error fetching hire content:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -118,8 +117,6 @@ export const updateHire = async (req, res) => {
       imageUrl,
     });
   } catch (error) {
-    console.error("Error updating hire content:", error);
-
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
@@ -128,5 +125,101 @@ export const updateHire = async (req, res) => {
       success: false,
       error: error.message,
     });
+  }
+};
+
+// front end data recive this contollers
+
+// Save hire enquiry
+export const saveHireEnquiry = async (req, res) => {
+  try {
+    const {
+      name,
+      company,
+      email,
+      phone,
+      existingCustomer,
+      equipment,
+      hireDate,
+      hirePeriod,
+      comments,
+    } = req.body;
+
+    const sql = `
+      INSERT INTO hire_enquiries
+      (name, company, email, phone, existingCustomer, equipment, hireDate, hirePeriod, comments)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      name,
+      company,
+      email,
+      phone,
+      existingCustomer,
+      JSON.stringify(equipment), // Save equipment as JSON array
+      hireDate,
+      hirePeriod,
+      comments,
+    ];
+
+    await db.query(sql, values);
+
+    res.status(201).json({ message: "Hire enquiry submitted successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Error saving hire enquiry." });
+  }
+};
+
+// Get hire content
+export const getHireContent = async (req, res) => {
+  try {
+    const sql = "SELECT * FROM hire_enquiries";
+    const [rows] = await db.query(sql);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Hire content not found." });
+    }
+
+    res.status(200).json({ data: rows });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching hire content." });
+  }
+};
+
+// Normalized boolean output from SQL
+export const getHireEquipment = async (req, res) => {
+  const [rows] = await db.query(
+    "SELECT id, name, image_url, is_visible FROM equipment"
+  );
+
+  const formatted = rows.map((row) => ({
+    ...row,
+    is_visible: Boolean(row.is_visible),
+  }));
+
+  res.json(formatted);
+};
+
+export const hireUpdateEquipment = async (req, res) => {
+  try {
+    const { name, is_visible } = req.body;
+    const { id } = req.params;
+    let image_url = req.body.image_url;
+
+    if (req.file) {
+      image_url = `/uploads/${req.file.filename}`;
+    }
+
+    await db.query(
+      "UPDATE equipment SET name = ?, image_url = ?, is_visible = ? WHERE id = ?",
+      [name, image_url, is_visible === "true", id]
+    );
+
+    res
+      .status(201)
+      .json({ success: true, message: `Equipment ${name} updated` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

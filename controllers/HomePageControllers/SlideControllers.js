@@ -1,6 +1,7 @@
 import path from "path";
 import db from "../../Utils/db.js";
 import fs from "fs";
+import { deleteFileFromUploads } from "./../../Utils/deleteFileFromUploads.js";
 
 export const GetAllSlides = async (req, res) => {
   try {
@@ -27,18 +28,12 @@ export const UpdateSlides = async (req, res) => {
 
     let imageUrl = existingSlide?.image_url;
 
-    console.log(imageUrl);
-
     // If a new image was uploaded
     if (newImage) {
       const imagePath = `/uploads/${newImage.filename}`;
       // Delete the old image if exists and stored locally
       if (imageUrl && imageUrl.startsWith("/uploads/")) {
-        const removerImagePath = imageUrl.replace(/^\/?uploads\//, "");
-        const oldImagePath = path.join("uploads", removerImagePath);
-        fs.unlink(oldImagePath, (err) => {
-          if (err) console.error("Failed to delete old image:", err);
-        });
+        deleteFileFromUploads(imageUrl);
       }
 
       imageUrl = imagePath; // update to new image path
@@ -54,7 +49,6 @@ export const UpdateSlides = async (req, res) => {
 
     res.json({ message: `Slide ${id} updated successfully`, imageUrl });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Update failed" });
   }
 };

@@ -28,7 +28,6 @@ export const Put_homepage_single_images = async (req, res) => {
 
     res.json({ success: true, imageUrl: newImageUrl });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Database or filesystem error" });
   }
 };

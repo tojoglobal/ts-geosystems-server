@@ -54,7 +54,6 @@ export const productAdd = async (req, res) => {
       message: "Product saved successfully!",
     });
   } catch (error) {
-    console.error("Error in product upload:", error);
     res.status(500).send("Failed to upload product");
   }
 };
@@ -69,7 +68,6 @@ export const getProducts = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.error("Error in getProducts:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -97,7 +95,6 @@ export const deleteProducts = async (req, res) => {
       message: "Product deleted successfully",
     });
   } catch (error) {
-    console.error("Error in deleteProducts:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -132,7 +129,6 @@ export const deleteImage = async (req, res) => {
     }
 
     let existingImageUrls = JSON.parse(existingRows[0].image_urls); // Parse JSON image URLs
-    // console.log("Existing Image URLs:", existingImageUrls);
 
     // Step 2: Remove the specified image URL from the array
     const updatedImageUrls = existingImageUrls.filter(
@@ -239,7 +235,6 @@ export const updateProductById = async (req, res) => {
       message: "Product updated successfully!",
     });
   } catch (error) {
-    console.error("Error in updateProductById:", error);
     res.status(500).send("Failed to update product");
   }
 };
@@ -270,7 +265,6 @@ export const getProductByIdQuery = async (req, res) => {
 
     res.json({ products: rows });
   } catch (err) {
-    console.error("Error fetching products by IDs:", err);
     res.status(500).json({ error: "Server error while fetching products" });
   }
 };
@@ -319,7 +313,6 @@ export const getProductsByCategory = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-    console.error("Error in getProductsByCategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -350,7 +343,6 @@ export const getClearanceProducts = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-    console.error("Error in getClearanceProducts:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -360,55 +352,58 @@ export const getClearanceProducts = async (req, res) => {
 // Search products with filters
 export const searchProducts = async (req, res) => {
   try {
-    const { query, sort = 'relevance', page = 1, limit = 12 } = req.query;
+    const { query, sort = "relevance", page = 1, limit = 12 } = req.query;
     const offset = (page - 1) * limit;
     let sqlQuery = `
       SELECT * FROM products 
       WHERE product_name LIKE ? 
       OR JSON_EXTRACT(category, '$.cat') LIKE ? 
       OR brand_name LIKE ?`;
-    
+
     let countQuery = `
       SELECT COUNT(*) as total FROM products 
       WHERE product_name LIKE ? 
       OR JSON_EXTRACT(category, '$.cat') LIKE ? 
       OR brand_name LIKE ?`;
-    
+
     const searchTerm = `%${query}%`;
     const queryParams = [searchTerm, searchTerm, searchTerm];
-    
+
     // Add sorting
-    switch(sort) {
-      case 'price_asc':
-        sqlQuery += ' ORDER BY CAST(price AS DECIMAL(10,2)) ASC';
+    switch (sort) {
+      case "price_asc":
+        sqlQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) ASC";
         break;
-      case 'price_desc':
-        sqlQuery += ' ORDER BY CAST(price AS DECIMAL(10,2)) DESC';
+      case "price_desc":
+        sqlQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) DESC";
         break;
-      case 'name_asc':
-        sqlQuery += ' ORDER BY product_name ASC';
+      case "name_asc":
+        sqlQuery += " ORDER BY product_name ASC";
         break;
       default: // relevance - could be enhanced with full-text search
-        sqlQuery += ' ORDER BY product_name ASC';
+        sqlQuery += " ORDER BY product_name ASC";
     }
-    
+
     // Add pagination
-    sqlQuery += ' LIMIT ? OFFSET ?';
+    sqlQuery += " LIMIT ? OFFSET ?";
     queryParams.push(parseInt(limit), offset);
-    
+
     // Execute queries
     const [products] = await db.query(sqlQuery, queryParams);
-    const [[countResult]] = await db.query(countQuery, [searchTerm, searchTerm, searchTerm]);
-    
+    const [[countResult]] = await db.query(countQuery, [
+      searchTerm,
+      searchTerm,
+      searchTerm,
+    ]);
+
     res.status(200).json({
       success: true,
       products,
       total: countResult.total,
       totalPages: Math.ceil(countResult.total / limit),
-      currentPage: parseInt(page)
+      currentPage: parseInt(page),
     });
   } catch (error) {
-    console.error('Error in searchProducts:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

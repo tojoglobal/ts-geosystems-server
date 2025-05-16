@@ -49,7 +49,6 @@ export const uploadExperienceCenterImages = async (req, res) => {
 
     res.status(201).json(uploaded);
   } catch (error) {
-    console.error("Upload error:", error);
     res.status(500).json({ error: "Upload failed" });
   }
 };
@@ -89,7 +88,6 @@ export const deleteExperienceCenterImage = async (req, res) => {
 
     res.json({ message: "Image deleted and order updated" });
   } catch (error) {
-    console.error("Delete error:", error);
     res.status(500).json({ error: "Delete failed" });
   }
 };

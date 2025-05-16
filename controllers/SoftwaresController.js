@@ -35,7 +35,6 @@ export const createSoftware = async (req, res) => {
 
     res.json({ message: "Software created successfully" });
   } catch (error) {
-    console.error("Error in createSoftware:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -85,7 +84,6 @@ export const updateSoftware = async (req, res) => {
 
     res.json({ message: "Software updated successfully" });
   } catch (error) {
-    console.error("Error in updateSoftware:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -115,7 +113,6 @@ export const deleteSoftware = async (req, res) => {
 
     res.json({ message: "Software deleted successfully" });
   } catch (error) {
-    console.error("Error in deleteSoftware:", error);
     res.status(500).json({ error: error.message });
   }
 };

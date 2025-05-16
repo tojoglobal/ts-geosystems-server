@@ -118,7 +118,6 @@ export const addNewUser = async (req, res) => {
       },
       async (err, token) => {
         if (err) {
-          console.error("Error generating JWT:", err.message);
           return res.status(500).json({ message: "Error generating token" });
         }
 
@@ -144,7 +143,6 @@ export const addNewUser = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error("Error registering user:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -152,7 +150,6 @@ export const addNewUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
     if (!email || !password) {
       return res.status(400).json({
         loginStatus: false,
@@ -190,7 +187,6 @@ export const loginUser = async (req, res) => {
       },
       async (err, token) => {
         if (err) {
-          console.error("Error generating JWT:", err.message);
           return res.status(500).json({ message: "Error generating token" });
         }
 
@@ -227,7 +223,6 @@ export const getUsers = async (req, res) => {
     );
     res.status(200).json(users);
   } catch (err) {
-    console.error("Error fetching users:", err.message);
     res.status(500).send("Server error");
   }
 };

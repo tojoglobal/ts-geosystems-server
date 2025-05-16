@@ -49,7 +49,6 @@ export const postOrder = async (req, res) => {
 
     res.status(201).json({ message: "Order placed successfully!" });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to place order" });
   }
 };
@@ -72,7 +71,6 @@ export const UpdateOrderStatus = async (req, res) => {
     ]);
     res.status(200).json({ message: "Status updated successfully" });
   } catch (err) {
-    console.error("Error updating order status:", err);
     res.status(500).json({ error: "Failed to update status" });
   }
 };
@@ -110,7 +108,6 @@ export const getOrderData = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
@@ -128,7 +125,6 @@ export const deleteOrder = async (req, res) => {
 
     res.status(200).json({ message: "Order deleted successfully" });
   } catch (err) {
-    console.error("Error deleting order:", err);
     res.status(500).json({ error: "Failed to delete order" });
   }
 };
@@ -140,7 +136,6 @@ export const getLatestOrders = async (req, res) => {
     );
     res.status(200).json({ message: true, data: orders });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to fetch latest orders" });
   }
 };

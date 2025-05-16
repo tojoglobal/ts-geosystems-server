@@ -23,8 +23,6 @@ export const createBrand = async (req, res) => {
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    // console.log("body", body, photo);
-
     const sql = `
       INSERT INTO brands (brands_name, slug, photo, status, is_populer, home_page_show)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -42,7 +40,6 @@ export const createBrand = async (req, res) => {
 
     res.json({ message: "Brand created successfully" });
   } catch (error) {
-    console.log("Error in createBrand:", error);
     res.status(500).json({ error: error.message });
   }
 };

@@ -20,7 +20,6 @@ export const getService = async (req, res) => {
       data: { title, description, info_after_images, image_grid, image_banner },
     });
   } catch (error) {
-    console.error("Error fetching service content:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -112,8 +111,6 @@ export const updateService = async (req, res) => {
       image_banner,
     });
   } catch (error) {
-    console.error("Error updating service content:", error);
-
     // Clean up uploaded files if error occurs
     if (
       req.files["imageGrid"]?.[0] &&

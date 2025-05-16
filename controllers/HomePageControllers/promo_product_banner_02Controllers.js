@@ -34,7 +34,6 @@ export const uploadImages = async (req, res) => {
 
     res.status(201).json(uploaded);
   } catch (error) {
-    console.error("Upload error:", error);
     res.status(500).json({ error: "Upload failed" });
   }
 };
@@ -63,7 +62,6 @@ export const deleteImage = async (req, res) => {
     ]);
     res.json({ message: "Image deleted" });
   } catch (error) {
-    console.error("Delete error:", error);
     res.status(500).json({ error: "Delete failed" });
   }
 };
@@ -81,7 +79,6 @@ export const updateImageOrder = async (req, res) => {
 
     res.json({ message: "Order updated" });
   } catch (error) {
-    console.error("Order update error:", error);
     res.status(500).json({ error: "Order update failed" });
   }
 };

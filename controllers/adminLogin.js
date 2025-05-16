@@ -26,7 +26,6 @@ const registerAdmin = async (req, res) => {
 const loginInfo = async (req, res) => {
   try {
     const { email, password } = req.body;
-    // console.log(email, password);
 
     if (!email || !password) {
       return res.status(400).json({
@@ -38,7 +37,6 @@ const loginInfo = async (req, res) => {
     const [result] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
       email,
     ]);
-    // console.log(result);
 
     // Check if the admin exists
     if (result.length === 0) {
@@ -81,7 +79,6 @@ const loginInfo = async (req, res) => {
       role, // Return the role for frontend usage if needed
     });
   } catch (error) {
-    console.error("Error during login:", error);
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
 };
@@ -129,7 +126,6 @@ const adminCreate = async (req, res) => {
 
     return res.status(201).json({ message: "Admin created successfully." });
   } catch (error) {
-    console.error("Error in adminCreate:", error);
     return res.status(500).json({ error: "Failed to create admin." });
   }
 };
@@ -173,7 +169,6 @@ const adminUpdate = async (req, res) => {
 
     return res.status(200).json({ message: "Admin updated successfully" });
   } catch (error) {
-    console.error("Error in adminUpdate:", error);
     return res.status(500).json({ error: "Failed to update admin" });
   }
 };
@@ -181,7 +176,6 @@ const adminUpdate = async (req, res) => {
 const adminEmailInfo = async (req, res) => {
   try {
     const { email } = req.query;
-    console.log(email);
 
     if (!email) {
       return res.status(400).json({ Error: "Email is required" });

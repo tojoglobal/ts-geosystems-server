@@ -74,7 +74,6 @@ export const getAboutUs = async (req, res) => {
       data: content,
     });
   } catch (error) {
-    console.error("Error fetching about us content:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -183,7 +182,6 @@ export const updateAboutUs = async (req, res) => {
       message: "About Us content updated successfully",
     });
   } catch (error) {
-    console.error("Error updating about us content:", error);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -233,7 +231,6 @@ export const updateAboutUsImages = async (req, res) => {
 
     res.status(200).json({ message: "About Us images updated successfully." });
   } catch (err) {
-    console.error("Update Error:", err);
     res.status(500).json({ message: "Failed to update About Us images." });
   }
 };
@@ -246,7 +243,6 @@ export const getAboutUsImages = async (req, res) => {
     const images = JSON.parse(rows[0]?.images || "[]");
     res.status(200).json(images);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Failed to fetch images" });
   }
 };

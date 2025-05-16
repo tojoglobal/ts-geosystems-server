@@ -40,7 +40,6 @@ export const addCategory = async (req, res) => {
       id: result.insertId,
     });
   } catch (error) {
-    console.error("Error in addCategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -70,7 +69,6 @@ export const addSubCategory = async (req, res) => {
       id: result.insertId,
     });
   } catch (error) {
-    console.error("Error in addSubCategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -85,7 +83,6 @@ export const getCategory = async (req, res) => {
       categories,
     });
   } catch (error) {
-    console.error("Error in getCategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -100,7 +97,6 @@ export const getSubcategory = async (req, res) => {
       subcategories,
     });
   } catch (error) {
-    console.error("Error in getSubcategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -121,7 +117,6 @@ export const getCategoryById = async (req, res) => {
       category: category[0],
     });
   } catch (error) {
-    console.error("Error in getCategoryById:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -142,7 +137,6 @@ export const getSubCategoryById = async (req, res) => {
       subcategory: subcategory[0],
     });
   } catch (error) {
-    console.error("Error in getSubCategoryById:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -210,7 +204,6 @@ export const updateCategory = async (req, res) => {
 
     res.json({ success: true, message: "Category updated successfully" });
   } catch (error) {
-    console.error("Error in updateCategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -264,7 +257,6 @@ export const updateSubCategory = async (req, res) => {
 
     res.json({ success: true, message: "Subcategory updated successfully" });
   } catch (error) {
-    console.error("Error in updateSubCategory:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -308,7 +300,6 @@ export const getCateWithSubcateWithData = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.error("Error in getCategoryWithSubcategories:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

@@ -6,11 +6,9 @@ import bcrypt from "bcrypt";
 
 export const socialLoginUser = async (req, res) => {
   const { token } = req.body;
-  //   console.log(token);
 
   const rawDummyPassword = crypto.randomBytes(16).toString("hex");
   const dummyPassword = await bcrypt.hash(rawDummyPassword, 10);
-  console.log(dummyPassword);
 
   try {
     const decoded = await admin.auth().verifyIdToken(token);
@@ -44,7 +42,6 @@ export const socialLoginUser = async (req, res) => {
       },
       async (err, token) => {
         if (err) {
-          console.error("Error generating JWT:", err.message);
           return res.status(500).json({ message: "Error generating token" });
         }
 
@@ -69,7 +66,6 @@ export const socialLoginUser = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error("Firebase social login error:", error.message);
     res.status(401).json({ success: false, message: "Unauthorized" });
   }
 };

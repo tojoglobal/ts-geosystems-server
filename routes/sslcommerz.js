@@ -148,7 +148,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
       res.json({ GatewayPageURL: apiResponse.GatewayPageURL });
     });
   } catch (err) {
-    console.error(err);
     res
       .status(500)
       .json({ message: "Error initializing payment", error: err.message });
@@ -204,7 +203,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/success", async (req, res) => {
 
     res.redirect(`${redirect_url}/thank-you?order_id=${tran_id}`);
   } catch (err) {
-    console.error(err);
     res.status(500).send("Payment Success Handling Failed");
   }
 });
@@ -217,7 +215,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/fail", async (req, res) => {
     await db.query(`DELETE FROM orders WHERE order_id = ?`, [tran_id]);
     res.redirect(`${redirect_url}/payment-failed`);
   } catch (err) {
-    console.error(err);
     res.status(500).send("Error deleting failed order");
   }
 });
@@ -231,7 +228,6 @@ SSLCommerzPaymentRoute.post("/payment/ssl-payment/cancel", async (req, res) => {
     await db.query(`DELETE FROM orders WHERE order_id = ?`, [tran_id]);
     res.redirect(`${redirect_url}/payment-cancelled`);
   } catch (err) {
-    console.error(err);
     res.status(500).send("Error deleting cancelled order");
   }
 });
@@ -257,7 +253,6 @@ SSLCommerzPaymentRoute.post("/payment/ssl-payment/ipn", async (req, res) => {
     );
     res.status(200).send("IPN received");
   } catch (err) {
-    console.error(err);
     res.status(500).send("Error processing IPN");
   }
 });
@@ -277,7 +272,6 @@ SSLCommerzPaymentRoute.get("/orderdata", async (req, res) => {
 
     res.json(order[0]);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Failed to fetch order data" });
   }
 });

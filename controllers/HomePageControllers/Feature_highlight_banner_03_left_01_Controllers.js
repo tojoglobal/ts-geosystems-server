@@ -32,7 +32,6 @@ export const featureUploadImages = async (req, res) => {
 
     res.status(201).json(uploaded);
   } catch (error) {
-    console.error("Upload error:", error);
     res.status(500).json({ error: "Upload failed" });
   }
 };
@@ -62,7 +61,6 @@ export const featureDeleteImage = async (req, res) => {
     );
     res.json({ message: "Image deleted" });
   } catch (error) {
-    console.error("Delete error:", error);
     res.status(500).json({ error: "Delete failed" });
   }
 };
@@ -80,7 +78,6 @@ export const featureUpdateImageOrder = async (req, res) => {
 
     res.json({ message: "Order updated" });
   } catch (error) {
-    console.error("Order update error:", error);
     res.status(500).json({ error: "Order update failed" });
   }
 };

@@ -343,3 +343,61 @@ CREATE TABLE trade_in_submissions (
   photos JSON, -- Store file paths as JSON
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+/* support  table */
+CREATE TABLE support_requests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  company VARCHAR(255),
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  equipment VARCHAR(100) NOT NULL,
+  model VARCHAR(100) NOT NULL,
+  supportIssues JSON NOT NULL, -- Array of support issues
+  details TEXT,
+  files JSON, -- Array of file paths
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Table for hire enquiries
+CREATE TABLE hire_enquiries (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  company VARCHAR(255),
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  existingCustomer ENUM('yes', 'no') NOT NULL,
+  equipment JSON NOT NULL, -- Store selected equipment as JSON array
+  hireDate DATE NOT NULL,
+  hirePeriod VARCHAR(100) NOT NULL,
+  comments TEXT,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+/* Hire equipment edit  */
+CREATE TABLE equipment (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  image_url TEXT NOT NULL,
+  is_visible BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO equipment (name, image_url, is_visible) VALUES
+('3D Laser Scanner', 'https://example.com/image1.jpg', TRUE),
+('Total Station - Robotic', 'https://example.com/image2.jpg', TRUE),
+('Total Station - Manual', 'https://example.com/image3.jpg', TRUE),
+('GPS/GNSS System', 'https://example.com/image4.jpg', TRUE),
+('Laser Level', 'https://example.com/image5.jpg', TRUE),
+('Pipe Laser', 'https://example.com/image6.jpg', TRUE),
+('Digital Level', 'https://example.com/image7.jpg', TRUE),
+('Automatic Level', 'https://example.com/image8.jpg', TRUE),
+('CAT / Genny', 'https://example.com/image9.jpg', TRUE),
+('Precision Locator', 'https://example.com/image10.jpg', TRUE),
+('Ground Penetrating Radar', 'https://example.com/image11.jpg', TRUE),
+('Other - Specify below', 'https://example.com/image12.jpg', TRUE);
+
+

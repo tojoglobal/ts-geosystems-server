@@ -9,7 +9,6 @@ export const addMessage = async (req, res) => {
     );
     res.json({ success: true, id: result.insertId });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -22,7 +21,6 @@ export const getClientMessage = async (req, res) => {
     );
     res.json({ success: true, messages: rows });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -33,7 +31,6 @@ export const deleteClientMessage = async (req, res) => {
     await db.execute("DELETE FROM contact_messages WHERE id = ?", [id]);
     res.json({ success: true });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

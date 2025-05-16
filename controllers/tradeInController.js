@@ -47,7 +47,6 @@ export const saveTradeInData = async (req, res) => {
 
     res.status(201).json({ message: "Trade-in form submitted successfully!" });
   } catch (error) {
-    console.error("Error saving trade-in data:", error);
     res.status(500).json({ message: "Error saving trade-in data." });
   }
 };
@@ -59,7 +58,6 @@ export const getTradeInData = async (req, res) => {
     const [rows] = await db.query(sql);
     res.status(200).json(rows);
   } catch (error) {
-    console.error("Error fetching trade-in data:", error);
     res.status(500).json({ message: "Error fetching trade-in data." });
   }
 };

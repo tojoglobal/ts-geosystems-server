@@ -10,9 +10,6 @@ export const authenticateUser = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log(decoded);
-
-    console.log(decoded.userId);
 
     // Fetch user from the database
     const [rows] = await db.query(
@@ -25,7 +22,6 @@ export const authenticateUser = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    console.error("Token verification failed:", err.message);
     return res.status(403).json({ message: "Invalid or expired token" });
   }
 };

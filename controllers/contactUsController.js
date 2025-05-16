@@ -32,7 +32,6 @@ export const getContactUs = async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error("Error fetching admin contact info:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -79,7 +78,6 @@ export const updateContactUs = async (req, res) => {
 
     res.json({ success: true, message: "Contact info updated" });
   } catch (error) {
-    console.error("Update error:", error);
     res.status(500).json({ error: "Database update failed" });
   }
 };
@@ -93,7 +91,6 @@ export const getCertificateDescription = async (req, res) => {
     const description = rows[0]?.description || "";
     res.json({ success: true, description });
   } catch (error) {
-    console.error("Error fetching certificate description:", error);
     res.status(500).json({
       success: false,
       error: "Failed to fetch certificate description",
@@ -105,11 +102,11 @@ export const getCertificateDescription = async (req, res) => {
 export const updateCertificateDescription = async (req, res) => {
   try {
     const { description } = req.body;
-    
+
     if (!description) {
       return res.status(400).json({
         success: false,
-        error: "Description is required"
+        error: "Description is required",
       });
     }
 
@@ -125,15 +122,14 @@ export const updateCertificateDescription = async (req, res) => {
       [description]
     );
 
-    res.json({ 
-      success: true, 
-      message: "Certificate description updated successfully" 
+    res.json({
+      success: true,
+      message: "Certificate description updated successfully",
     });
   } catch (error) {
-    console.error("Update error:", error);
-    res.status(500).json({ 
-      success: false, 
-      error: "Failed to update certificate description" 
+    res.status(500).json({
+      success: false,
+      error: "Failed to update certificate description",
     });
   }
 };
@@ -161,7 +157,6 @@ export const submitContactForm = async (req, res) => {
       id: result.insertId,
     });
   } catch (error) {
-    console.error("Error submitting contact form:", error);
     res.status(500).json({
       success: false,
       error: "Failed to submit contact form",
@@ -177,7 +172,6 @@ export const getContactMessages = async (req, res) => {
     );
     res.json({ success: true, messages });
   } catch (error) {
-    console.error("Error fetching contact messages:", error);
     res.status(500).json({
       success: false,
       error: "Failed to fetch contact messages",
@@ -192,7 +186,6 @@ export const deleteContactMessage = async (req, res) => {
     await db.query("DELETE FROM contact_messages WHERE id = ?", [id]);
     res.json({ success: true, message: "Message deleted successfully" });
   } catch (error) {
-    console.error("Error deleting contact message:", error);
     res.status(500).json({
       success: false,
       error: "Failed to delete contact message",

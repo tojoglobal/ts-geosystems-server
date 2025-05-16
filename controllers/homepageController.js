@@ -17,7 +17,6 @@ export const getHomepageControl = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error in getHomepageControl:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -54,7 +53,6 @@ export const updateHomepageControl = async (req, res) => {
       message: "Homepage control settings updated successfully",
     });
   } catch (error) {
-    console.error("Error in updateHomepageControl:", error);
     res.status(500).json({
       success: false,
       message: "Server error",

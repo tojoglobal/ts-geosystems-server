@@ -34,7 +34,6 @@ export const creataBlogPost = async (req, res) => {
 
     res.status(201).json({ message: "Blog created successfully" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error creating blog post" });
   }
 };
@@ -101,7 +100,6 @@ export const updateBlogPost = async (req, res) => {
 
     res.status(200).json({ message: "Blog updated successfully" });
   } catch (error) {
-    console.error("Error updating blog post:", error);
     res.status(500).json({ message: "Error updating blog post" });
   }
 };
@@ -199,8 +197,6 @@ export const deleteBlogPost = async (req, res) => {
       typeof blog.images === "string" ? JSON.parse(blog.images) : [];
 
     // Step 2: Delete each image safely from uploads folder
-    // console.log("Image", images);
-
     images.forEach((img) => {
       if (img && img?.filePath) {
         deleteFileFromUploads(img.filePath);
@@ -212,7 +208,6 @@ export const deleteBlogPost = async (req, res) => {
 
     res.status(200).json({ message: "Blog and images deleted successfully" });
   } catch (error) {
-    console.error("Error deleting blog:", error);
     res.status(500).json({ message: "Failed to delete blog" });
   }
 };
@@ -260,7 +255,6 @@ export const getRelatedBlogs = async (req, res) => {
       relatedArticles,
     });
   } catch (err) {
-    console.error("Error in getRelatedBlogs:", err); // Detailed error logging
     res.status(500).json({
       success: false,
       message: "Failed to fetch related blogs",
