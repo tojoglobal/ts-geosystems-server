@@ -266,7 +266,6 @@ export const getRelatedBlogs = async (req, res) => {
 export const searchBlogs = async (req, res) => {
   try {
     const { query } = req.query;
-    console.log(query);
     let searchQuery = "SELECT * FROM blogs";
     if (query) {
       searchQuery += " WHERE title LIKE ?";
