@@ -262,3 +262,30 @@ export const getRelatedBlogs = async (req, res) => {
     });
   }
 };
+
+export const searchBlogs = async (req, res) => {
+  try {
+    const { query } = req.query;
+    let searchQuery = "SELECT * FROM blogs";
+    if (query) {
+      searchQuery += " WHERE title LIKE ?";
+    }
+    searchQuery += " ORDER BY created_at DESC";
+    
+    const [rows] = await db.query(
+      searchQuery, 
+      query ? [`%${query}%`] : []
+    );
+
+    res.status(200).json({
+      success: true,
+      blogs: rows
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to search blogs",
+      error: err.message,
+    });
+  }
+};
