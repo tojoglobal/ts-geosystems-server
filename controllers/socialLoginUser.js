@@ -22,7 +22,6 @@ export const socialLoginUser = async (req, res) => {
     let user;
     if (result.length === 0) {
       // Auto-create user if doesn't exist
-
       const [insertResult] = await db.query(
         "INSERT INTO users (email, role, password) VALUES (?, ?, ?)",
         [email, role, dummyPassword]
@@ -32,8 +31,8 @@ export const socialLoginUser = async (req, res) => {
       user = result[0];
     }
     // Create JWT token
-    const userId = user.id;
-    const paylod = { userId, email: user.email, role: user.role };
+    const id = user.id;
+    const paylod = { id, email: user.email, role: user.role };
     jwt.sign(
       paylod,
       process.env.ACCESS_TOKEN_SECRET,
@@ -46,10 +45,7 @@ export const socialLoginUser = async (req, res) => {
         }
 
         // Optionally update user table with token
-        await db.query("UPDATE users SET token = ? WHERE id = ?", [
-          token,
-          userId,
-        ]);
+        await db.query("UPDATE users SET token = ? WHERE id = ?", [token, id]);
         // Set token in cookie (httpOnly)
         res.cookie("authToken", token, {
           httpOnly: true,
@@ -61,7 +57,7 @@ export const socialLoginUser = async (req, res) => {
         res.status(200).json({
           success: true,
           message: "Login successful",
-          user: { id: userId, email, role },
+          user: { id, email, role },
         });
       }
     );

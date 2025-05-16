@@ -195,14 +195,15 @@ export const updateAboutUsImages = async (req, res) => {
       "SELECT images FROM about_us_image_controls1 WHERE id = 2"
     );
     const existingImages = JSON.parse(current[0]?.images || "[]");
-    const updatedImages = [...existingImages];
 
+    const updatedImages = [...existingImages];
     for (let i = 0; i < 6; i++) {
       const show = req.body[`show_${i}`] === "true";
       const order = parseInt(req.body[`order_${i}`] || 0);
       const section = req.body[`section_${i}`] || "";
 
       const file = req.files?.find((f) => f.fieldname === `images[${i}][file]`);
+
       const existing = existingImages[i];
 
       let filePath = existing?.filePath || "";

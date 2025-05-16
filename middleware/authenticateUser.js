@@ -14,7 +14,7 @@ export const authenticateUser = async (req, res, next) => {
     // Fetch user from the database
     const [rows] = await db.query(
       "SELECT * FROM users WHERE id = ? AND token = ?",
-      [decoded.userId, token]
+      [decoded.id, token]
     );
     if (rows.length === 0) {
       return res.status(401).json({ message: "Invalid or expired token" });

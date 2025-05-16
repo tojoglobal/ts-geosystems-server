@@ -5,7 +5,6 @@ import {
   updateAboutUs,
   updateAboutUsImages,
 } from "../controllers/aboutUsController.js";
-import multer from "multer";
 import { upload } from "../middleware/UploadFile.js";
 
 // const upload = multer({

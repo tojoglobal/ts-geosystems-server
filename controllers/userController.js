@@ -175,10 +175,10 @@ export const loginUser = async (req, res) => {
         .status(401)
         .json({ loginStatus: false, Error: "Wrong password" });
     }
-    const userId = user.id;
+    const id = user.id;
     const role = user.role;
     // Create JWT token
-    const payload = { userId, email: user.email, role };
+    const payload = { id, email: user.email, role };
     jwt.sign(
       payload,
       process.env.ACCESS_TOKEN_SECRET,
@@ -191,10 +191,7 @@ export const loginUser = async (req, res) => {
         }
 
         // Optionally update user table with token
-        await db.query("UPDATE users SET token = ? WHERE id = ?", [
-          token,
-          userId,
-        ]);
+        await db.query("UPDATE users SET token = ? WHERE id = ?", [token, id]);
         // Set token in cookie (httpOnly)
         res.cookie("authToken", token, {
           httpOnly: true,
@@ -206,7 +203,7 @@ export const loginUser = async (req, res) => {
         res.status(200).json({
           success: true,
           message: "Login successful",
-          user: { id: userId, email, role },
+          user: { id, email, role },
         });
       }
     );
@@ -224,5 +221,144 @@ export const getUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (err) {
     res.status(500).send("Server error");
+  }
+};
+
+// GET /api/getUserInfo/:email
+export const getSingleUserInfo = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const [user] = await db.query(
+      "SELECT id, email, first_name as firstName, last_name as lastName,  phone_number as phoneNumber, company_name as companyName, created_at FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(201).json(user[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateUserInfo = async (req, res) => {
+  try {
+    const {
+      id,
+      email,
+      firstName,
+      lastName,
+      phoneNumber,
+      companyName,
+      password,
+      confirmPassword,
+      currentPassword,
+    } = req.body;
+
+    console.log(
+      id,
+      email,
+      firstName,
+      lastName,
+      phoneNumber,
+      companyName,
+      password,
+      confirmPassword,
+      currentPassword
+    );
+
+    // Fetch current user details
+    const [user] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
+
+    if (!user.length) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const currentUser = user[0];
+    const updates = {};
+
+    // Update email
+    if (email && email !== currentUser.email) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          message: "Current password is required to change the email.",
+        });
+      }
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        currentUser.password
+      );
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid current password." });
+      }
+
+      updates.email = email;
+
+      // Send email to the old email address
+      const message = `
+        Your email has been updated. If you did not request this change, please contact support immediately.
+      `;
+      await sendEmail({
+        to: currentUser.email,
+        subject: "Email Updated",
+        text: message,
+      });
+    }
+
+    // Update password
+    if (password) {
+      if (password.length < 6 || !/[a-zA-Z]/.test(password)) {
+        return res.status(400).json({
+          message:
+            "Password must be at least 6 characters and contain at least one alphabet.",
+        });
+      }
+
+      if (password !== confirmPassword) {
+        return res.status(400).json({ message: "Passwords do not match." });
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        currentUser.password
+      );
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid current password." });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updates.password = hashedPassword;
+    }
+
+    // Update other fields
+    if (firstName && firstName !== currentUser.first_name)
+      updates.first_name = firstName;
+    if (lastName && lastName !== currentUser.last_name)
+      updates.last_name = lastName;
+    if (phoneNumber && phoneNumber !== currentUser.phone_number)
+      updates.phone_number = phoneNumber;
+    if (companyName && companyName !== currentUser.company_name)
+      updates.company_name = companyName;
+
+    // Apply updates to the database
+    const updateKeys = Object.keys(updates);
+    if (updateKeys.length > 0) {
+      const sql = `
+        UPDATE users
+        SET ${updateKeys.map((key) => `${key} = ?`).join(", ")}
+        WHERE id = ?
+      `;
+      const values = [...updateKeys.map((key) => updates[key]), id];
+
+      await db.query(sql, values);
+    }
+
+    res.status(200).json({ message: "User details updated successfully." });
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    res.status(500).json({ message: "Server error." });
   }
 };

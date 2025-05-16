@@ -1,8 +1,10 @@
 import express from "express";
 import {
   addNewUser,
+  getSingleUserInfo,
   getUsers,
   loginUser,
+  updateUserInfo,
 } from "../controllers/userController.js";
 import { authenticateUser } from "../middleware/authenticateUser.js";
 import db from "../Utils/db.js";
@@ -13,6 +15,10 @@ const userRoutes = express.Router();
 userRoutes.post("/add-user", addNewUser);
 userRoutes.get("/all-users", getUsers);
 userRoutes.post("/user-login", loginUser);
+
+// get the user only email
+userRoutes.get("/getUserInfo/:email", getSingleUserInfo);
+
 userRoutes.get("/user-verify-token", authenticateUser, (req, res) => {
   res.status(200).json({
     valid: true,
@@ -47,5 +53,8 @@ userRoutes.post("/user-logout", async (req, res) => {
 });
 
 userRoutes.post("/social-login", socialLoginUser);
+
+// Update user information
+userRoutes.put("/updateUserInfo", updateUserInfo);
 
 export default userRoutes;
