@@ -121,3 +121,22 @@ export const deleteBrand = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+// for only in category product sidebar image as brand image
+export const getPopularBrandPhoto = async (req, res) => {
+  try {
+    const [brands] = await db.query(
+      "SELECT photo FROM brands WHERE is_populer = 1 ORDER BY id DESC LIMIT 1"
+    );
+    
+    if (brands.length === 0) {
+      return res.status(404).json({ message: "No popular brand found" });
+    }
+    
+    // Return just the photo URL
+    res.json({ photo: brands[0].photo });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
