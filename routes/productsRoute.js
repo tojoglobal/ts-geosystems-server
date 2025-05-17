@@ -13,6 +13,7 @@ import {
   getProductsForShopAll,
   trackProductView,
   getViewedProducts,
+  getRecommendedProducts,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -57,5 +58,6 @@ ProductsRoute.get("/api/shop-all/product", getProductsForShopAll);
 // recent view
 ProductsRoute.post("/api/views/product", trackProductView);
 ProductsRoute.get("/api/viewed/products/:email", getViewedProducts);
+ProductsRoute.get("/api/recommended-products", getRecommendedProducts);
 
 export default ProductsRoute;

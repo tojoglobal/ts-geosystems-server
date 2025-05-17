@@ -520,13 +520,11 @@ export const trackProductView = async (req, res) => {
 
     res.status(200).json({ success: true, message: "View tracked" });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error tracking view",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error tracking view",
+      error: error.message,
+    });
   }
 };
 
@@ -572,5 +570,23 @@ export const getViewedProducts = async (req, res) => {
       message: "Error fetching viewed products",
       error: error.message,
     });
+  }
+};
+
+// in search box getRecommendedProducts
+export const getRecommendedProducts = async (req, res) => {
+  try {
+    const [products] = await db.query(`
+      SELECT * FROM products 
+      ORDER BY id DESC 
+      LIMIT 10
+    `);
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
