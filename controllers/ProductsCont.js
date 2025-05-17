@@ -492,3 +492,16 @@ export const getProductsForShopAll = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const getRecommendedProducts = async (req, res) => {
+  try {
+    const [products] = await db.query(
+      `SELECT * FROM recommended_products ORDER BY product_count DESC, last_ordered_at DESC LIMIT 10`
+    );
+
+    res.status(200).json({ recommendedProducts: products });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch recommended products" });
+  }
+};

@@ -1,8 +1,13 @@
 import express from "express";
-import { getService, updateService } from "../controllers/serviceController.js";
-import multer from "multer";
+import {
+  getService,
+  getServiceImages,
+  updateService,
+  updateServiceImages,
+} from "../controllers/serviceController.js";
+import { upload } from "../middleware/UploadFile.js";
 
-const upload = multer({ dest: "uploads/service/" });
+// const upload = multer({ dest: "uploads/service/" });
 const serviceRoute = express.Router();
 
 serviceRoute.get("/service", getService);
@@ -14,5 +19,8 @@ serviceRoute.put(
   ]),
   updateService
 );
+
+serviceRoute.put("/update-service-images", upload.any(), updateServiceImages);
+serviceRoute.get("/get-service-images", getServiceImages);
 
 export default serviceRoute;

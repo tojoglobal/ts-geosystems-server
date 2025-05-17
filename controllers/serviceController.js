@@ -1,6 +1,7 @@
 import db from "../Utils/db.js";
 import fs from "fs";
 import path from "path";
+import { deleteFileFromUploads } from "./../Utils/deleteFileFromUploads.js";
 
 export const getService = async (req, res) => {
   try {
@@ -129,5 +130,66 @@ export const updateService = async (req, res) => {
       success: false,
       error: error.message,
     });
+  }
+};
+
+export const updateServiceImages = async (req, res) => {
+  try {
+    const [current] = await db.query(
+      "SELECT images FROM services_image_controls WHERE id = 1"
+    );
+    const existingImages = JSON.parse(current[0]?.images || "[]");
+
+    const updatedImages = [...existingImages];
+    for (let i = 0; i < 6; i++) {
+      const show = req.body[`show_${i}`] === "true";
+      const order = parseInt(req.body[`order_${i}`] || 0);
+      const section = req.body[`section_${i}`] || "";
+
+      const file = req.files?.find((f) => f.fieldname === `images[${i}][file]`);
+
+      const existing = existingImages[i];
+
+      let filePath = existing?.filePath || "";
+      console.log(filePath);
+
+      if (file) {
+        // Delete old image if it exists
+        if (existing?.filePath) {
+          deleteFileFromUploads(filePath);
+        }
+        filePath = `/uploads/${file.filename}`;
+      } else {
+        filePath = req.body[`filePath_${i}`] || filePath;
+      }
+
+      updatedImages[i] = {
+        filePath,
+        show,
+        order,
+        section,
+      };
+    }
+
+    await db.query(
+      "UPDATE services_image_controls SET images = ? WHERE id = 1",
+      [JSON.stringify(updatedImages)]
+    );
+
+    res.status(200).json({ message: "service images updated successfully." });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update service images." });
+  }
+};
+
+export const getServiceImages = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT images FROM services_image_controls WHERE id = 1"
+    );
+    const images = JSON.parse(rows[0]?.images || "[]");
+    res.status(200).json(images);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch images" });
   }
 };
