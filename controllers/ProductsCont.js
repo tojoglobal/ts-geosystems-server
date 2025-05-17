@@ -22,14 +22,15 @@ export const productAdd = async (req, res) => {
       videoUrls,
       warrantyInfo,
       clearance,
+      isStock,
+      sale,
     } = req.body;
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
     const sql = `INSERT INTO products 
       (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, 
        product_options, productOptionShowHide, software_options, brand_name, product_overview, 
-       video_urls, warranty_info, image_urls, clearance)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`; // Fixed missing parenthesis
-
+       video_urls, warranty_info, image_urls, clearance, isStock, sale)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const [result] = await db.query(sql, [
       productName,
       price,
@@ -48,6 +49,8 @@ export const productAdd = async (req, res) => {
       warrantyInfo,
       JSON.stringify(imageUrls),
       clearance || false,
+      isStock !== undefined ? isStock : true,
+      sale !== undefined ? sale : false,
     ]);
     res.status(200).json({
       success: true,
@@ -177,9 +180,18 @@ export const updateProductById = async (req, res) => {
     videoUrls,
     warrantyInfo,
     clearance,
+    isStock,
+    sale,
   } = req.body;
 
   try {
+    // Convert string values to proper boolean values
+    const clearanceBool =
+      clearance === "1" || clearance === "true" || clearance === true;
+    const isStockBool =
+      isStock === "1" || isStock === "true" || isStock === true;
+    const saleBool = sale === "1" || sale === "true" || sale === true;
+
     // Fetch existing product to get the old image URLs
     const [existingRows] = await db.query(
       "SELECT image_urls FROM products WHERE id = ?",
@@ -195,7 +207,8 @@ export const updateProductById = async (req, res) => {
       UPDATE products 
       SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, 
           product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
-          brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?
+          brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?,
+          isStock=?, sale=?
       WHERE id=?`;
 
     await db.query(sql, [
@@ -214,8 +227,10 @@ export const updateProductById = async (req, res) => {
       productOverview,
       videoUrls,
       warrantyInfo,
-      clearance || false,
-      id, // Moved to the end as it's the WHERE clause parameter
+      clearanceBool ? 1 : 0,
+      isStockBool ? 1 : 0,
+      saleBool ? 1 : 0,
+      id,
     ]);
 
     // Handle new images if provided
@@ -235,6 +250,7 @@ export const updateProductById = async (req, res) => {
       message: "Product updated successfully!",
     });
   } catch (error) {
+    console.error("Update error:", error);
     res.status(500).send("Failed to update product");
   }
 };
