@@ -3,6 +3,7 @@ import {
   deleteOrder,
   getLatestOrders,
   getOrderData,
+  getOrdersByEmail,
   postOrder,
   UpdateOrderStatus,
   updatePaymentStaus,
@@ -16,5 +17,6 @@ ordersRoute.get("/orderinfo", getOrderData);
 ordersRoute.get("/latest-order", getLatestOrders);
 ordersRoute.delete("/orders/:order_id", deleteOrder);
 ordersRoute.put("/orders/:orderId/payment-status", updatePaymentStaus);
+ordersRoute.get("/order/:email", getOrdersByEmail);
 
 export default ordersRoute;
