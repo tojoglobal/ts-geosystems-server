@@ -7,11 +7,6 @@ import {
 } from "../controllers/aboutUsController.js";
 import { upload } from "../middleware/UploadFile.js";
 
-// const upload = multer({
-//   dest: "uploads/about-us/",
-//   limits: { fileSize: 10 * 1024 * 1024 },
-// });
-
 const aboutUsRoute = express.Router();
 
 aboutUsRoute.get("/about-us", getAboutUs);
