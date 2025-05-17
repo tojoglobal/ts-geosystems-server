@@ -492,3 +492,85 @@ export const getProductsForShopAll = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// Track product view
+export const trackProductView = async (req, res) => {
+  try {
+    const { productId, userEmail } = req.body;
+    // Check if the product exists
+    const [product] = await db.query("SELECT id FROM products WHERE id = ?", [
+      productId,
+    ]);
+    if (product.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // Insert or update view count
+    const sql = `
+      INSERT INTO product_views (product_id, user_email, view_count) 
+      VALUES (?, ?, 1)
+      ON DUPLICATE KEY UPDATE 
+        view_count = view_count + 1,
+        last_viewed = CURRENT_TIMESTAMP
+    `;
+
+    await db.query(sql, [productId, userEmail]);
+
+    res.status(200).json({ success: true, message: "View tracked" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error tracking view",
+        error: error.message,
+      });
+  }
+};
+
+// Get viewed products by user
+export const getViewedProducts = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const sql = `
+      SELECT 
+        pv.id as view_id,
+        pv.view_count,
+        pv.last_viewed,
+        p.* 
+      FROM products p
+      JOIN product_views pv ON p.id = pv.product_id
+      WHERE pv.user_email = ?
+      ORDER BY pv.last_viewed DESC
+    `;
+
+    const [products] = await db.query(sql, [email]);
+
+    // Format the response to include view data
+    const formattedProducts = products.map((product) => {
+      const { view_id, view_count, last_viewed, ...productData } = product;
+      return {
+        ...productData,
+        view_info: {
+          view_id,
+          view_count,
+          last_viewed,
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      products: formattedProducts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching viewed products",
+      error: error.message,
+    });
+  }
+};

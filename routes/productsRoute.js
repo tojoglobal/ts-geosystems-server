@@ -11,6 +11,8 @@ import {
   getClearanceProducts,
   searchProducts,
   getProductsForShopAll,
+  trackProductView,
+  getViewedProducts,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -52,5 +54,8 @@ ProductsRoute.get("/api/clearance", getClearanceProducts);
 // Add these new routes
 ProductsRoute.get("/api/search", searchProducts);
 ProductsRoute.get("/api/shop-all/product", getProductsForShopAll);
+// recent view
+ProductsRoute.post("/api/views/product", trackProductView);
+ProductsRoute.get("/api/viewed/products/:email", getViewedProducts);
 
 export default ProductsRoute;
