@@ -372,7 +372,15 @@ CREATE TABLE hire_enquiries (
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
+CREATE TABLE product_views (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  user_email VARCHAR(255) NOT NULL,
+  view_count INT DEFAULT 1,
+  last_viewed TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_user_product (product_id, user_email)
+);
 
 /* Hire equipment edit  */
 CREATE TABLE equipment (
