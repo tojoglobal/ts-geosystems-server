@@ -442,6 +442,41 @@ export const searchProducts = async (req, res) => {
   }
 };
 
+// In your searchProducts controller
+export const searchProductsMobile = async (req, res) => {
+  try {
+    const { query, sort = "relevance", page = 1, limit = 12 } = req.query;
+    const offset = (page - 1) * limit;
+    
+    // Modified to only search product_name
+    let sqlQuery = `
+      SELECT * FROM products 
+      WHERE product_name LIKE ? 
+      ORDER BY product_name ASC
+      LIMIT ? OFFSET ?`;
+
+    let countQuery = `
+      SELECT COUNT(*) as total FROM products 
+      WHERE product_name LIKE ?`;
+
+    const searchTerm = `%${query}%`;
+
+    // Execute queries
+    const [products] = await db.query(sqlQuery, [searchTerm, parseInt(limit), offset]);
+    const [[countResult]] = await db.query(countQuery, [searchTerm]);
+
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export const getProductsForShopAll = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
