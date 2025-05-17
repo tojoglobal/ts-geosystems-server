@@ -20,12 +20,13 @@ export const postOrder = async (req, res) => {
       total,
     } = req.body;
 
+    // Insert the order into the orders table
     await db.query(
       `INSERT INTO orders 
-  (order_id, email, shipping_name, shipping_address, shipping_city, shipping_zip,
-   shipping_phone, shipping_comments, billing_address, payment_method, paymentStatus, 
-   items, total, status, shipping_cost, payment_info, promo_code) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, // ✅ 17 placeholders
+      (order_id, email, shipping_name, shipping_address, shipping_city, shipping_zip,
+       shipping_phone, shipping_comments, billing_address, payment_method, paymentStatus, 
+       items, total, status, shipping_cost, payment_info, promo_code) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         order_id,
         email,
@@ -47,9 +48,91 @@ export const postOrder = async (req, res) => {
       ]
     );
 
+    // Update the recommended_products table
+    for (const item of items) {
+      const {
+        id: product_id,
+        product_name,
+        quantity,
+        category,
+        sub_category,
+      } = item;
+
+      // Parse category and sub_category JSON strings
+      const parsedCategory = JSON.parse(category);
+      const parsedSubCategory = JSON.parse(sub_category);
+
+      const productCategory = parsedCategory.cat;
+      const productSubcategory = parsedSubCategory.slug;
+
+      // Check if the product already exists in the recommended_products table
+      const [existingProduct] = await db.query(
+        "SELECT * FROM recommended_products WHERE product_id = ?",
+        [product_id]
+      );
+
+      if (existingProduct.length > 0) {
+        // If the product exists, update the product count and last ordered time
+        await db.query(
+          `UPDATE recommended_products 
+           SET product_count = product_count + ?, last_ordered_at = NOW() 
+           WHERE product_id = ?`,
+          [quantity, product_id]
+        );
+      } else {
+        // If the product is new, insert it into the table
+        await db.query(
+          `INSERT INTO recommended_products 
+           (product_id, product_name, product_count, product_category, product_subcategory, last_ordered_at) 
+           VALUES (?, ?, ?, ?, ?, NOW())`,
+          [
+            product_id,
+            product_name,
+            quantity,
+            productCategory,
+            productSubcategory,
+          ]
+        );
+      }
+    }
+
     res.status(201).json({ message: "Order placed successfully!" });
   } catch (err) {
+    console.error("Error placing order:", err.message);
     res.status(500).json({ error: "Failed to place order" });
+  }
+};
+
+export const updatePaymentStaus = async (req, res) => {
+  const { orderId } = req.params;
+  const { paymentStatus } = req.body;
+
+  //✅ Validate payment status
+  const validStatuses = ["paid", "unpaid", "pending"];
+  if (!validStatuses.includes(paymentStatus)) {
+    return res.status(400).json({ message: "Invalid payment status" });
+  }
+
+  try {
+    // Check if order exists
+    const [orderRows] = await db.execute(
+      "SELECT * FROM orders WHERE order_id = ?",
+      [orderId]
+    );
+    if (orderRows.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Update payment status
+    await db.query("UPDATE orders SET paymentStatus = ? WHERE order_id = ?", [
+      paymentStatus,
+      orderId,
+    ]);
+
+    res.status(200).json({ message: "Payment status updated successfully" });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 

@@ -29,6 +29,8 @@ import BlogRoutes from "./routes/BlogRoutes.js";
 import experienceCenterRoutes from "./routes/HomePageRoutes/experienceCenterRoutes.js";
 import tradeInRoutes from "./routes/tradeInRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
+import UserManualsRoute from "./routes/userManualsRoutes.js";
+import QuickGuidesRoute from "./routes/quickGuidesRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -77,6 +79,10 @@ app.use("/api", categoryRoute);
 app.use("/api", brandsRoute);
 // Software routes
 app.use("/api", SoftwareRoute);
+// UserManualsRoute routes
+app.use("/api", UserManualsRoute);
+// QuickGuidesRoute routes
+app.use("/api", QuickGuidesRoute);
 // ssl commer
 app.use("/api", SSLCommerzPaymentRoute);
 // order route

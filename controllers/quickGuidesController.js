@@ -2,62 +2,61 @@ import fs from "fs/promises";
 import path from "path";
 import db from "../Utils/db.js";
 
-// GET all softwares
-export const getSoftwares = async (req, res) => {
+// GET all QuickGuides
+export const getQuickGuides = async (req, res) => {
   try {
-    const [softwares] = await db.query(
-      "SELECT * FROM softwares ORDER BY id DESC"
+    const [QuickGuides] = await db.query(
+      "SELECT * FROM quick_guides ORDER BY id DESC"
     );
-    res.status(200).json(softwares);
+    res.status(200).json(QuickGuides);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// CREATE a new software
-export const createSoftware = async (req, res) => {
+// CREATE a new QuickGuide
+export const createQuickGuides = async (req, res) => {
   try {
     const body = { ...req.body };
-    const { softwar_name, softwarlink } = body;
+    const { quickGuides_name, quickGuideslink } = body;
     const photo = req.file ? req.file.filename : null;
-    const slug = softwar_name
+    const slug = quickGuides_name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
     const sql = `
-      INSERT INTO softwares (softwar_name, slug, softwarlink, photo)
+      INSERT INTO quick_guides (quick_guides_name, slug, quick_guides_link, photo)
       VALUES (?, ?, ?, ?)
     `;
-    const values = [softwar_name, slug, softwarlink, photo];
-
-    const [result] = await db.query(sql, values);
-
-    res.status(200).json({ message: "Software created successfully" });
+    const values = [quickGuides_name, slug, quickGuideslink, photo];
+    await db.query(sql, values);
+    res.json({ message: "QuickGuide created successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// UPDATE a software
-export const updateSoftware = async (req, res) => {
+// UPDATE a QuickGuide
+export const updateQuickGuides = async (req, res) => {
   try {
     const { id } = req.params;
-    const { softwar_name, softwarlink } = req.body;
+    const { quickGuides_name, quickGuideslink } = req.body;
     const newPhoto = req.file ? req.file.filename : null;
-    const slug = softwar_name
+    const slug = quickGuides_name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
     // Get old photo
-    const [rows] = await db.query("SELECT photo FROM softwares WHERE id = ?", [
-      id,
-    ]);
+    const [rows] = await db.query(
+      "SELECT photo FROM quick_guides WHERE id = ?",
+      [id]
+    );
     const oldPhoto = rows[0]?.photo;
 
-    let updateFields = "softwar_name=?, slug=?, softwarlink=?";
-    let values = [softwar_name, slug, softwarlink];
+    let updateFields = "quick_guides_name=?, slug=?, quick_guides_link=?";
+    let values = [quickGuides_name, slug, quickGuideslink];
 
     if (newPhoto) {
       updateFields += ", photo=?";
@@ -69,7 +68,7 @@ export const updateSoftware = async (req, res) => {
 
     values.push(id);
 
-    const sql = `UPDATE softwares SET ${updateFields} WHERE id = ?`;
+    const sql = `UPDATE quick_guides SET ${updateFields} WHERE id = ?`;
     await db.query(sql, values);
 
     // If new photo uploaded, delete old photo
@@ -82,24 +81,25 @@ export const updateSoftware = async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: "Software updated successfully" });
+    res.status(200).json({ message: "QuickGuide updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// DELETE a software
-export const deleteSoftware = async (req, res) => {
+// DELETE a QuickGuide
+export const deleteQuickGuides = async (req, res) => {
   try {
     const { id } = req.params;
     // Get photo
-    const [rows] = await db.query("SELECT photo FROM softwares WHERE id = ?", [
-      id,
-    ]);
+    const [rows] = await db.query(
+      "SELECT photo FROM quick_guides WHERE id = ?",
+      [id]
+    );
     const photo = rows[0]?.photo;
 
-    // Delete software
-    await db.query("DELETE FROM softwares WHERE id = ?", [id]);
+    // Delete QuickGuide
+    await db.query("DELETE FROM quick_guides WHERE id = ?", [id]);
 
     // Delete photo file
     if (photo) {
@@ -111,7 +111,7 @@ export const deleteSoftware = async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: "Software deleted successfully" });
+    res.status(200).json({ message: "QuickGuide deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

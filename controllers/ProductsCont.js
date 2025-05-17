@@ -463,7 +463,7 @@ export const searchProductsMobile = async (req, res) => {
   try {
     const { query, sort = "relevance", page = 1, limit = 12 } = req.query;
     const offset = (page - 1) * limit;
-    
+
     // Modified to only search product_name
     let sqlQuery = `
       SELECT * FROM products 
@@ -478,7 +478,11 @@ export const searchProductsMobile = async (req, res) => {
     const searchTerm = `%${query}%`;
 
     // Execute queries
-    const [products] = await db.query(sqlQuery, [searchTerm, parseInt(limit), offset]);
+    const [products] = await db.query(sqlQuery, [
+      searchTerm,
+      parseInt(limit),
+      offset,
+    ]);
     const [[countResult]] = await db.query(countQuery, [searchTerm]);
 
     res.status(200).json({
@@ -625,19 +629,30 @@ export const getViewedProducts = async (req, res) => {
 };
 
 // in search box getRecommendedProducts
+// export const getRecommendedProducts = async (req, res) => {
+//   try {
+//     const [products] = await db.query(`
+//       SELECT * FROM products
+//       ORDER BY id DESC
+//       LIMIT 10
+//     `);
+
+//     res.status(200).json({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: "Server error" });
+//   };
 export const getRecommendedProducts = async (req, res) => {
   try {
-    const [products] = await db.query(`
-      SELECT * FROM products 
-      ORDER BY id DESC 
-      LIMIT 10
-    `);
+    const [products] = await db.query(
+      `SELECT * FROM recommended_products ORDER BY product_count DESC, last_ordered_at DESC LIMIT 10`
+    );
 
-    res.status(200).json({
-      success: true,
-      products,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ recommendedProducts: products });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch recommended products" });
   }
 };

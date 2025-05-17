@@ -63,6 +63,27 @@ CREATE TABLE softwares (
   photo VARCHAR(255), 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+/* user_manuals crete code */
+DROP TABLE user_manuals
+
+
+CREATE TABLE user_manuals (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+ user_manuals_name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL,
+  user_manuals_link VARCHAR(255) NOT NULL,
+  photo VARCHAR(255), 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+/* Quick Guides crete code */
+CREATE TABLE quick_guides (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  quick_guides_name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) NOT NULL,
+  quick_guides_link VARCHAR(255) NOT NULL,
+  photo VARCHAR(255), 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
 /* Homepage Control Table */
@@ -316,11 +337,14 @@ CREATE TABLE experience_center_images (
 
 -- SQL to create the about_us_image_controls table
 CREATE TABLE about_us_image_controls (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  filePath VARCHAR(255) DEFAULT '',
-  `show` BOOLEAN DEFAULT FALSE,
-  `order` INT NOT NULL,
-  section VARCHAR(50) NOT NULL UNIQUE
+    id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    images LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+);
+
+-- SQL to create the services_image_controls table
+CREATE TABLE services_image_controls (
+    id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    images LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
 );
 
 /* trade in  */
@@ -392,18 +416,15 @@ CREATE TABLE equipment (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO equipment (name, image_url, is_visible) VALUES
-('3D Laser Scanner', 'https://example.com/image1.jpg', TRUE),
-('Total Station - Robotic', 'https://example.com/image2.jpg', TRUE),
-('Total Station - Manual', 'https://example.com/image3.jpg', TRUE),
-('GPS/GNSS System', 'https://example.com/image4.jpg', TRUE),
-('Laser Level', 'https://example.com/image5.jpg', TRUE),
-('Pipe Laser', 'https://example.com/image6.jpg', TRUE),
-('Digital Level', 'https://example.com/image7.jpg', TRUE),
-('Automatic Level', 'https://example.com/image8.jpg', TRUE),
-('CAT / Genny', 'https://example.com/image9.jpg', TRUE),
-('Precision Locator', 'https://example.com/image10.jpg', TRUE),
-('Ground Penetrating Radar', 'https://example.com/image11.jpg', TRUE),
-('Other - Specify below', 'https://example.com/image12.jpg', TRUE);
 
+/* recommended_products tabe */
+CREATE TABLE recommended_products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL UNIQUE,
+  product_name VARCHAR(255) NOT NULL,
+  product_category VARCHAR(60) NOT NULL,
+  product_subcategory VARCHAR(60) NOT NULL,
+  product_count INT DEFAULT 1,
+  last_ordered_at DATETIME NOT NULL
+);
 
