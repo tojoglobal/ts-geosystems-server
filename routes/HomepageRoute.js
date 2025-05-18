@@ -1,5 +1,8 @@
 import express from "express";
 import {
+  addSubscriber,
+  deleteSubscriber,
+  getAllSubscribers,
   getHomepageControl,
   updateHomepageControl,
 } from "../controllers/homepageController.js";
@@ -14,5 +17,8 @@ HomePageControlRoute.get("/homepage-control", getHomepageControl);
 // );
 HomePageControlRoute.put("/homepage-control", updateHomepageControl);
 // HomePageControlRoute.delete("/softwar/:id", deleteSoftware);
+HomePageControlRoute.post("/subscribers", addSubscriber);
+HomePageControlRoute.get("/subscribers", getAllSubscribers);
+HomePageControlRoute.delete("/subscribers/:id", deleteSubscriber);
 
 export default HomePageControlRoute;
