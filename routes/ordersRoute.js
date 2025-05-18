@@ -7,6 +7,7 @@ import {
   postOrder,
   UpdateOrderStatus,
   updatePaymentStaus,
+  getUserInboxOrders,
 } from "../controllers/ordersController.js";
 
 const ordersRoute = express.Router();
@@ -18,5 +19,6 @@ ordersRoute.get("/latest-order", getLatestOrders);
 ordersRoute.delete("/orders/:order_id", deleteOrder);
 ordersRoute.put("/orders/:orderId/payment-status", updatePaymentStaus);
 ordersRoute.get("/order/:email", getOrdersByEmail);
+ordersRoute.get("/order/inbox/:email", getUserInboxOrders);
 
 export default ordersRoute;

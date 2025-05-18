@@ -262,3 +262,22 @@ export const getOrdersByEmail = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
+
+export const getUserInboxOrders = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const [orders] = await db.query(
+      `SELECT order_id, total, created_at 
+       FROM orders 
+       WHERE email = ? 
+       ORDER BY created_at DESC`,
+      [email]
+    );
+
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching user inbox orders" });
+  }
+};
