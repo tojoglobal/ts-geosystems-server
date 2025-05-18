@@ -656,3 +656,48 @@ export const getRecommendedProducts = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch recommended products" });
   }
 };
+
+// Homepage Get products for highlights section (featured, top sellers, new products)
+export const getProductHighlights = async (req, res) => {
+  try {
+    // Get all products first
+    const [allProducts] = await db.query("SELECT * FROM products");
+
+    // Get recommended products for top sellers
+    const [recommendedProducts] = await db.query(
+      "SELECT * FROM recommended_products ORDER BY product_count DESC, last_ordered_at DESC"
+    );
+
+    // Featured Products - Old to new (ascending by ID)
+    const featuredProducts = [...allProducts]
+      .sort((a, b) => a.id - b.id)
+      .slice(0, 10); // Get first 10 oldest products
+
+    // Top Sellers - Match recommended products with main products
+    const topSellerIds = recommendedProducts.map((p) => p.product_id);
+    const topSellers = allProducts
+      .filter((product) => topSellerIds.includes(product.id))
+      .slice(0, 10); // Limit to 10 products
+
+    // New Products - New to old (descending by ID)
+    const newProducts = [...allProducts]
+      .sort((a, b) => b.id - a.id)
+      .slice(0, 10); // Get first 10 newest products
+
+    res.status(200).json({
+      success: true,
+      data: {
+        featured: featuredProducts,
+        top: topSellers,
+        new: newProducts,
+      },
+    });
+  } catch (error) {
+    console.error("Error in getProductHighlights:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching product highlights",
+      error: error.message,
+    });
+  }
+};
