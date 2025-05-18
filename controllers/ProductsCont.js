@@ -587,7 +587,19 @@ export const trackProductView = async (req, res) => {
 export const getViewedProducts = async (req, res) => {
   try {
     const { email } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
 
+    // Count total viewed products
+    const [countResult] = await db.query(
+      `SELECT COUNT(*) as total 
+       FROM product_views 
+       WHERE user_email = ?`,
+      [email]
+    );
+
+    // Get paginated viewed products
     const sql = `
       SELECT 
         pv.id as view_id,
@@ -598,11 +610,12 @@ export const getViewedProducts = async (req, res) => {
       JOIN product_views pv ON p.id = pv.product_id
       WHERE pv.user_email = ?
       ORDER BY pv.last_viewed DESC
+      LIMIT ? OFFSET ?
     `;
 
-    const [products] = await db.query(sql, [email]);
+    const [products] = await db.query(sql, [email, limit, offset]);
 
-    // Format the response to include view data
+    // Format the response
     const formattedProducts = products.map((product) => {
       const { view_id, view_count, last_viewed, ...productData } = product;
       return {
@@ -618,6 +631,10 @@ export const getViewedProducts = async (req, res) => {
     res.status(200).json({
       success: true,
       products: formattedProducts,
+      total: countResult[0].total,
+      totalPages: Math.ceil(countResult[0].total / limit),
+      currentPage: page,
+      limit,
     });
   } catch (error) {
     res.status(500).json({
