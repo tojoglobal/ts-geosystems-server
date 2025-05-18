@@ -5,10 +5,33 @@ import db from "../Utils/db.js";
 // GET all UserManualss
 export const getUserManuals = async (req, res) => {
   try {
-    const [UserManuals] = await db.query(
-      "SELECT * FROM user_manuals ORDER BY id DESC"
+    // Get page and limit from query parameters, default to page 1 and limit 10
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+    // Get total count of records
+    const [totalCount] = await db.query(
+      "SELECT COUNT(*) as count FROM user_manuals"
     );
-    res.status(200).json(UserManuals);
+    const total = totalCount[0].count;
+    const totalPages = Math.ceil(total / limit);
+
+    // Get paginated data
+    const [userManuals] = await db.query(
+      "SELECT * FROM user_manuals ORDER BY id DESC LIMIT ? OFFSET ?",
+      [limit, offset]
+    );
+
+    res.status(200).json({
+      data: userManuals,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

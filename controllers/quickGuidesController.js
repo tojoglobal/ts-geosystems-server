@@ -5,10 +5,32 @@ import db from "../Utils/db.js";
 // GET all QuickGuides
 export const getQuickGuides = async (req, res) => {
   try {
-    const [QuickGuides] = await db.query(
-      "SELECT * FROM quick_guides ORDER BY id DESC"
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
+    // Get total count of records
+    const [totalCount] = await db.query(
+      "SELECT COUNT(*) as count FROM quick_guides"
     );
-    res.status(200).json(QuickGuides);
+    const total = totalCount[0].count;
+    const totalPages = Math.ceil(total / limit);
+
+    // Get paginated data
+    const [quickGuides] = await db.query(
+      "SELECT * FROM quick_guides ORDER BY id DESC LIMIT ? OFFSET ?",
+      [limit, offset]
+    );
+
+    res.status(200).json({
+      data: quickGuides,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
