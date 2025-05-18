@@ -446,3 +446,31 @@ CREATE TABLE email_subscribers (
   subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   is_active BOOLEAN DEFAULT TRUE
 );
+/* servce page service inquire form data  */
+CREATE TABLE service_inquiries (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  company VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  equipment VARCHAR(100),
+  model VARCHAR(100),
+  request_service BOOLEAN DEFAULT 0,
+  request_calibration BOOLEAN DEFAULT 0,
+  request_repair BOOLEAN DEFAULT 0,
+  comments TEXT,
+  file_paths JSON,  -- stores array of uploaded file paths
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+/* log the email rotues */
+CREATE TABLE emails (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  sender VARCHAR(255) NOT NULL,
+  recipient VARCHAR(255) NOT NULL,
+  subject VARCHAR(255) NOT NULL,
+  body TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT 0,
+  folder ENUM('inbox','sent','trash') DEFAULT 'inbox',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -193,3 +193,66 @@ export const getServiceImages = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch images" });
   }
 };
+
+// GET: fetch all service inquiries
+export const getServiceInquiries = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM service_inquiries ORDER BY id DESC"
+    );
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// POST: receive new service inquiry
+export const createServiceInquiry = async (req, res) => {
+  try {
+    const {
+      name,
+      company,
+      email,
+      phone,
+      equipment,
+      model,
+      comments,
+      requests,
+    } = req.body;
+
+    // Parse the requests object if sent as JSON string
+    let reqs = requests;
+    if (typeof reqs === "string") {
+      reqs = JSON.parse(reqs);
+    }
+    // Handle uploaded files
+    const files = req.files || [];
+    const filePaths = files.map((f) => f.path.replace(/\\/g, "/")); // for Windows paths
+
+    const sql = `
+      INSERT INTO service_inquiries
+      (name, company, email, phone, equipment, model, request_service, request_calibration, request_repair, comments, file_paths)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const values = [
+      name,
+      company,
+      email,
+      phone,
+      equipment,
+      model,
+      reqs?.service ? 1 : 0,
+      reqs?.calibration ? 1 : 0,
+      reqs?.repair ? 1 : 0,
+      comments,
+      JSON.stringify(filePaths),
+    ];
+    await db.query(sql, values);
+
+    res
+      .status(201)
+      .json({ message: "Service inquiry submitted successfully." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

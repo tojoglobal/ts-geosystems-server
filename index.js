@@ -31,6 +31,7 @@ import tradeInRoutes from "./routes/tradeInRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import UserManualsRoute from "./routes/userManualsRoutes.js";
 import QuickGuidesRoute from "./routes/quickGuidesRoutes.js";
+import emailRouter from "./routes/emailsRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -122,6 +123,8 @@ app.use("/api", BlogRoutes);
 app.use("/api", tradeInRoutes);
 // support
 app.use("/api", supportRoutes);
+// mail sent
+app.use("/api/emails", emailRouter);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");

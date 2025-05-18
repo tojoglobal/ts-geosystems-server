@@ -1,7 +1,9 @@
 import express from "express";
 import {
+  createServiceInquiry,
   getService,
   getServiceImages,
+  getServiceInquiries,
   updateService,
   updateServiceImages,
 } from "../controllers/serviceController.js";
@@ -22,5 +24,13 @@ serviceRoute.put(
 
 serviceRoute.put("/update-service-images", upload.any(), updateServiceImages);
 serviceRoute.get("/get-service-images", getServiceImages);
+
+// service page service inquiries from
+serviceRoute.get("/service-inquiries", getServiceInquiries);
+serviceRoute.post(
+  "/service-inquiries",
+  upload.array("files"),
+  createServiceInquiry
+);
 
 export default serviceRoute;
