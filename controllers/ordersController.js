@@ -281,3 +281,120 @@ export const getUserInboxOrders = async (req, res) => {
     res.status(500).json({ message: "Error fetching user inbox orders" });
   }
 };
+
+// for user inbox to chat msg to database get post method
+// Add a new message from user
+export const addUserMessage = async (req, res) => {
+  try {
+    const { order_id, user_email, subject, message } = req.body;
+
+    // Basic validation
+    if (!order_id || !user_email || !subject || !message) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Check if the order exists (soft check without foreign key)
+    const [order] = await db.query(
+      "SELECT order_id FROM orders WHERE order_id = ? AND email = ? LIMIT 1",
+      [order_id, user_email]
+    );
+
+    if (order.length === 0) {
+      return res.status(404).json({ error: "Order not found for this user" });
+    }
+
+    // Insert the message
+    const [result] = await db.query(
+      `INSERT INTO user_messages 
+       (order_id, user_email, subject, message) 
+       VALUES (?, ?, ?, ?)`,
+      [order_id, user_email, subject, message]
+    );
+
+    res.status(201).json({ 
+      message: "Message sent successfully!",
+      messageId: result.insertId 
+    });
+  } catch (err) {
+    console.error("Error sending message:", err);
+    res.status(500).json({ error: "Failed to send message" });
+  }
+};
+
+// Get all messages for admin dashboard
+export const getAllMessages = async (req, res) => {
+  try {
+    // Get pagination parameters from query
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+
+    // Get total count of messages (with optional search)
+    const [countResult] = await db.query(
+      `SELECT COUNT(*) as total FROM user_messages
+       WHERE order_id LIKE ? OR user_email LIKE ? OR subject LIKE ?`,
+      [`%${search}%`, `%${search}%`, `%${search}%`]
+    );
+    
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+
+    // Get paginated messages with optional order details
+    const [messages] = await db.query(
+      `SELECT m.*, 
+              COALESCE(o.created_at, 'N/A') as order_date,
+              COALESCE(o.total, 'N/A') as order_total 
+       FROM user_messages m
+       LEFT JOIN orders o ON m.order_id = o.order_id
+       WHERE m.order_id LIKE ? OR m.user_email LIKE ? OR m.subject LIKE ?
+       ORDER BY m.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: messages,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching messages:", err);
+    res.status(500).json({ error: "Failed to fetch messages" });
+  }
+};
+
+// Delete a message
+export const deleteMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if message exists
+    const [message] = await db.query(
+      "SELECT id FROM user_messages WHERE id = ? LIMIT 1",
+      [id]
+    );
+
+    if (message.length === 0) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    // Delete the message
+    await db.query("DELETE FROM user_messages WHERE id = ?", [id]);
+
+    res.status(200).json({ 
+      success: true,
+      message: "Message deleted successfully"
+    });
+  } catch (err) {
+    console.error("Error deleting message:", err);
+    res.status(500).json({ error: "Failed to delete message" });
+  }
+};
