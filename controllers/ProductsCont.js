@@ -628,32 +628,58 @@ export const getViewedProducts = async (req, res) => {
   }
 };
 
-// in search box getRecommendedProducts
 // export const getRecommendedProducts = async (req, res) => {
 //   try {
-//     const [products] = await db.query(`
-//       SELECT * FROM products
-//       ORDER BY id DESC
-//       LIMIT 10
-//     `);
+//     const [products] = await db.query(
+//       `SELECT * FROM recommended_products ORDER BY product_count DESC, last_ordered_at DESC LIMIT 10`
+//     );
 
-//     res.status(200).json({
-//       success: true,
-//       products,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: "Server error" });
-//   };
+//     res.status(200).json({ recommendedProducts: products });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch recommended products" });
+//   }
+// };
+
 export const getRecommendedProducts = async (req, res) => {
   try {
-    const [products] = await db.query(
-      `SELECT * FROM recommended_products ORDER BY product_count DESC, last_ordered_at DESC LIMIT 10`
+    // First get the recommended product IDs from recommended_products table
+    const [recommendedItems] = await db.query(
+      `SELECT product_id FROM recommended_products 
+       ORDER BY product_count DESC, last_ordered_at DESC 
+       LIMIT 10`
     );
 
-    res.status(200).json({ recommendedProducts: products });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch recommended products" });
+    // Extract just the product IDs
+    const productIds = recommendedItems.map((item) => item.product_id);
+
+    if (productIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        products: [],
+      });
+    }
+
+    // Get full product details for these IDs
+    const placeholders = productIds.map(() => "?").join(",");
+    const [products] = await db.query(
+      `SELECT * FROM products 
+       WHERE id IN (${placeholders}) 
+       ORDER BY FIELD(id, ${placeholders})`,
+      [...productIds, ...productIds] // Need to pass the IDs twice for FIELD() to work
+    );
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.error("Error in getRecommendedProducts:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch recommended products",
+      error: error.message,
+    });
   }
 };
 
