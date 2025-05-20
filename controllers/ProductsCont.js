@@ -78,27 +78,53 @@ export const getProducts = async (req, res) => {
 export const deleteProducts = async (req, res) => {
   try {
     const { id } = req.params;
-    const { imageUrls } = req.body;
 
-    // First unlink all images
-    if (!imageUrls || !Array.isArray(imageUrls)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid image URLs provided",
+    // 1. First get the product to find its image URLs
+    const [product] = await db.query(
+      "SELECT image_urls FROM products WHERE id = ?",
+      [id]
+    );
+
+    if (!product.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    const imageUrls = JSON.parse(product[0].image_urls);
+
+    // 2. Delete the product from database
+    await db.query("DELETE FROM products WHERE id = ?", [id]);
+
+    // 3. Delete associated images
+    if (Array.isArray(imageUrls)) {
+      imageUrls.forEach((imgPath) => {
+        try {
+          const filename = imgPath.split("/uploads/").pop();
+          if (filename) {
+            const fullPath = path.join(process.cwd(), "uploads", filename);
+            if (fs.existsSync(fullPath)) {
+              fs.unlinkSync(fullPath);
+              // console.log(`Deleted file: ${filename}`);
+            }
+          }
+        } catch (err) {
+          console.error(`Error deleting file ${imgPath}:`, err);
+        }
       });
     }
-    // Delete images from the filesystem
-    for (const imgPath of imageUrls) {
-      fs.unlinkSync(path.join(__dirname, "..", "uploads", imgPath));
-    }
-    const sql = `DELETE FROM products WHERE id = ?`;
-    await db.query(sql, [id]);
+
     res.status(200).json({
       success: true,
-      message: "Product deleted successfully",
+      message: "Product and images deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Delete error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete product",
+      error: error.message,
+    });
   }
 };
 
