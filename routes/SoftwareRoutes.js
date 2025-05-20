@@ -9,9 +9,9 @@ import {
 
 const SoftwareRoute = express.Router();
 
-SoftwareRoute.get("/softwar", getSoftwares);
-SoftwareRoute.post("/softwar", upload.single("photo"), createSoftware);
-SoftwareRoute.put("/softwar/:id", upload.single("photo"), updateSoftware);
-SoftwareRoute.delete("/softwar/:id", deleteSoftware);
+SoftwareRoute.get("/software", getSoftwares);
+SoftwareRoute.post("/software", upload.single("photo"), createSoftware);
+SoftwareRoute.put("/software/:id", upload.single("photo"), updateSoftware);
+SoftwareRoute.delete("/software/:id", deleteSoftware);
 
 export default SoftwareRoute;
