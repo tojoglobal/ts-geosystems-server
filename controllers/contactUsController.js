@@ -1,6 +1,6 @@
 import db from "../Utils/db.js";
 
-// GET admin contact info (formatted for frontend)
+// GET admin contact info
 export const getContactUs = async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM contact_us LIMIT 1");
@@ -11,6 +11,8 @@ export const getContactUs = async (req, res) => {
         phoneNumbers: [],
         emails: [],
         officeAddresses: [],
+        workingDays: "",
+        weeklyHoliday: "",
       });
     }
 
@@ -28,6 +30,8 @@ export const getContactUs = async (req, res) => {
       emails: formatArray(data.emails),
       officeAddresses: formatArray(data.officeAddresses),
       socialLinks: data.socialLinks ? JSON.parse(data.socialLinks) : null,
+      workingDays: data.working_days || "",
+      weeklyHoliday: data.weekly_holiday || "",
     };
 
     res.json(response);
@@ -39,12 +43,22 @@ export const getContactUs = async (req, res) => {
 // PUT update public admin contact info
 export const updateContactUs = async (req, res) => {
   try {
-    const { phoneNumbers, emails, officeAddresses, socialLinks } = req.body;
+    const {
+      phoneNumbers,
+      emails,
+      officeAddresses,
+      socialLinks,
+      workingDays,
+      weeklyHoliday,
+    } = req.body;
+
     // Input validation
     if (
       !Array.isArray(phoneNumbers) ||
       !Array.isArray(emails) ||
-      !Array.isArray(officeAddresses)
+      !Array.isArray(officeAddresses) ||
+      !workingDays ||
+      !weeklyHoliday
     ) {
       return res.status(400).json({ error: "Invalid data format" });
     }
@@ -55,24 +69,30 @@ export const updateContactUs = async (req, res) => {
       emails: emails.map((e) => e.value),
       officeAddresses: officeAddresses.map((a) => a.value),
       socialLinks: socialLinks ? JSON.stringify(socialLinks) : null,
+      working_days: workingDays,
+      weekly_holiday: weeklyHoliday,
     };
 
     // Upsert operation
     await db.query(
       `
-      INSERT INTO contact_us (id, phoneNumbers, emails, officeAddresses, socialLinks) 
-      VALUES (1, ?, ?, ?, ?)
+      INSERT INTO contact_us (id, phoneNumbers, emails, officeAddresses, socialLinks, working_days, weekly_holiday) 
+      VALUES (1, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         phoneNumbers = VALUES(phoneNumbers),
         emails = VALUES(emails),
         officeAddresses = VALUES(officeAddresses),
-        socialLinks = VALUES(socialLinks)
+        socialLinks = VALUES(socialLinks),
+        working_days = VALUES(working_days),
+        weekly_holiday = VALUES(weekly_holiday)
       `,
       [
         JSON.stringify(contactData.phoneNumbers),
         JSON.stringify(contactData.emails),
         JSON.stringify(contactData.officeAddresses),
         contactData.socialLinks,
+        contactData.working_days,
+        contactData.weekly_holiday,
       ]
     );
 
