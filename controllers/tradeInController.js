@@ -71,14 +71,12 @@ export const getTradeInContent = async (req, res) => {
       return res.status(200).json({
         success: true,
         data: {
-          title1: "Sell or Trade In Your Surveying Equipment",
-          description1:
-            "G2 Survey purchases Leica Geosystems survey equipment and will trade in Trimble, Topcon, and others against the purchase of new or used Leica surveying instruments.",
-          title2: "Our Buying Process",
+          title1: "",
+          description1: "",
+          title2: "",
           process_points: [],
-          title3: "Trade-Ins",
-          description3:
-            "Are you looking to trade in your survey equipment? The process is the same for buying your equipment! We will simply credit the offer amount towards the new equipment you want to purchase.",
+          title3: "",
+          description3: "",
           instrument_makes: [],
         },
       });
