@@ -2,9 +2,11 @@ import express from "express";
 import {
   createServiceInquiry,
   getService,
+  getServiceEquipmentOptions,
   getServiceImages,
   getServiceInquiries,
   updateService,
+  updateServiceEquipmentOptions,
   updateServiceImages,
 } from "../controllers/serviceController.js";
 import { upload } from "../middleware/UploadFile.js";
@@ -32,5 +34,9 @@ serviceRoute.post(
   upload.array("files"),
   createServiceInquiry
 );
+
+
+serviceRoute.get("/service-equipment-options", getServiceEquipmentOptions);
+serviceRoute.put("/service-equipment-options", updateServiceEquipmentOptions);
 
 export default serviceRoute;

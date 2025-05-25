@@ -256,3 +256,71 @@ export const createServiceInquiry = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+// just EquipmentOptions
+export const getServiceEquipmentOptions = async (req, res) => {
+  try {
+    const [content] = await db.query("SELECT * FROM service_content LIMIT 1");
+    
+    if (content.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          equipment_options: []
+        }
+      });
+    }
+
+    const serviceContent = content[0];
+    
+    // Parse JSON array
+    try {
+      serviceContent.equipment_options = JSON.parse(
+        serviceContent.equipment_options || "[]"
+      );
+    } catch (e) {
+      serviceContent.equipment_options = [];
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        equipment_options: serviceContent.equipment_options
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateServiceEquipmentOptions = async (req, res) => {
+  try {
+    const { equipment_options } = req.body;
+
+    const serviceData = {
+      equipment_options: JSON.stringify(equipment_options || [])
+    };
+
+    const [existing] = await db.query("SELECT id FROM service_content LIMIT 1");
+
+    if (existing.length === 0) {
+      await db.query("INSERT INTO service_content SET ?", serviceData);
+    } else {
+      await db.query("UPDATE service_content SET ? WHERE id = ?", [
+        serviceData,
+        existing[0].id
+      ]);
+    }
+
+    res.json({
+      success: true,
+      message: "Service equipment options updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
