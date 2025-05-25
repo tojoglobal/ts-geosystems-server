@@ -55,3 +55,68 @@ export const getSupportRequests = async (req, res) => {
     res.status(500).json({ message: "Error fetching support requests." });
   }
 };
+
+// support dynamic Instrument Type *
+export const getSupportContent = async (req, res) => {
+  try {
+    const [content] = await db.query("SELECT * FROM support_content LIMIT 1");
+
+    if (content.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          instrument_types: [],
+        },
+      });
+    }
+
+    const supportContent = content[0];
+
+    // Parse JSON array
+    try {
+      supportContent.instrument_types = JSON.parse(
+        supportContent.instrument_types || "[]"
+      );
+    } catch (e) {
+      supportContent.instrument_types = [];
+    }
+
+    res.status(200).json({
+      success: true,
+      data: supportContent,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateSupportContent = async (req, res) => {
+  try {
+    const { instrument_types } = req.body;
+
+    const supportData = {
+      instrument_types: JSON.stringify(instrument_types || []),
+    };
+
+    const [existing] = await db.query("SELECT id FROM support_content LIMIT 1");
+
+    if (existing.length === 0) {
+      await db.query("INSERT INTO support_content SET ?", supportData);
+    } else {
+      await db.query("UPDATE support_content SET ? WHERE id = ?", [
+        supportData,
+        existing[0].id,
+      ]);
+    }
+
+    res.json({
+      success: true,
+      message: "Support content updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
