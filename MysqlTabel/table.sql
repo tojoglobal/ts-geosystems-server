@@ -474,3 +474,16 @@ CREATE TABLE emails (
   folder ENUM('inbox','sent','trash') DEFAULT 'inbox',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE trade_in_content (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title1 VARCHAR(255),
+  description1 TEXT,
+  title2 VARCHAR(255),
+  process_points JSON,
+  title3 VARCHAR(255),
+  description3 TEXT,
+  instrument_makes JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
