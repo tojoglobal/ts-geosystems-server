@@ -27,11 +27,29 @@ export const getHire = async (req, res) => {
       }
     }
 
-    const { title, description, infoBox, imageUrl, show_buttons } =
-      hireContent[0];
+    // Extract new fields
+    const {
+      title,
+      description,
+      infoBox,
+      imageUrl,
+      show_hire_enquiry_button,
+      show_credit_account_button,
+      show_info_box,
+    } = hireContent[0];
+
     res.status(200).json({
       success: true,
-      data: { title, description, infoBox, imageUrl, links, show_buttons },
+      data: {
+        title,
+        description,
+        infoBox,
+        imageUrl,
+        links,
+        show_hire_enquiry_button: !!show_hire_enquiry_button,
+        show_credit_account_button: !!show_credit_account_button,
+        show_info_box: !!show_info_box,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -40,7 +58,14 @@ export const getHire = async (req, res) => {
 
 export const updateHire = async (req, res) => {
   try {
-    const { title, description, infoBox, show_buttons } = req.body;
+    const {
+      title,
+      description,
+      infoBox,
+      show_hire_enquiry_button,
+      show_credit_account_button,
+      show_info_box,
+    } = req.body;
     let imageUrl = req.body.imageUrl;
     let links = req.body.links;
 
@@ -84,30 +109,26 @@ export const updateHire = async (req, res) => {
     // Check if any record exists
     const [existing] = await db.query("SELECT id FROM hire LIMIT 1");
 
+    const hireData = [
+      title,
+      description,
+      infoBox,
+      imageUrl,
+      linksString,
+      show_hire_enquiry_button === "true" || show_hire_enquiry_button === true,
+      show_credit_account_button === "true" || show_credit_account_button === true,
+      show_info_box === "true" || show_info_box === true,
+    ];
+
     if (existing.length === 0) {
       await db.query(
-        "INSERT INTO hire (title, description, infoBox, imageUrl, links, show_buttons) VALUES (?, ?, ?, ?, ?, ?)",
-        [
-          title,
-          description,
-          infoBox,
-          imageUrl,
-          linksString,
-          show_buttons === "true",
-        ]
+        `INSERT INTO hire (title, description, infoBox, imageUrl, links, show_hire_enquiry_button, show_credit_account_button, show_info_box) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        hireData
       );
     } else {
       await db.query(
-        "UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ?, links = ?, show_buttons = ? WHERE id = ?",
-        [
-          title,
-          description,
-          infoBox,
-          imageUrl,
-          linksString,
-          show_buttons === "true",
-          existing[0].id,
-        ]
+        `UPDATE hire SET title = ?, description = ?, infoBox = ?, imageUrl = ?, links = ?, show_hire_enquiry_button = ?, show_credit_account_button = ?, show_info_box = ? WHERE id = ?`,
+        [...hireData, existing[0].id]
       );
     }
 

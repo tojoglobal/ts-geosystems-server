@@ -17,13 +17,8 @@ hireRoute.put("/hire", upload.single("image"), updateHire);
 
 // POST API to save hire enquiries
 hireRoute.post("/hire", saveHireEnquiry);
-
-// GET API to retrieve hire content
 hireRoute.get("/hire-enquiries", getHireContent);
-
-// Get the hire equipment
 hireRoute.get("/equipment", getHireEquipment);
-
 hireRoute.put("/equipment/:id", upload.single("image"), hireUpdateEquipment);
 
 export default hireRoute;
