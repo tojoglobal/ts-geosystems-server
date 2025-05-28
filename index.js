@@ -32,6 +32,7 @@ import supportRoutes from "./routes/supportRoutes.js";
 import UserManualsRoute from "./routes/userManualsRoutes.js";
 import QuickGuidesRoute from "./routes/quickGuidesRoutes.js";
 import emailRouter from "./routes/emailsRoutes.js";
+import usedRoute from "./routes/usedRoute.js";
 
 dotenv.config();
 const app = express();
@@ -96,6 +97,8 @@ app.use("/api", TaxesRoutes);
 app.use("/api", serviceRoute);
 // contact route
 app.use("/api", contactUsRoute);
+// used benifit route
+app.use("/api", usedRoute);
 // hire route
 app.use("/api", hireRoute);
 // aboutUs route

@@ -235,7 +235,9 @@ CREATE TABLE hire (
   description TEXT NOT NULL,
   infoBox TEXT NOT NULL,
   imageUrl VARCHAR(255),
-  show_buttons BOOLEAN DEFAULT TRUE,
+  show_hire_enquiry_button BOOLEAN DEFAULT TRUE,
+  show_credit_account_button BOOLEAN DEFAULT TRUE,
+  show_info_box BOOLEAN DEFAULT TRUE;
   links JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -493,4 +495,15 @@ CREATE TABLE support_content (
   instrument_types JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE used_equipment_content (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  banner_image VARCHAR(255),
+  banner_image_show BOOLEAN DEFAULT TRUE,
+  description TEXT,
+  benefits_box_title VARCHAR(255) DEFAULT 'USED SURVEYING EQUIPMENT BENEFITS',
+  benefits_box_description TEXT,
+  benefits_box_show BOOLEAN DEFAULT TRUE,
+  links JSON DEFAULT NULL
 );
