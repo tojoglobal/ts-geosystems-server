@@ -9,17 +9,6 @@ export const getUsedEquipmentContent = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "No content found" });
-    let links = null;
-    if (rows[0].links) {
-      try {
-        links =
-          typeof rows[0].links === "string"
-            ? JSON.parse(rows[0].links)
-            : rows[0].links;
-      } catch {
-        links = null;
-      }
-    }
     const {
       banner_image,
       banner_image_show,
@@ -37,7 +26,6 @@ export const getUsedEquipmentContent = async (req, res) => {
         benefits_box_title,
         benefits_box_description,
         benefits_box_show: !!benefits_box_show,
-        links,
       },
     });
   } catch (err) {
@@ -53,8 +41,7 @@ export const updateUsedEquipmentContent = async (req, res) => {
       benefits_box_title,
       benefits_box_description,
       benefits_box_show,
-      links,
-      banner_image: incomingBannerImage, // get from form-data if present
+      banner_image: incomingBannerImage,
     } = req.body;
 
     // Parse booleans
@@ -62,15 +49,6 @@ export const updateUsedEquipmentContent = async (req, res) => {
       banner_image_show === "true" || banner_image_show === true;
     benefits_box_show =
       benefits_box_show === "true" || benefits_box_show === true;
-
-    // Parse links if string
-    if (typeof links === "string") {
-      try {
-        links = JSON.parse(links);
-      } catch {
-        links = null;
-      }
-    }
 
     // Get the current DB value for banner_image if no new file is uploaded and no value is provided
     let banner_image = incomingBannerImage;
@@ -84,8 +62,6 @@ export const updateUsedEquipmentContent = async (req, res) => {
       banner_image = existing.length > 0 ? existing[0].banner_image : "";
     }
 
-    const linksString = links ? JSON.stringify(links) : null;
-
     // Upsert logic
     const [existing] = await db.query(
       "SELECT id FROM used_equipment_content LIMIT 1"
@@ -97,13 +73,12 @@ export const updateUsedEquipmentContent = async (req, res) => {
       benefits_box_title,
       benefits_box_description,
       benefits_box_show,
-      linksString,
     ];
     if (existing.length === 0) {
       await db.query(
         `INSERT INTO used_equipment_content 
-        (banner_image, banner_image_show, description, benefits_box_title, benefits_box_description, benefits_box_show, links)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        (banner_image, banner_image_show, description, benefits_box_title, benefits_box_description, benefits_box_show)
+        VALUES (?, ?, ?, ?, ?, ?)`,
         values
       );
     } else {
@@ -114,8 +89,7 @@ export const updateUsedEquipmentContent = async (req, res) => {
           description = ?,
           benefits_box_title = ?,
           benefits_box_description = ?,
-          benefits_box_show = ?,
-          links = ?
+          benefits_box_show = ?
         WHERE id = ?`,
         [...values, existing[0].id]
       );
