@@ -529,3 +529,15 @@ CREATE TABLE our_ad_services (
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL
 );
+
+CREATE TABLE footer (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    address1 TEXT NOT NULL,
+    address2 TEXT,
+    iso_image_url VARCHAR(255),
+    mailing_title VARCHAR(255) DEFAULT 'JOIN OUR MAILING LIST',
+    mailing_text TEXT DEFAULT 'Signup for our newsletter to receive specials and up to date product news and releases.',
+    bg_color VARCHAR(15) DEFAULT '#585c5d',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
