@@ -33,6 +33,7 @@ import UserManualsRoute from "./routes/userManualsRoutes.js";
 import QuickGuidesRoute from "./routes/quickGuidesRoutes.js";
 import emailRouter from "./routes/emailsRoutes.js";
 import usedRoute from "./routes/usedRoute.js";
+import homeRoute from "./routes/HomePageRoutes/homeRoute.js";
 
 dotenv.config();
 const app = express();
@@ -126,6 +127,8 @@ app.use("/api", BlogRoutes);
 app.use("/api", tradeInRoutes);
 // support
 app.use("/api", supportRoutes);
+// home sent
+app.use("/api", homeRoute);
 // mail sent
 app.use("/api/emails", emailRouter);
 

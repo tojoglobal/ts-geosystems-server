@@ -507,3 +507,25 @@ CREATE TABLE used_equipment_content (
   benefits_box_show BOOLEAN DEFAULT TRUE,
   links JSON DEFAULT NULL
 );
+
+-- WeProvide Table
+CREATE TABLE we_provide (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    image VARCHAR(512) NOT NULL,
+    description JSON NOT NULL
+);
+
+-- OurAchievements Table
+CREATE TABLE our_achievements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    number VARCHAR(32) NOT NULL,
+    text VARCHAR(255) NOT NULL
+);
+
+-- OurAdServices Table
+CREATE TABLE our_ad_services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL
+);
