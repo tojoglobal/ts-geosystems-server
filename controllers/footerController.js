@@ -17,7 +17,6 @@ export const getFooter = async (req, res) => {
   }
 };
 
-// Update Footer (with/without image)
 export const updateFooter = async (req, res) => {
   try {
     let {
@@ -26,27 +25,25 @@ export const updateFooter = async (req, res) => {
       mailing_title,
       mailing_text,
       bg_color,
-      old_iso_image_url,
+      old_iso_image_url, // from frontend, always sent
     } = req.body;
 
-    let iso_image_url = req.body.iso_image_url;
+    let iso_image_url = old_iso_image_url; // default: keep old image
 
-    // Handle file upload if a new image has been sent
-    if (req.file) {
-        const fileExtension = path.extname(req.file.originalname).toLowerCase();
-        const uploadsDir = path.join("uploads", "footer");
-        const newFilename = `footer-iso-${Date.now()}${fileExtension}`;
-        const newPath = path.join(uploadsDir, newFilename);
+    if (req.file && req.file.size > 0) {
+      const fileExtension = path.extname(req.file.originalname).toLowerCase();
+      const uploadsDir = path.join("uploads", "footer");
+      const newFilename = `footer-iso-${Date.now()}${fileExtension}`;
+      const newPath = path.join(uploadsDir, newFilename);
 
-        // Ensure the directory exists!
-        if (!fs.existsSync(uploadsDir)) {
-          fs.mkdirSync(uploadsDir, { recursive: true });
-        }
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
 
-        fs.renameSync(req.file.path, newPath);
-        iso_image_url = `/uploads/footer/${newFilename}`;
+      fs.renameSync(req.file.path, newPath);
+      iso_image_url = `/uploads/footer/${newFilename}`;
 
-      // Optionally remove old file if not the default image & exists
+      // Remove old file unless default
       if (
         old_iso_image_url &&
         !old_iso_image_url.includes("ISO-WHITE.png") &&
@@ -56,7 +53,7 @@ export const updateFooter = async (req, res) => {
       }
     }
 
-    // Check if footer exists
+    // Update DB as before
     const [existing] = await db.query("SELECT id FROM footer LIMIT 1");
     if (existing.length === 0) {
       await db.query(
@@ -91,7 +88,7 @@ export const updateFooter = async (req, res) => {
       iso_image_url,
     });
   } catch (err) {
-    if (req.file && fs.existsSync(req.file.path)) {
+    if (req.file && req.file.size > 0 && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
     res.status(500).json({ success: false, message: err.message });
