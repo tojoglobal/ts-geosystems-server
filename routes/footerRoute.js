@@ -5,6 +5,16 @@ import { upload } from "../middleware/UploadFile.js";
 const footerRoute = express.Router();
 
 footerRoute.get("/footer", getFooter);
-footerRoute.put("/footer", upload.single("iso_image"), updateFooter);
+
+// IMPORTANT: Use upload.fields to handle multiple distinct file input fields
+footerRoute.put(
+  "/footer",
+  upload.fields([
+    { name: "iso_image_1", maxCount: 1 },
+    { name: "iso_image_2", maxCount: 1 },
+    { name: "iso_image_3", maxCount: 1 },
+  ]),
+  updateFooter
+);
 
 export default footerRoute;
