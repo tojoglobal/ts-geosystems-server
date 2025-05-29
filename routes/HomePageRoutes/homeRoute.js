@@ -13,15 +13,7 @@ const homeRoute = express.Router();
 
 // WeProvide
 homeRoute.get("/we-provide", getWeProvide);
-homeRoute.put("/we-provide", updateWeProvide);
-// Image upload for WeProvide
-homeRoute.post("/we-provide/upload", upload.single("image"), (req, res) => {
-  if (!req.file)
-    return res
-      .status(400)
-      .json({ success: false, message: "No file uploaded" });
-  res.json({ success: true, imageUrl: `/uploads/${req.file.filename}` });
-});
+homeRoute.put("/we-provide", upload.array("images", 3), updateWeProvide);
 
 // OurAchievements
 homeRoute.get("/our-achievements", getOurAchievements);
