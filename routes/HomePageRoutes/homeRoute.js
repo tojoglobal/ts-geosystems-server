@@ -13,7 +13,16 @@ const homeRoute = express.Router();
 
 // WeProvide
 homeRoute.get("/we-provide", getWeProvide);
-homeRoute.put("/we-provide", upload.array("images", 3), updateWeProvide);
+homeRoute.put(
+  "/we-provide",
+  upload.fields([
+    { name: "images[0]", maxCount: 1 },
+    { name: "images[1]", maxCount: 1 },
+    { name: "images[2]", maxCount: 1 },
+  ]),
+  updateWeProvide
+);
+
 
 // OurAchievements
 homeRoute.get("/our-achievements", getOurAchievements);
