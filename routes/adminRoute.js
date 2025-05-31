@@ -7,7 +7,6 @@ import {
   adminEmailInfo,
 } from "../controllers/adminLogin.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
-import { getHomepageControl, updateHomepageControl } from "../controllers/homepageController.js";
 
 const adminRoute = express.Router();
 // admin login
@@ -34,8 +33,5 @@ adminRoute.post("/api/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-// Homepage control routes
-adminRoute.get("/api/homepage-control", getHomepageControl);
-adminRoute.put("/api/homepage-control", verifyAdmin, updateHomepageControl);
 
 export default adminRoute;
