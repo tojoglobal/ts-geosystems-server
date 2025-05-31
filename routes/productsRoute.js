@@ -17,12 +17,14 @@ import {
   searchProductsMobile,
   getRecommendedProducts,
   getProductHighlights,
+  getProductTable,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
 const ProductsRoute = express.Router();
 
 ProductsRoute.post("/api/products", upload.array("images", 20), productAdd);
+ProductsRoute.get("/api/products-table", getProductTable);
 ProductsRoute.get("/api/products", getProducts);
 ProductsRoute.put(
   "/api/products/:id",

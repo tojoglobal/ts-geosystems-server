@@ -60,6 +60,50 @@ export const productAdd = async (req, res) => {
     res.status(500).send("Failed to upload product");
   }
 };
+
+// for only product table
+// New paginated, search-enabled product table endpoint
+export const getProductTable = async (req, res) => {
+  try {
+    let { page = 1, limit = 10, search = "" } = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const offset = (page - 1) * limit;
+
+    let countQuery = "SELECT COUNT(*) AS total FROM products";
+    let dataQuery = "SELECT * FROM products";
+    const params = [];
+    const countParams = [];
+
+    // Only search by product_name
+    if (search && search.trim() !== "") {
+      countQuery += " WHERE product_name LIKE ?";
+      dataQuery += " WHERE product_name LIKE ?";
+      params.push(`%${search}%`);
+      countParams.push(`%${search}%`);
+    }
+
+    dataQuery += " ORDER BY id DESC LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
+    // Execute queries
+    const [products] = await db.query(dataQuery, params);
+    const [[countResult]] = await db.query(countQuery, countParams.length ? countParams : undefined);
+
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: page,
+      limit,
+    });
+  } catch (error) {
+    console.error("getProductTable error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // get a product
 export const getProducts = async (req, res) => {
   try {
@@ -74,6 +118,7 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 // get a delete product
 export const deleteProducts = async (req, res) => {
   try {
