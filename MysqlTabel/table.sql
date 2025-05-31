@@ -555,3 +555,9 @@ CREATE TABLE product_questions (
     question TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE `last_banner_images` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `photourl` VARCHAR(255) NOT NULL,
+  `order` INT NOT NULL
+);

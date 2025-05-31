@@ -36,6 +36,7 @@ import usedRoute from "./routes/usedRoute.js";
 import homeRoute from "./routes/HomePageRoutes/homeRoute.js";
 import footerRoute from "./routes/footerRoute.js";
 import askQuestionRoute from "./routes/askQuestionRoute.js";
+import lastBannerRoutes from "./routes/HomePageRoutes/lastBannerRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -116,6 +117,8 @@ app.use("/api", promo_product_banner_02);
 app.use("/api", Feature_highlight_banner_03_left_01);
 // Home page Feature_highlight_banner_03_left_01_image
 app.use("/api", homepage_single_images);
+// last banner images
+app.use("/api", lastBannerRoutes);
 app.use("/api", experienceCenterRoutes);
 // home mainSlide
 app.use("/api", SlideRoutes);
