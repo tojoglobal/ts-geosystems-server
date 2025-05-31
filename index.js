@@ -35,6 +35,7 @@ import emailRouter from "./routes/emailsRoutes.js";
 import usedRoute from "./routes/usedRoute.js";
 import homeRoute from "./routes/HomePageRoutes/homeRoute.js";
 import footerRoute from "./routes/footerRoute.js";
+import askQuestionRoute from "./routes/askQuestionRoute.js";
 
 dotenv.config();
 const app = express();
@@ -130,6 +131,8 @@ app.use("/api", tradeInRoutes);
 app.use("/api", supportRoutes);
 // home sent
 app.use("/api", homeRoute);
+// ask question from product details route
+app.use("/api", askQuestionRoute);
 // footer sent
 app.use("/api", footerRoute);
 // mail sent
