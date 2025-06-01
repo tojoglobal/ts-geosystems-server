@@ -8,6 +8,8 @@ export const getWeProvide = async (req, res) => {
       "SELECT * FROM we_provide ORDER BY id ASC LIMIT 3"
     );
 
+    const section_title = rows[0]?.section_title || "";
+
     const result = [];
     for (let i = 0; i < 3; i++) {
       const item = rows[i] || {
@@ -16,8 +18,6 @@ export const getWeProvide = async (req, res) => {
         image: "",
         description: JSON.stringify([]),
       };
-
-      // Parse JSON description if it exists
       try {
         item.description =
           typeof item.description === "string"
@@ -26,11 +26,10 @@ export const getWeProvide = async (req, res) => {
       } catch (e) {
         item.description = [];
       }
-
       result.push(item);
     }
 
-    res.json(result);
+    res.json({ section_title, items: result });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -107,9 +106,15 @@ export const updateWeProvide = async (req, res) => {
       const descriptionJson = JSON.stringify(item.description);
 
       // Insert new record
+      // Insert new record WITH section_title
       await db.query(
-        "INSERT INTO we_provide (title, image, description) VALUES (?, ?, ?)",
-        [item.title || "", imageUrl, descriptionJson]
+        "INSERT INTO we_provide (title, image, description, section_title) VALUES (?, ?, ?, ?)",
+        [
+          item.title || "",
+          imageUrl,
+          descriptionJson,
+          items[0]?.section_title || "",
+        ]
       );
     }
 
@@ -139,20 +144,20 @@ export const updateWeProvide = async (req, res) => {
     });
   }
 };
- 
 
 export const getOurAchievements = async (req, res) => {
   const [rows] = await db.query("SELECT * FROM our_achievements");
-  res.json(rows.slice(0, 3)); // Always return top 3
+  const section_title = rows[0]?.section_title || "";
+  res.json({ section_title, items: rows.slice(0, 3) });
 };
 
 export const updateOurAchievements = async (req, res) => {
-  const items = req.body.slice(0, 3);
+  const { section_title = "", items = [] } = req.body;
   await db.query("DELETE FROM our_achievements");
-  for (const item of items) {
+  for (const item of items.slice(0, 3)) {
     await db.query(
-      "INSERT INTO our_achievements (number, text) VALUES (?, ?)",
-      [item.number, item.text]
+      "INSERT INTO our_achievements (number, text, section_title) VALUES (?, ?, ?)",
+      [item.number, item.text, section_title]
     );
   }
   res.json({ success: true });
@@ -160,16 +165,17 @@ export const updateOurAchievements = async (req, res) => {
 
 export const getOurAdServices = async (req, res) => {
   const [rows] = await db.query("SELECT * FROM our_ad_services");
-  res.json(rows);
+  const section_title = rows[0]?.section_title || "";
+  res.json({ section_title, items: rows });
 };
 
 export const updateOurAdServices = async (req, res) => {
-  const items = req.body;
+  const { section_title = "", items = [] } = req.body;
   await db.query("DELETE FROM our_ad_services");
   for (const item of items) {
     await db.query(
-      "INSERT INTO our_ad_services (title, description) VALUES (?, ?)",
-      [item.title, item.description]
+      "INSERT INTO our_ad_services (title, description, section_title) VALUES (?, ?, ?)",
+      [item.title, item.description, section_title]
     );
   }
   res.json({ success: true });

@@ -522,6 +522,7 @@ CREATE TABLE we_provide (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     image VARCHAR(512) NOT NULL,
+    section_title VARCHAR(255) DEFAULT NULL;
     description JSON NOT NULL
 );
 
@@ -529,6 +530,7 @@ CREATE TABLE we_provide (
 CREATE TABLE our_achievements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     number VARCHAR(32) NOT NULL,
+    section_title VARCHAR(255) DEFAULT NULL;
     text VARCHAR(255) NOT NULL
 );
 
@@ -536,6 +538,7 @@ CREATE TABLE our_achievements (
 CREATE TABLE our_ad_services (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    section_title VARCHAR(255) DEFAULT NULL;
     description TEXT NOT NULL
 );
 
