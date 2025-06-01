@@ -102,58 +102,6 @@ export const updateContactUs = async (req, res) => {
   }
 };
 
-// GET certificate description only
-export const getCertificateDescription = async (req, res) => {
-  try {
-    const [rows] = await db.query(
-      "SELECT certificate_description as description FROM contact_us LIMIT 1"
-    );
-    const description = rows[0]?.description || "";
-    res.json({ success: true, description });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch certificate description",
-    });
-  }
-};
-
-// PUT update certificate description
-export const updateCertificateDescription = async (req, res) => {
-  try {
-    const { description } = req.body;
-
-    if (!description) {
-      return res.status(400).json({
-        success: false,
-        error: "Description is required",
-      });
-    }
-
-    // Ensure the record exists with all required fields
-    await db.query(
-      `
-      INSERT INTO contact_us 
-      (id, phoneNumbers, emails, officeAddresses, certificate_description) 
-      VALUES (1, '[]', '[]', '[]', ?)
-      ON DUPLICATE KEY UPDATE
-        certificate_description = VALUES(certificate_description)
-      `,
-      [description]
-    );
-
-    res.json({
-      success: true,
-      message: "Certificate description updated successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Failed to update certificate description",
-    });
-  }
-};
-
 // Submit contact form
 export const submitContactForm = async (req, res) => {
   try {

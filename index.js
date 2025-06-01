@@ -37,6 +37,7 @@ import homeRoute from "./routes/HomePageRoutes/homeRoute.js";
 import footerRoute from "./routes/footerRoute.js";
 import askQuestionRoute from "./routes/askQuestionRoute.js";
 import lastBannerRoutes from "./routes/HomePageRoutes/lastBannerRoutes.js";
+import cTRouter from "./routes/certificateTrackingRoute.js";
 
 dotenv.config();
 const app = express();
@@ -128,6 +129,8 @@ app.use("/api", authorRoutes);
 app.use("/api", blogTypeRoutes);
 // blog routs
 app.use("/api", BlogRoutes);
+// certificate Tracking routs
+app.use("/api", cTRouter);
 // trad in api
 app.use("/api", tradeInRoutes);
 // support

@@ -152,9 +152,18 @@ CREATE TABLE contact_us (
     emails JSON NOT NULL,
     officeAddresses JSON NOT NULL,
     socialLinks JSON DEFAULT NULL,
-    certificate_description TEXT DEFAULT NULL
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE certificate_tracking (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  tracking_title VARCHAR(255) NOT NULL,
+  tracking_description TEXT NOT NULL,
+  image_url VARCHAR(255),
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 /* taxes table */

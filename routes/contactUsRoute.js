@@ -2,8 +2,6 @@ import express from "express";
 import {
   getContactUs,
   updateContactUs,
-  getCertificateDescription,
-  updateCertificateDescription,
   submitContactForm,
   getContactMessages,
   deleteContactMessage,
@@ -13,8 +11,6 @@ const contactUsRoute = express.Router();
 
 contactUsRoute.get("/admin-contact-us", getContactUs);
 contactUsRoute.put("/admin-contact-us", updateContactUs);
-contactUsRoute.get("/certificate-description", getCertificateDescription);
-contactUsRoute.put("/certificate-description", updateCertificateDescription);
 
 // Contact form submission (public)
 contactUsRoute.post("/contact", submitContactForm);
