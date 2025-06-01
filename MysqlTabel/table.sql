@@ -570,3 +570,15 @@ CREATE TABLE `last_banner_images` (
   `photourl` VARCHAR(255) NOT NULL,
   `order` INT NOT NULL
 );
+
+CREATE TABLE helpdesk_info (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(100) NOT NULL,
+  helpline_number VARCHAR(40),
+  whatsapp VARCHAR(40),
+  email VARCHAR(100),
+  contact_btn_label VARCHAR(40) DEFAULT 'Contact Us',
+  contact_btn_link VARCHAR(200) DEFAULT '/contact-us',
+  tooltip_text VARCHAR(100) DEFAULT 'Need Support?',
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
