@@ -40,6 +40,7 @@ import lastBannerRoutes from "./routes/HomePageRoutes/lastBannerRoutes.js";
 import cTRouter from "./routes/certificateTrackingRoute.js";
 import helpdeskRoute from "./routes/helpdeskRoute.js";
 import youtubeRoute from "./routes/HomePageRoutes/youtubeRoute.js";
+import addressRoute from "./routes/addressRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -114,6 +115,8 @@ app.use("/api", aboutUsRoute);
 app.use("/api", HomePageControlRoute);
 // user contoll
 app.use("/api", userRoutes);
+// address contoll
+app.use("/api/addresses", addressRoute);
 // Home page api
 app.use("/api", promo_product_banner_02);
 // Home page Feature_highlight_banner_03_left_01_image

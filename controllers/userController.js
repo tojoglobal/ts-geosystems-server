@@ -58,7 +58,25 @@ export const addNewUser = async (req, res) => {
       ]
     );
     const userId = result.insertId;
-
+    // Add the initial address to addresses table
+    await db.query(
+      `INSERT INTO addresses 
+    (user_id, first_name, last_name, company, address_line_1, address_line_2, city, state, postcode, country, phone) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        firstName,
+        lastName,
+        companyName,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        postcode,
+        country,
+        phoneNumber,
+      ]
+    );
     // Send welcome email
     const html = `
       <table role="presentation" style="width:100%; border-collapse:collapse; border:0; border-spacing:0; background:#ffffff;">
