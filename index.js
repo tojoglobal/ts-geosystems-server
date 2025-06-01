@@ -39,6 +39,7 @@ import askQuestionRoute from "./routes/askQuestionRoute.js";
 import lastBannerRoutes from "./routes/HomePageRoutes/lastBannerRoutes.js";
 import cTRouter from "./routes/certificateTrackingRoute.js";
 import helpdeskRoute from "./routes/helpdeskRoute.js";
+import youtubeRoute from "./routes/HomePageRoutes/youtubeRoute.js";
 
 dotenv.config();
 const app = express();
@@ -138,6 +139,8 @@ app.use("/api", tradeInRoutes);
 app.use("/api", supportRoutes);
 // home sent
 app.use("/api", homeRoute);
+// youtube route
+app.use("/api", youtubeRoute);
 // helpdesk route
 app.use("/api", helpdeskRoute);
 // ask question from product details route
