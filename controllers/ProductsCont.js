@@ -12,8 +12,8 @@ export const productAdd = async (req, res) => {
       category,
       subCategory,
       tax,
-      sku,
       condition,
+      sku,
       productOptions,
       productOptionShowHide,
       softwareOptions,
@@ -88,7 +88,10 @@ export const getProductTable = async (req, res) => {
 
     // Execute queries
     const [products] = await db.query(dataQuery, params);
-    const [[countResult]] = await db.query(countQuery, countParams.length ? countParams : undefined);
+    const [[countResult]] = await db.query(
+      countQuery,
+      countParams.length ? countParams : undefined
+    );
 
     res.status(200).json({
       success: true,
@@ -240,9 +243,9 @@ export const updateProductById = async (req, res) => {
     priceShowHide,
     category,
     subCategory,
+    condition,
     tax,
     sku,
-    condition,
     productOptions,
     productOptionShowHide,
     softwareOptions,
@@ -316,7 +319,7 @@ export const updateProductById = async (req, res) => {
       ]);
     }
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "Product updated successfully!",
     });
