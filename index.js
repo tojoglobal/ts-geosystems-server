@@ -42,6 +42,7 @@ import helpdeskRoute from "./routes/helpdeskRoute.js";
 import youtubeRoute from "./routes/HomePageRoutes/youtubeRoute.js";
 import addressRoute from "./routes/addressRoutes.js";
 import dynamicLinksRoute from "./routes/dynamicLinksRoute.js";
+import siteSettingsRoutes from "./routes/siteSettingsRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -155,6 +156,8 @@ app.use("/api", askQuestionRoute);
 app.use("/api", footerRoute);
 // mail sent
 app.use("/api/emails", emailRouter);
+// api site settings
+app.use("/api/settings", siteSettingsRoutes);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");

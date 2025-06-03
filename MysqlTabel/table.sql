@@ -621,3 +621,31 @@ CREATE TABLE dynamic_links (
   show_in_header BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+
+-- MySQL table for the given fields
+CREATE TABLE site_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    app_name VARCHAR(255) NOT NULL DEFAULT 'My App',
+    home_title VARCHAR(255) NOT NULL DEFAULT 'Welcome to My App',
+    main_logo VARCHAR(255) NOT NULL DEFAULT '/uploads/default-logo.png', -- store file path or URL
+    favicon VARCHAR(255) NOT NULL DEFAULT '/uploads/default-favicon.ico', -- store file path or URL
+    meta_keywords JSON NOT NULL DEFAULT (JSON_ARRAY('app','website','react','business')),
+    meta_description TEXT NOT NULL DEFAULT 'This is the default meta description of your site.',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Default data insert (only one row for single-site settings)
+INSERT INTO site_settings
+(app_name, home_title, main_logo, favicon, meta_keywords, meta_description)
+VALUES
+(
+  'My App',
+  'Welcome to My App',
+  '/uploads/default-logo.png',
+  '/uploads/default-favicon.ico',
+  JSON_ARRAY('app','website','react','business'),
+  'This is the default meta description of your site.'
+);
