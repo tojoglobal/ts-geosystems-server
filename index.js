@@ -41,6 +41,7 @@ import cTRouter from "./routes/certificateTrackingRoute.js";
 import helpdeskRoute from "./routes/helpdeskRoute.js";
 import youtubeRoute from "./routes/HomePageRoutes/youtubeRoute.js";
 import addressRoute from "./routes/addressRoutes.js";
+import dynamicLinksRoute from "./routes/dynamicLinksRoute.js";
 
 dotenv.config();
 const app = express();
@@ -111,6 +112,8 @@ app.use("/api", usedRoute);
 app.use("/api", hireRoute);
 // aboutUs route
 app.use("/api", aboutUsRoute);
+// dynamic links foorter/header
+app.use("/api", dynamicLinksRoute);
 // Home page contoll
 app.use("/api", HomePageControlRoute);
 // user contoll
