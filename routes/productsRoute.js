@@ -18,6 +18,7 @@ import {
   getRecommendedProducts,
   getProductHighlights,
   getProductTable,
+  getProductsByBrand,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 
@@ -70,5 +71,7 @@ ProductsRoute.get("/api/viewed/products/:email", getViewedProducts);
 // recommended-products
 ProductsRoute.get("/api/recommended-products", getRecommendedProducts);
 ProductsRoute.get("/api/product-highlights", getProductHighlights);
-
+// extra
+ProductsRoute.get("/api/brand-products/:brand", getProductsByBrand);
+ 
 export default ProductsRoute;

@@ -818,3 +818,65 @@ export const getProductHighlights = async (req, res) => {
     });
   }
 };
+
+// Get products by brand slug (case-insensitive)
+export const getProductsByBrand = async (req, res) => {
+  try {
+    const { brand } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+    const sortBy = req.query.sortBy || "newest";
+
+    let baseQuery = `
+      SELECT * FROM products 
+      WHERE LOWER(brand_name) = ?
+    `;
+    let countQuery = `
+      SELECT COUNT(*) AS total FROM products 
+      WHERE LOWER(brand_name) = ?
+    `;
+    const queryParams = [brand.toLowerCase()];
+    const countParams = [brand.toLowerCase()];
+
+    // Add sorting
+    switch (sortBy) {
+      case "newest":
+        baseQuery += " ORDER BY id DESC";
+        break;
+      case "price_asc":
+        baseQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) ASC";
+        break;
+      case "price_desc":
+        baseQuery += " ORDER BY CAST(price AS DECIMAL(10,2)) DESC";
+        break;
+      case "name_asc":
+        baseQuery += " ORDER BY product_name ASC";
+        break;
+      case "name_desc":
+        baseQuery += " ORDER BY product_name DESC";
+        break;
+      default:
+        baseQuery += " ORDER BY id DESC";
+    }
+
+    // Pagination
+    baseQuery += " LIMIT ? OFFSET ?";
+    queryParams.push(limit, offset);
+
+    // Execute
+    const [products] = await db.query(baseQuery, queryParams);
+    const [[countResult]] = await db.query(countQuery, countParams);
+
+    res.status(200).json({
+      success: true,
+      products,
+      total: countResult.total,
+      totalPages: Math.ceil(countResult.total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("getProductsByBrand error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
