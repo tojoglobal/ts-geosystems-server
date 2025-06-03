@@ -59,7 +59,7 @@ const loginInfo = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: admin.id, email: admin.email, role }, // Include role in the token
+      { id: admin.id, email: admin.email, role },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
@@ -74,9 +74,7 @@ const loginInfo = async (req, res) => {
     });
 
     res.status(200).json({
-      success: true,
-      message: "Login successful",
-      role, // Return the role for frontend usage if needed
+      adminInfo: { adminId: admin.id, adminEmail: admin.email, role },
     });
   } catch (error) {
     res.status(500).json({ success: false, error: "Something went wrong" });
@@ -192,4 +190,126 @@ const adminEmailInfo = async (req, res) => {
   }
 };
 
-export { loginInfo, adminCreate, adminUpdate, registerAdmin, adminEmailInfo };
+// GET admin profile by ID (for profile view or edit, excluding sensitive fields)
+const adminGetProfile = async (req, res) => {
+  try {
+    const adminId = req.admin.id;
+    const [result] = await db.query(
+      "SELECT name, email, phone, role_id as role, photo, facebook, instagram, linkedin, twitter FROM admins WHERE id = ?",
+      [adminId]
+    );
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    res.status(200).json({ success: true, data: result[0] });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch admin profile." });
+  }
+};
+
+// PUT admin profile update (skip password, role_id, email_token, created_at)
+const adminProfileUpdate = async (req, res) => {
+  try {
+    const adminId = req.admin.id; // use from token
+    const { name, email, phone, facebook, instagram, linkedin, twitter } =
+      req.body;
+
+    // Handle photo upload (from multer)
+    let photo = undefined;
+    if (req.file && req.file.filename) {
+      photo = req.file.filename;
+    }
+
+    // Check if admin exists
+    const [existing] = await db.query("SELECT * FROM admins WHERE id = ?", [
+      adminId,
+    ]);
+    if (existing.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    // Prepare update fields (only allowed fields)
+    const updates = {};
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+    if (phone) updates.phone = phone;
+    if (photo) updates.photo = photo;
+    if (facebook) updates.facebook = facebook;
+    if (instagram) updates.instagram = instagram;
+    if (linkedin) updates.linkedin = linkedin;
+    if (twitter) updates.twitter = twitter;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: "No fields to update." });
+    }
+
+    // Build dynamic query
+    const updateFields = Object.keys(updates)
+      .map((field) => `${field} = ?`)
+      .join(", ");
+    const values = Object.values(updates);
+    values.push(adminId);
+
+    await db.query(
+      `UPDATE admins SET ${updateFields}, updated_at = NOW() WHERE id = ?`,
+      values
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update profile." });
+  }
+};
+
+// POST adminUnlock
+const adminUnlock = async (req, res) => {
+  try {
+    const adminId = req.admin.id;
+    const { password } = req.body;
+
+    if (!password) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Password is required." });
+    }
+
+    // Fetch admin's hashed password
+    const [result] = await db.query(
+      "SELECT password FROM admins WHERE id = ?",
+      [adminId]
+    );
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Admin not found." });
+    }
+
+    const hash = result[0].password;
+    const match = await bcrypt.compare(password, hash);
+
+    if (!match) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Incorrect password." });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Unlock successful." });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: "Unlock failed." });
+  }
+};
+
+export {
+  loginInfo,
+  adminCreate,
+  adminUpdate,
+  registerAdmin,
+  adminEmailInfo,
+  adminProfileUpdate,
+  adminGetProfile,
+  adminUnlock,
+};
