@@ -10,6 +10,7 @@ export const verifyAdmin = (req, res, next) => {
     if (decoded.role !== "admin") {
       return res.status(403).json({ message: "Forbidden" });
     }
+
     req.admin = decoded;
     next();
   } catch (err) {
