@@ -12,6 +12,8 @@ CREATE TABLE products (
   product_overview TEXT,
   video_urls TEXT,
   warranty_info TEXT,
+  flash_sale TINYINT(1) DEFAULT 0,
+  flash_sale_end DATETIME DEFAULT NULL;
   image_urls TEXT
   clearance TINYINT(1) DEFAULT 0;
 );

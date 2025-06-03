@@ -23,14 +23,16 @@ export const productAdd = async (req, res) => {
       warrantyInfo,
       clearance,
       isStock,
+      flashSale,
+      flashSaleEnd,
       sale,
     } = req.body;
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
     const sql = `INSERT INTO products 
       (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, 
        product_options, productOptionShowHide, software_options, brand_name, product_overview, 
-       video_urls, warranty_info, image_urls, clearance, isStock, sale)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+       video_urls, warranty_info, image_urls, clearance, isStock, sale, flash_sale, flash_sale_end)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const [result] = await db.query(sql, [
       productName,
       price,
@@ -51,6 +53,8 @@ export const productAdd = async (req, res) => {
       clearance || false,
       isStock !== undefined ? isStock : true,
       sale !== undefined ? sale : false,
+      flashSale ? 1 : 0,
+      flashSaleEnd ? new Date(flashSaleEnd) : null,
     ]);
     res.status(200).json({
       success: true,
@@ -256,6 +260,8 @@ export const updateProductById = async (req, res) => {
     clearance,
     isStock,
     sale,
+    flashSale,
+    flashSaleEnd,
   } = req.body;
 
   try {
@@ -265,6 +271,8 @@ export const updateProductById = async (req, res) => {
     const isStockBool =
       isStock === "1" || isStock === "true" || isStock === true;
     const saleBool = sale === "1" || sale === "true" || sale === true;
+    const flashSaleBool =
+      flashSale === "1" || flashSale === "true" || flashSale === true;
 
     // Fetch existing product to get the old image URLs
     const [existingRows] = await db.query(
@@ -280,9 +288,9 @@ export const updateProductById = async (req, res) => {
     const sql = `
       UPDATE products 
       SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, 
-          product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
-          brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?,
-          isStock=?, sale=?
+        product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
+        brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?,
+        isStock=?, sale=?, flash_sale=?, flash_sale_end=?
       WHERE id=?`;
 
     await db.query(sql, [
@@ -304,6 +312,8 @@ export const updateProductById = async (req, res) => {
       clearanceBool ? 1 : 0,
       isStockBool ? 1 : 0,
       saleBool ? 1 : 0,
+      flashSaleBool ? 1 : 0,
+      flashSaleEnd ? new Date(flashSaleEnd) : null,
       id,
     ]);
 
