@@ -43,6 +43,7 @@ import youtubeRoute from "./routes/HomePageRoutes/youtubeRoute.js";
 import addressRoute from "./routes/addressRoutes.js";
 import dynamicLinksRoute from "./routes/dynamicLinksRoute.js";
 import siteSettingsRoutes from "./routes/siteSettingsRoutes.js";
+import creditAccountRoute from "./routes/creditAccountRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -111,6 +112,8 @@ app.use("/api", contactUsRoute);
 app.use("/api", usedRoute);
 // hire route
 app.use("/api", hireRoute);
+// credit account route
+app.use("/api", creditAccountRoute);
 // aboutUs route
 app.use("/api", aboutUsRoute);
 // dynamic links foorter/header
