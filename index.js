@@ -45,6 +45,7 @@ import dynamicLinksRoute from "./routes/dynamicLinksRoute.js";
 import siteSettingsRoutes from "./routes/siteSettingsRoutes.js";
 import creditAccountRoute from "./routes/creditAccountRoutes.js";
 import top_clients_router from "./routes/HomePageRoutes/top-clients-routes.js";
+import blogTagRoute from "./routes/blogTagRoute.js";
 
 dotenv.config();
 const app = express();
@@ -140,6 +141,8 @@ app.use("/api", top_clients_router);
 app.use("/api", SlideRoutes);
 // author
 app.use("/api", authorRoutes);
+// Tag Routes
+app.use("/api", blogTagRoute);
 // blogTypeRoutes routes
 app.use("/api", blogTypeRoutes);
 // blog routs
