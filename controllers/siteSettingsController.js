@@ -1,4 +1,3 @@
-import path from "path";
 import db from "../Utils/db.js";
 
 // GET site settings (only one row)
