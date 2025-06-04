@@ -691,3 +691,10 @@ CREATE TABLE credit_account_applications (
   g2RepName VARCHAR(255),
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE top_clients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    imageUrl VARCHAR(255) NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    updatedAt TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
+);

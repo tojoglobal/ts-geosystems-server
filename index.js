@@ -44,6 +44,7 @@ import addressRoute from "./routes/addressRoutes.js";
 import dynamicLinksRoute from "./routes/dynamicLinksRoute.js";
 import siteSettingsRoutes from "./routes/siteSettingsRoutes.js";
 import creditAccountRoute from "./routes/creditAccountRoutes.js";
+import top_clients_router from "./routes/HomePageRoutes/top-clients-routes.js";
 
 dotenv.config();
 const app = express();
@@ -133,6 +134,8 @@ app.use("/api", homepage_single_images);
 // last banner images
 app.use("/api", lastBannerRoutes);
 app.use("/api", experienceCenterRoutes);
+// top client mainSlide
+app.use("/api", top_clients_router);
 // home mainSlide
 app.use("/api", SlideRoutes);
 // author
