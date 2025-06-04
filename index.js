@@ -44,6 +44,8 @@ import addressRoute from "./routes/addressRoutes.js";
 import dynamicLinksRoute from "./routes/dynamicLinksRoute.js";
 import siteSettingsRoutes from "./routes/siteSettingsRoutes.js";
 import creditAccountRoute from "./routes/creditAccountRoutes.js";
+import TSCCEquipmentRoutes from "./routes/TSCCEquipmentRoutes.js";
+import TsClientRoutes from "./routes/TsClientRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -161,6 +163,10 @@ app.use("/api", footerRoute);
 app.use("/api/emails", emailRouter);
 // api site settings
 app.use("/api/settings", siteSettingsRoutes);
+// api TS CC EquipmentRoutes
+app.use("/api", TSCCEquipmentRoutes);
+// api TS ClientRoutes
+app.use("/api", TsClientRoutes);
 
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");

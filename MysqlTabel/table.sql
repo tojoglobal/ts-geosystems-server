@@ -636,18 +636,28 @@ CREATE TABLE site_settings (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+/* ts-cc equipments list */
+CREATE TABLE ts_cc_equipments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  trackingNo VARCHAR(100) NOT NULL,
+  equipment VARCHAR(100) NOT NULL,
+  serialNo VARCHAR(100) NOT NULL,
+  accuracy VARCHAR(100),
+  manufacturer VARCHAR(100) NOT NULL,
+  companyName VARCHAR(100),
+  validity DATE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
--- Default data insert (only one row for single-site settings)
-INSERT INTO site_settings
-(app_name, home_title, main_logo, favicon, meta_keywords, meta_description)
-VALUES
-(
-  'My App',
-  'Welcome to My App',
-  '/uploads/default-logo.png',
-  '/uploads/default-favicon.ico',
-  JSON_ARRAY('app','website','react','business'),
-  'This is the default meta description of your site.'
+CREATE TABLE ts_clients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  companyName VARCHAR(100) NOT NULL,
+  ownerName VARCHAR(100) NOT NULL,
+  mobileNumber VARCHAR(20) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE credit_account_applications (
