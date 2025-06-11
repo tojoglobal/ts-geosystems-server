@@ -2,6 +2,7 @@ import express from "express";
 import {
   addNewUser,
   getSingleUserInfo,
+  getUserMetrics,
   getUsers,
   loginUser,
   updateUserInfo,
@@ -56,5 +57,6 @@ userRoutes.post("/social-login", socialLoginUser);
 
 // Update user information
 userRoutes.put("/updateUserInfo", updateUserInfo);
+userRoutes.get("/user-metrics", getUserMetrics);
 
 export default userRoutes;

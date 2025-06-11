@@ -380,3 +380,27 @@ export const updateUserInfo = async (req, res) => {
     res.status(500).json({ message: "Server error." });
   }
 };
+
+// GET /api/user-metrics?period=year|month|week|today
+export const getUserMetrics = async (req, res) => {
+  try {
+    const { period = "year" } = req.query;
+    let dateCondition = "";
+    if (period === "today") {
+      dateCondition = "AND DATE(created_at) = CURDATE()";
+    } else if (period === "week") {
+      dateCondition = "AND YEARWEEK(created_at, 1) = YEARWEEK(NOW(), 1)";
+    } else if (period === "month") {
+      dateCondition = "AND YEAR(created_at) = YEAR(NOW()) AND MONTH(created_at) = MONTH(NOW())";
+    } else if (period === "year") {
+      dateCondition = "AND YEAR(created_at) = YEAR(NOW())";
+    }
+
+    const [users] = await db.query(
+      `SELECT * FROM users WHERE 1=1 ${dateCondition}`
+    );
+    res.json({ users });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user metrics" });
+  }
+};
