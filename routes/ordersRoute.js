@@ -20,7 +20,7 @@ import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const ordersRoute = express.Router();
 
-ordersRoute.post("/orderdata", authenticateUser, postOrder);
+ordersRoute.post("/orderdata", postOrder);
 ordersRoute.put("/orders/:order_id/status", verifyAdmin, UpdateOrderStatus);
 ordersRoute.get("/orderinfo", getOrderData);
 ordersRoute.get("/latest-order", getLatestOrders);
