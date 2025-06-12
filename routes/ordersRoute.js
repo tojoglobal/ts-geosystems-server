@@ -12,6 +12,8 @@ import {
   getAllMessages,
   deleteMessage,
   getOrderMetrics,
+  getOrdersStatusSummary,
+  getOrdersPaymentMethodSummary,
 } from "../controllers/ordersController.js";
 
 const ordersRoute = express.Router();
@@ -29,5 +31,10 @@ ordersRoute.post("/messages", addUserMessage);
 ordersRoute.get("/messages", getAllMessages);
 ordersRoute.delete("/messages/:id", deleteMessage);
 ordersRoute.get("/order-metrics", getOrderMetrics);
+ordersRoute.get("/orders-status-summary", getOrdersStatusSummary);
+ordersRoute.get(
+  "/orders-payment-method-summary",
+  getOrdersPaymentMethodSummary
+);
 
 export default ordersRoute;

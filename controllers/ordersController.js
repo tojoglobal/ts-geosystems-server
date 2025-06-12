@@ -446,3 +446,27 @@ export const getOrderMetrics = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch metrics" });
   }
 };
+
+// for home dashboard
+export const getOrdersStatusSummary = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT status, COUNT(*) as count FROM orders GROUP BY status"
+    );
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch status summary" });
+  }
+};
+
+// GET /api/orders-payment-method-summary
+export const getOrdersPaymentMethodSummary = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT payment_method, COUNT(*) as count FROM orders GROUP BY payment_method"
+    );
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch method summary" });
+  }
+};
