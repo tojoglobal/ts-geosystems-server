@@ -1,6 +1,7 @@
 import express from "express";
 import { getFooter, updateFooter } from "../controllers/footerController.js";
 import { upload } from "../middleware/UploadFile.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const footerRoute = express.Router();
 
@@ -14,6 +15,7 @@ footerRoute.put(
     { name: "iso_image_2", maxCount: 1 },
     { name: "iso_image_3", maxCount: 1 },
   ]),
+  verifyAdmin,
   updateFooter
 );
 

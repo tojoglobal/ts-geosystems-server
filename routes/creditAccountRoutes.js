@@ -1,6 +1,7 @@
 import express from "express";
 import { upload } from "../middleware/UploadFile.js";
 import { getAllCreditAccountApplications, saveCreditAccountApplication } from "../controllers/creditAccountController.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const creditAccountRoute = express.Router();
 
@@ -12,6 +13,10 @@ creditAccountRoute.post(
 );
 
 // Retrieve all form submissions
-creditAccountRoute.get("/credit-accounts", getAllCreditAccountApplications);
+creditAccountRoute.get(
+  "/credit-accounts",
+  verifyAdmin,
+  getAllCreditAccountApplications
+);
 
 export default creditAccountRoute;

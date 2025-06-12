@@ -8,6 +8,7 @@ import {
   getOurAdServices,
   updateOurAdServices,
 } from "../../controllers/HomePageControllers/homeController.js";
+import { verifyAdmin } from "../../middleware/verifyAdmin.js";
 
 const homeRoute = express.Router();
 
@@ -20,16 +21,17 @@ homeRoute.put(
     { name: "images[1]", maxCount: 1 },
     { name: "images[2]", maxCount: 1 },
   ]),
+  verifyAdmin,
   updateWeProvide
 );
 
 
 // OurAchievements
 homeRoute.get("/our-achievements", getOurAchievements);
-homeRoute.put("/our-achievements", updateOurAchievements);
+homeRoute.put("/our-achievements", verifyAdmin, updateOurAchievements);
 
 // OurAdServices
 homeRoute.get("/our-ad-services", getOurAdServices);
-homeRoute.put("/our-ad-services", updateOurAdServices);
+homeRoute.put("/our-ad-services", verifyAdmin, updateOurAdServices);
 
 export default homeRoute;

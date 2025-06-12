@@ -6,11 +6,12 @@ import {
   getContactMessages,
   deleteContactMessage,
 } from "../controllers/contactUsController.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const contactUsRoute = express.Router();
 
 contactUsRoute.get("/admin-contact-us", getContactUs);
-contactUsRoute.put("/admin-contact-us", updateContactUs);
+contactUsRoute.put("/admin-contact-us", verifyAdmin, updateContactUs);
 
 // Contact form submission (public)
 contactUsRoute.post("/contact", submitContactForm);
@@ -19,6 +20,10 @@ contactUsRoute.post("/contact", submitContactForm);
 contactUsRoute.get("/contact-messages", getContactMessages);
 
 // Delete a contact message (admin)
-contactUsRoute.delete("/contact-messages/:id", deleteContactMessage);
+contactUsRoute.delete(
+  "/contact-messages/:id",
+  verifyAdmin,
+  deleteContactMessage
+);
 
 export default contactUsRoute;
