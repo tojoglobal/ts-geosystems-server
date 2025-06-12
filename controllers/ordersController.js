@@ -1,4 +1,5 @@
 import db from "../Utils/db.js";
+import { addAdminNotification } from "./notification.js";
 
 export const postOrder = async (req, res) => {
   try {
@@ -95,7 +96,13 @@ export const postOrder = async (req, res) => {
         );
       }
     }
-
+    // new added
+    await addAdminNotification({
+      type: "order",
+      refId: order_id,
+      content: `New order placed: ${order_id} by ${email}`,
+      link: "/dashboard/orders",
+    });
     res.status(201).json({ message: "Order placed successfully!" });
   } catch (err) {
     console.error("Error placing order:", err.message);
@@ -314,6 +321,13 @@ export const addUserMessage = async (req, res) => {
     res.status(201).json({ 
       message: "Message sent successfully!",
       messageId: result.insertId 
+    });
+    // new added
+    await addAdminNotification({
+      type: "message",
+      refId: result.insertId,
+      content: `New message from ${user_email} (Order #${order_id})`,
+      link: "/dashboard/chat",
     });
   } catch (err) {
     console.error("Error sending message:", err);

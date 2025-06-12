@@ -712,3 +712,13 @@ CREATE TABLE top_clients (
     createdAt TIMESTAMP DEFAULT NOW(),
     updatedAt TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
 );
+
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type ENUM('order','question','message') NOT NULL,
+    ref_id INT DEFAULT NULL,
+    content VARCHAR(255) NOT NULL,
+    link VARCHAR(255) DEFAULT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

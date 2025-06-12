@@ -48,6 +48,7 @@ import top_clients_router from "./routes/HomePageRoutes/top-clients-routes.js";
 import blogTagRoute from "./routes/blogTagRoute.js";
 import TSCCEquipmentRoutes from "./routes/TSCCEquipmentRoutes.js";
 import TsClientRoutes from "./routes/TsClientRoutes.js";
+import notificationsRoute from "./routes/notificationsRoute.js";
 
 dotenv.config();
 const app = express();
@@ -88,6 +89,8 @@ app.use(bodyParser.json());
 
 // Router set up
 app.use(adminRoute);
+// notification route
+app.use("/api", notificationsRoute);
 // product
 app.use(ProductsRoute);
 // category
