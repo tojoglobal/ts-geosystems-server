@@ -11,7 +11,6 @@ import {
   addUserMessage,
   getAllMessages,
   deleteMessage,
-  getOrderMetrics,
 } from "../controllers/ordersController.js";
 
 const ordersRoute = express.Router();
@@ -28,6 +27,5 @@ ordersRoute.get("/order/inbox/:email", getUserInboxOrders);
 ordersRoute.post("/messages", addUserMessage);
 ordersRoute.get("/messages", getAllMessages);
 ordersRoute.delete("/messages/:id", deleteMessage);
-ordersRoute.get("/order-metrics", getOrderMetrics);
 
 export default ordersRoute;

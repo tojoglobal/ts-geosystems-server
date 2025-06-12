@@ -325,7 +325,7 @@ export const addUserMessage = async (req, res) => {
     // Add notification for admin
     await addAdminNotification({
       type: "message",
-      refId: result.insertId,
+      refId: result?.insertId,
       content: `New message from ${user_email} (Order #${order_id})`,
       link: "/dashboard/chat",
     });
@@ -342,7 +342,7 @@ export const getAllMessages = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-    const search = req.query.search || '';
+    const search = req.query.search || "";
 
     // Get total count of messages (with optional search)
     const [countResult] = await db.query(
@@ -350,7 +350,6 @@ export const getAllMessages = async (req, res) => {
        WHERE order_id LIKE ? OR user_email LIKE ? OR subject LIKE ?`,
       [`%${search}%`, `%${search}%`, `%${search}%`]
     );
-    
     const total = countResult[0].total;
     const totalPages = Math.ceil(total / limit);
 
@@ -403,46 +402,12 @@ export const deleteMessage = async (req, res) => {
     // Delete the message
     await db.query("DELETE FROM user_messages WHERE id = ?", [id]);
 
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
-      message: "Message deleted successfully"
+      message: "Message deleted successfully",
     });
   } catch (err) {
     console.error("Error deleting message:", err);
     res.status(500).json({ error: "Failed to delete message" });
-  }
-};
-
-// for dashboard chart
-// GET /api/order-metrics?period=year|month|week|today
-export const getOrderMetrics = async (req, res) => {
-  try {
-    const { period = "year" } = req.query;
-    let dateCondition = "";
-    if (period === "today") {
-      dateCondition = "AND DATE(created_at) = CURDATE()";
-    } else if (period === "week") {
-      dateCondition = "AND YEARWEEK(created_at, 1) = YEARWEEK(NOW(), 1)";
-    } else if (period === "month") {
-      dateCondition = "AND YEAR(created_at) = YEAR(NOW()) AND MONTH(created_at) = MONTH(NOW())";
-    } else if (period === "year") {
-      dateCondition = "AND YEAR(created_at) = YEAR(NOW())";
-    }
-
-    // Orders
-    const [orders] = await db.query(
-      `SELECT * FROM orders WHERE 1=1 ${dateCondition}`
-    );
-    // Users (if you want to show users added in this period)
-    const [users] = await db.query(
-      `SELECT * FROM users WHERE 1=1 ${dateCondition}`
-    );
-
-    res.json({
-      orders,
-      users,
-    });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch metrics" });
   }
 };
