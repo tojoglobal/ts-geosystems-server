@@ -411,3 +411,38 @@ export const deleteMessage = async (req, res) => {
     res.status(500).json({ error: "Failed to delete message" });
   }
 };
+
+// for dashboard chart
+// GET /api/order-metrics?period=year|month|week|today
+export const getOrderMetrics = async (req, res) => {
+  try {
+    const { period = "year" } = req.query;
+    let dateCondition = "";
+    if (period === "today") {
+      dateCondition = "AND DATE(created_at) = CURDATE()";
+    } else if (period === "week") {
+      dateCondition = "AND YEARWEEK(created_at, 1) = YEARWEEK(NOW(), 1)";
+    } else if (period === "month") {
+      dateCondition =
+        "AND YEAR(created_at) = YEAR(NOW()) AND MONTH(created_at) = MONTH(NOW())";
+    } else if (period === "year") {
+      dateCondition = "AND YEAR(created_at) = YEAR(NOW())";
+    }
+
+    // Orders
+    const [orders] = await db.query(
+      `SELECT * FROM orders WHERE 1=1 ${dateCondition}`
+    );
+    // Users (if you want to show users added in this period)
+    const [users] = await db.query(
+      `SELECT * FROM users WHERE 1=1 ${dateCondition}`
+    );
+
+    res.json({
+      orders,
+      users,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch metrics" });
+  }
+};
