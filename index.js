@@ -49,6 +49,7 @@ import blogTagRoute from "./routes/blogTagRoute.js";
 import TSCCEquipmentRoutes from "./routes/TSCCEquipmentRoutes.js";
 import TsClientRoutes from "./routes/TsClientRoutes.js";
 import notificationsRoute from "./routes/notificationsRoute.js";
+import settingRoute from "./routes/settingRoute.js";
 
 dotenv.config();
 const app = express();
@@ -113,6 +114,8 @@ app.use("/api", promoRoutes);
 app.use("/api", TaxesRoutes);
 // service route ..
 app.use("/api", serviceRoute);
+// setting vat route ..
+app.use("/api", settingRoute);
 // contact route
 app.use("/api", contactUsRoute);
 // used benifit route

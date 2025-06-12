@@ -722,3 +722,9 @@ CREATE TABLE notifications (
     is_read BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS shop_settings (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  vat_enabled TINYINT(1) NOT NULL DEFAULT 1
+);
+INSERT INTO shop_settings (vat_enabled) VALUES (1) ON DUPLICATE KEY UPDATE vat_enabled=1;
