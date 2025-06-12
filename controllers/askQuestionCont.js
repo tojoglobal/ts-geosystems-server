@@ -34,7 +34,7 @@ export const submitProductQuestion = async (req, res) => {
       message: "Your question has been submitted successfully",
       id: result.insertId,
     });
-    // new added
+    // Add notification for admin
     await addAdminNotification({
       type: "question",
       refId: result.insertId,

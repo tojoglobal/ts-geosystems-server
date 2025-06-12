@@ -96,7 +96,7 @@ export const postOrder = async (req, res) => {
         );
       }
     }
-    // new added
+    // Add notification for admin
     await addAdminNotification({
       type: "order",
       refId: order_id,
@@ -318,11 +318,11 @@ export const addUserMessage = async (req, res) => {
       [order_id, user_email, subject, message]
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Message sent successfully!",
-      messageId: result.insertId 
+      messageId: result.insertId,
     });
-    // new added
+    // Add notification for admin
     await addAdminNotification({
       type: "message",
       refId: result.insertId,
