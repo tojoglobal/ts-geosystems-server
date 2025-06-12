@@ -45,7 +45,7 @@ export const postOrder = async (req, res) => {
         "pending",
         shipping_cost,
         null,
-        coupon || null,
+        coupon ? JSON.stringify(coupon) : null,
       ]
     );
 
@@ -76,16 +76,16 @@ export const postOrder = async (req, res) => {
         // If the product exists, update the product count and last ordered time
         await db.query(
           `UPDATE recommended_products 
-           SET product_count = product_count + ?, last_ordered_at = NOW() 
-           WHERE product_id = ?`,
+         SET product_count = product_count + ?, last_ordered_at = NOW() 
+         WHERE product_id = ?`,
           [quantity, product_id]
         );
       } else {
         // If the product is new, insert it into the table
         await db.query(
           `INSERT INTO recommended_products 
-           (product_id, product_name, product_count, product_category, product_subcategory, last_ordered_at) 
-           VALUES (?, ?, ?, ?, ?, NOW())`,
+         (product_id, product_name, product_count, product_category, product_subcategory, last_ordered_at) 
+         VALUES (?, ?, ?, ?, ?, NOW())`,
           [
             product_id,
             product_name,
@@ -105,7 +105,7 @@ export const postOrder = async (req, res) => {
     });
     res.status(201).json({ message: "Order placed successfully!" });
   } catch (err) {
-    console.error("Error placing order:", err.message);
+    console.error("Error placing order:", err);
     res.status(500).json({ error: "Failed to place order" });
   }
 };

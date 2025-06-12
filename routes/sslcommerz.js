@@ -26,6 +26,7 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
     shipping_zip,
     items,
     coupon,
+    vatEnabled, // <-- NEW
   } = req.body;
 
   try {
@@ -80,8 +81,11 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
 
       const quantity = item.quantity;
       const itemSubtotal = price * quantity;
-      const itemVat = price * taxRate * quantity;
-
+      let itemVat = 0;
+      if (vatEnabled !== false) {
+        // Default to true if undefined
+        itemVat = price * (taxRate / 100) * quantity;
+      }
       subtotal += itemSubtotal;
       vat += itemVat;
     });
@@ -107,8 +111,8 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
     // Calculate total
     const total = subtotal + vat + shippingCost - discount;
 
-    // ✅ Check total match
-    if (Math.abs(total - total_amount) > 1) {
+    // ✅ Check total match (allow 1 BDT difference due to float imprecision)
+    if (Math.abs(Number(total) - Number(total_amount)) > 1) {
       return res.status(400).json({
         message: "Total amount mismatch. Please refresh and try again.",
         calculatedTotal: total,
@@ -118,7 +122,7 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
 
     // ✅ Proceed with payment
     const data = {
-      total_amount,
+      total_amount: Math.round(Number(total_amount)).toString(),
       currency: "BDT",
       tran_id: order_id,
       success_url: `${process.env.BACKEND_URL}/api/ssl-payment/success`,
