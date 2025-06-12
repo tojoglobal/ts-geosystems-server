@@ -10,6 +10,7 @@ export const authenticateUser = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    // console.log(decoded);
 
     // Fetch user from the database
     const [rows] = await db.query(

@@ -10,6 +10,7 @@ import {
   updateServiceImages,
 } from "../controllers/serviceController.js";
 import { upload } from "../middleware/UploadFile.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 // const upload = multer({ dest: "uploads/service/" });
 const serviceRoute = express.Router();
@@ -24,7 +25,12 @@ serviceRoute.put(
   updateService
 );
 
-serviceRoute.put("/update-service-images", upload.any(), updateServiceImages);
+serviceRoute.put(
+  "/update-service-images",
+  upload.any(),
+  verifyAdmin,
+  updateServiceImages
+);
 serviceRoute.get("/get-service-images", getServiceImages);
 
 // service page service inquiries from
@@ -35,8 +41,11 @@ serviceRoute.post(
   createServiceInquiry
 );
 
-
 serviceRoute.get("/service-equipment-options", getServiceEquipmentOptions);
-serviceRoute.put("/service-equipment-options", updateServiceEquipmentOptions);
+serviceRoute.put(
+  "/service-equipment-options",
+  verifyAdmin,
+  updateServiceEquipmentOptions
+);
 
 export default serviceRoute;

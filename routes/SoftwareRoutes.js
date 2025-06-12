@@ -6,12 +6,23 @@ import {
   updateSoftware,
   deleteSoftware,
 } from "../controllers/SoftwaresController.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const SoftwareRoute = express.Router();
 
 SoftwareRoute.get("/software", getSoftwares);
-SoftwareRoute.post("/software", upload.single("photo"), createSoftware);
-SoftwareRoute.put("/software/:id", upload.single("photo"), updateSoftware);
-SoftwareRoute.delete("/software/:id", deleteSoftware);
+SoftwareRoute.post(
+  "/software",
+  upload.single("photo"),
+  verifyAdmin,
+  createSoftware
+);
+SoftwareRoute.put(
+  "/software/:id",
+  upload.single("photo"),
+  verifyAdmin,
+  updateSoftware
+);
+SoftwareRoute.delete("/software/:id", verifyAdmin, deleteSoftware);
 
 export default SoftwareRoute;

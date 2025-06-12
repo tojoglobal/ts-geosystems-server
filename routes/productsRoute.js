@@ -21,10 +21,16 @@ import {
   getProductsByBrand,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const ProductsRoute = express.Router();
 
-ProductsRoute.post("/api/products", upload.array("images", 20), productAdd);
+ProductsRoute.post(
+  "/api/products",
+  upload.array("images", 20),
+  verifyAdmin,
+  productAdd
+);
 ProductsRoute.get("/api/products-table", getProductTable);
 ProductsRoute.get("/api/products", getProducts);
 ProductsRoute.put(
@@ -32,7 +38,7 @@ ProductsRoute.put(
   upload.array("images", 20),
   updateProductById
 );
-ProductsRoute.delete("/api/products/:id", deleteProducts);
+ProductsRoute.delete("/api/products/:id", verifyAdmin, deleteProducts);
 ProductsRoute.post("/api/products/delete-image", deleteImage);
 ProductsRoute.get("/api/products/:id", getproductById);
 // category/:subcategory wise data// Add this with your other routes
