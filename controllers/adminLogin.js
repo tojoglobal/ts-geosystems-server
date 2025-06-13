@@ -65,20 +65,11 @@ const loginInfo = async (req, res) => {
     );
 
     // Set the token as a cookie
-    // res.cookie("admin_token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    //   // domain: ".tsgb.site",
-    //   maxAge: 24 * 60 * 60 * 1000, // 1 day
-    // });
-    
     res.cookie("admin_token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      domain: ".tsgb.site",
-      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      // domain: ".tsgb.site",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
