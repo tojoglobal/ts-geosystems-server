@@ -17,7 +17,7 @@ userRoutes.get("/all-users", getUsers);
 userRoutes.post("/user-login", loginUser);
 
 // get the user only email
-userRoutes.get("/getUserInfo/:email", getSingleUserInfo);
+userRoutes.get("/getUserInfo/:email", authenticateUser, getSingleUserInfo);
 
 userRoutes.get("/user-verify-token", authenticateUser, (req, res) => {
   res.status(200).json({

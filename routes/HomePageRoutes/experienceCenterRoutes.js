@@ -5,6 +5,7 @@ import {
   uploadExperienceCenterImages,
   deleteExperienceCenterImage,
 } from "../../controllers/HomePageControllers/experienceCenterControllers.js";
+import { verifyAdmin } from "../../middleware/verifyAdmin.js";
 
 const experienceCenterRoutes = express.Router();
 
@@ -18,12 +19,14 @@ experienceCenterRoutes.get(
 experienceCenterRoutes.post(
   "/upload-experience-center-images",
   upload.array("images"),
+  verifyAdmin,
   uploadExperienceCenterImages
 );
 
 // Delete image
 experienceCenterRoutes.delete(
   "/delete-experience-center-image/:id",
+  verifyAdmin,
   deleteExperienceCenterImage
 );
 

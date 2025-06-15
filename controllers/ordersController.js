@@ -1,4 +1,5 @@
 import db from "../Utils/db.js";
+import { addAdminNotification } from "./notification.js";
 
 export const postOrder = async (req, res) => {
   try {
@@ -44,7 +45,7 @@ export const postOrder = async (req, res) => {
         "pending",
         shipping_cost,
         null,
-        coupon || null,
+        coupon ? JSON.stringify(coupon) : null,
       ]
     );
 
@@ -75,16 +76,16 @@ export const postOrder = async (req, res) => {
         // If the product exists, update the product count and last ordered time
         await db.query(
           `UPDATE recommended_products 
-           SET product_count = product_count + ?, last_ordered_at = NOW() 
-           WHERE product_id = ?`,
+         SET product_count = product_count + ?, last_ordered_at = NOW() 
+         WHERE product_id = ?`,
           [quantity, product_id]
         );
       } else {
         // If the product is new, insert it into the table
         await db.query(
           `INSERT INTO recommended_products 
-           (product_id, product_name, product_count, product_category, product_subcategory, last_ordered_at) 
-           VALUES (?, ?, ?, ?, ?, NOW())`,
+         (product_id, product_name, product_count, product_category, product_subcategory, last_ordered_at) 
+         VALUES (?, ?, ?, ?, ?, NOW())`,
           [
             product_id,
             product_name,
@@ -95,10 +96,16 @@ export const postOrder = async (req, res) => {
         );
       }
     }
-
+    // Add notification for admin
+    await addAdminNotification({
+      type: "order",
+      refId: order_id,
+      content: `New order placed: ${order_id} by ${email}`,
+      link: "/dashboard/orders",
+    });
     res.status(201).json({ message: "Order placed successfully!" });
   } catch (err) {
-    console.error("Error placing order:", err.message);
+    console.error("Error placing order:", err);
     res.status(500).json({ error: "Failed to place order" });
   }
 };
@@ -311,9 +318,16 @@ export const addUserMessage = async (req, res) => {
       [order_id, user_email, subject, message]
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Message sent successfully!",
-      messageId: result.insertId 
+      messageId: result.insertId,
+    });
+    // Add notification for admin
+    await addAdminNotification({
+      type: "message",
+      refId: result?.insertId,
+      content: `New message from ${user_email} (Order #${order_id})`,
+      link: "/dashboard/chat",
     });
   } catch (err) {
     console.error("Error sending message:", err);
@@ -328,7 +342,7 @@ export const getAllMessages = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-    const search = req.query.search || '';
+    const search = req.query.search || "";
 
     // Get total count of messages (with optional search)
     const [countResult] = await db.query(
@@ -336,7 +350,6 @@ export const getAllMessages = async (req, res) => {
        WHERE order_id LIKE ? OR user_email LIKE ? OR subject LIKE ?`,
       [`%${search}%`, `%${search}%`, `%${search}%`]
     );
-    
     const total = countResult[0].total;
     const totalPages = Math.ceil(total / limit);
 
@@ -389,12 +402,71 @@ export const deleteMessage = async (req, res) => {
     // Delete the message
     await db.query("DELETE FROM user_messages WHERE id = ?", [id]);
 
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
-      message: "Message deleted successfully"
+      message: "Message deleted successfully",
     });
   } catch (err) {
     console.error("Error deleting message:", err);
     res.status(500).json({ error: "Failed to delete message" });
+  }
+};
+
+// for dashboard chart
+// GET /api/order-metrics?period=year|month|week|today
+export const getOrderMetrics = async (req, res) => {
+  try {
+    const { period = "year" } = req.query;
+    let dateCondition = "";
+    if (period === "today") {
+      dateCondition = "AND DATE(created_at) = CURDATE()";
+    } else if (period === "week") {
+      dateCondition = "AND YEARWEEK(created_at, 1) = YEARWEEK(NOW(), 1)";
+    } else if (period === "month") {
+      dateCondition =
+        "AND YEAR(created_at) = YEAR(NOW()) AND MONTH(created_at) = MONTH(NOW())";
+    } else if (period === "year") {
+      dateCondition = "AND YEAR(created_at) = YEAR(NOW())";
+    }
+
+    // Orders
+    const [orders] = await db.query(
+      `SELECT * FROM orders WHERE 1=1 ${dateCondition}`
+    );
+    // Users (if you want to show users added in this period)
+    const [users] = await db.query(
+      `SELECT * FROM users WHERE 1=1 ${dateCondition}`
+    );
+
+    res.json({
+      orders,
+      users,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch metrics" });
+  }
+};
+
+// for home dashboard
+export const getOrdersStatusSummary = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT status, COUNT(*) as count FROM orders GROUP BY status"
+    );
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch status summary" });
+  }
+};
+
+// GET /api/orders-payment-method-summary
+export const getOrdersPaymentMethodSummary = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT payment_method, COUNT(*) as count FROM orders GROUP BY payment_method"
+    );
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch method summary" });
   }
 };

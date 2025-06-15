@@ -5,12 +5,13 @@ import {
   putClient,
   deleteClient,
 } from "../controllers/TsClientControllers.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const TsClientRoutes = express.Router();
 
-TsClientRoutes.get("/clients/search", getClients);
-TsClientRoutes.post("/clients", postClient);
-TsClientRoutes.put("/clients/:id", putClient);
-TsClientRoutes.delete("/clients/:id", deleteClient);
+TsClientRoutes.get("/clients/search", verifyAdmin, getClients);
+TsClientRoutes.post("/clients", verifyAdmin, postClient);
+TsClientRoutes.put("/clients/:id", verifyAdmin, putClient);
+TsClientRoutes.delete("/clients/:id", verifyAdmin, deleteClient);
 
 export default TsClientRoutes;

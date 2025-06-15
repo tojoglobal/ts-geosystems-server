@@ -712,3 +712,19 @@ CREATE TABLE top_clients (
     createdAt TIMESTAMP DEFAULT NOW(),
     updatedAt TIMESTAMP DEFAULT NOW() ON UPDATE NOW()
 );
+
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type ENUM('order','question','message') NOT NULL,
+    ref_id INT DEFAULT NULL,
+    content VARCHAR(255) NOT NULL,
+    link VARCHAR(255) DEFAULT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS shop_settings (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  vat_enabled TINYINT(1) NOT NULL DEFAULT 1
+);
+INSERT INTO shop_settings (vat_enabled) VALUES (1) ON DUPLICATE KEY UPDATE vat_enabled=1;

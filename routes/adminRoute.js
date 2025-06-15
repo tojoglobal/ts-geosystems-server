@@ -8,6 +8,7 @@ import {
   adminGetProfile,
   adminProfileUpdate,
   adminUnlock,
+  adminChangePassword,
 } from "../controllers/adminLogin.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
 import { upload } from "../middleware/UploadFile.js";
@@ -46,5 +47,7 @@ adminRoute.post("/api/logout", (req, res) => {
   });
   res.status(200).json({ message: "Logged out successfully" });
 });
+
+adminRoute.put("/api/admin/change-password", verifyAdmin, adminChangePassword);
 
 export default adminRoute;

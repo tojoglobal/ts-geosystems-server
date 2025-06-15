@@ -302,6 +302,42 @@ const adminUnlock = async (req, res) => {
   }
 };
 
+const adminChangePassword = async (req, res) => {
+  try {
+    const adminId = req.admin.id;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Fetch current password hash
+    const [admins] = await db.query(
+      "SELECT password FROM admins WHERE id = ?",
+      [adminId]
+    );
+    if (admins.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, admins[0].password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Old password is incorrect" });
+    }
+
+    // Update password
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await db.query(
+      "UPDATE admins SET password = ?, updated_at = NOW() WHERE id = ?",
+      [newHash, adminId]
+    );
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to update password" });
+  }
+};
+
 export {
   loginInfo,
   adminCreate,
@@ -311,4 +347,5 @@ export {
   adminProfileUpdate,
   adminGetProfile,
   adminUnlock,
+  adminChangePassword,
 };

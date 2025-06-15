@@ -7,6 +7,7 @@ import {
   updateTradeInContent,
 } from "../controllers/tradeInController.js";
 import { upload } from "../middleware/UploadFile.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const tradeInRoutes = express.Router();
 
@@ -19,6 +20,6 @@ tradeInRoutes.post("/trade-in", upload.array("photos"), saveTradeInData);
 tradeInRoutes.get("/trade-in", getTradeInData);
 
 tradeInRoutes.get("/trade-in-content", getTradeInContent);
-tradeInRoutes.put("/trade-in-content", updateTradeInContent);
+tradeInRoutes.put("/trade-in-content", verifyAdmin, updateTradeInContent);
 
 export default tradeInRoutes;

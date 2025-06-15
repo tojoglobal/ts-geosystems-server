@@ -1,4 +1,5 @@
 import db from "../Utils/db.js";
+import { addAdminNotification } from "./notification.js";
 
 // Submit ask question form
 export const submitProductQuestion = async (req, res) => {
@@ -32,6 +33,13 @@ export const submitProductQuestion = async (req, res) => {
       success: true,
       message: "Your question has been submitted successfully",
       id: result.insertId,
+    });
+    // Add notification for admin
+    await addAdminNotification({
+      type: "question",
+      refId: result.insertId,
+      content: `New product question by ${name} ${lastName}`,
+      link: "/dashboard/product/question",
     });
   } catch (error) {
     res.status(500).json({

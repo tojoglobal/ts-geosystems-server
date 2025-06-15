@@ -6,6 +6,7 @@ import {
   getHomepageControl,
   updateHomepageControl,
 } from "../controllers/homepageController.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const HomePageControlRoute = express.Router();
 
@@ -15,10 +16,14 @@ HomePageControlRoute.get("/homepage-control", getHomepageControl);
 //   upload.single("photo"),
 //   HomePageControlRoute
 // );
-HomePageControlRoute.put("/homepage-control", updateHomepageControl);
+HomePageControlRoute.put(
+  "/homepage-control",
+  verifyAdmin,
+  updateHomepageControl
+);
 // HomePageControlRoute.delete("/softwar/:id", deleteSoftware);
 HomePageControlRoute.post("/subscribers", addSubscriber);
 HomePageControlRoute.get("/subscribers", getAllSubscribers);
-HomePageControlRoute.delete("/subscribers/:id", deleteSubscriber);
+HomePageControlRoute.delete("/subscribers/:id", verifyAdmin, deleteSubscriber);
 
 export default HomePageControlRoute;

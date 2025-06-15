@@ -1,4 +1,5 @@
 import db from "../Utils/db.js";
+import { addAdminNotification } from "./notification.js";
 
 // GET admin contact info
 export const getContactUs = async (req, res) => {
@@ -118,6 +119,13 @@ export const submitContactForm = async (req, res) => {
       "INSERT INTO contact_messages (first_name, last_name, email, phone, message) VALUES (?, ?, ?, ?, ?)",
       [firstName, lastName, email, phone, message]
     );
+    // Add notification for admin
+    await addAdminNotification({
+      type: "contact",
+      refId: result.insertId,
+      content: `New contact form message from ${firstName} ${lastName || ""}`,
+      link: "/dashboard/client-messages",
+    });
 
     res.json({
       success: true,

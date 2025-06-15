@@ -10,14 +10,31 @@ import {
   updateCategory,
   updateSubCategory,
 } from "../controllers/categoryController.js";
+import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const categoryRoute = express.Router();
-categoryRoute.post("/category", upload.single("photo"), addCategory);
-categoryRoute.post("/subcategory", upload.single("photo"), addSubCategory);
-categoryRoute.put("/category/:id", upload.single("photo"), updateCategory);
+categoryRoute.post(
+  "/category",
+  upload.single("photo"),
+  verifyAdmin,
+  addCategory
+);
+categoryRoute.post(
+  "/subcategory",
+  upload.single("photo"),
+  verifyAdmin,
+  addSubCategory
+);
+categoryRoute.put(
+  "/category/:id",
+  upload.single("photo"),
+  verifyAdmin,
+  updateCategory
+);
 categoryRoute.put(
   "/subcategory/:id",
   upload.single("photo"),
+  verifyAdmin,
   updateSubCategory
 );
 categoryRoute.get("/category", getCategory);
