@@ -57,22 +57,20 @@ export const getSupportRequests = async (req, res) => {
 };
 
 // support dynamic Instrument Type *
+// Get support content
 export const getSupportContent = async (req, res) => {
   try {
     const [content] = await db.query("SELECT * FROM support_content LIMIT 1");
-
     if (content.length === 0) {
       return res.status(200).json({
         success: true,
         data: {
           instrument_types: [],
+          description: "",
         },
       });
     }
-
     const supportContent = content[0];
-
-    // Parse JSON array
     try {
       supportContent.instrument_types = JSON.parse(
         supportContent.instrument_types || "[]"
@@ -80,7 +78,6 @@ export const getSupportContent = async (req, res) => {
     } catch (e) {
       supportContent.instrument_types = [];
     }
-
     res.status(200).json({
       success: true,
       data: supportContent,
@@ -90,16 +87,15 @@ export const getSupportContent = async (req, res) => {
   }
 };
 
+// Update support content
 export const updateSupportContent = async (req, res) => {
   try {
-    const { instrument_types } = req.body;
-
+    const { instrument_types, description } = req.body;
     const supportData = {
       instrument_types: JSON.stringify(instrument_types || []),
+      description: description || "",
     };
-
     const [existing] = await db.query("SELECT id FROM support_content LIMIT 1");
-
     if (existing.length === 0) {
       await db.query("INSERT INTO support_content SET ?", supportData);
     } else {
@@ -108,7 +104,6 @@ export const updateSupportContent = async (req, res) => {
         existing[0].id,
       ]);
     }
-
     res.json({
       success: true,
       message: "Support content updated successfully",
