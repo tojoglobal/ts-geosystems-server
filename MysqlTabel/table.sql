@@ -728,3 +728,16 @@ CREATE TABLE IF NOT EXISTS shop_settings (
   vat_enabled TINYINT(1) NOT NULL DEFAULT 1
 );
 INSERT INTO shop_settings (vat_enabled) VALUES (1) ON DUPLICATE KEY UPDATE vat_enabled=1;
+
+CREATE TABLE quotation_requests (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(30) NOT NULL,
+    message TEXT,
+    product_id VARCHAR(100) NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    product_price DECIMAL(12,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

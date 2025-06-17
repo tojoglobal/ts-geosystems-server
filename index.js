@@ -50,6 +50,7 @@ import TSCCEquipmentRoutes from "./routes/TSCCEquipmentRoutes.js";
 import TsClientRoutes from "./routes/TsClientRoutes.js";
 import notificationsRoute from "./routes/notificationsRoute.js";
 import settingRoute from "./routes/settingRoute.js";
+import quotationRoutes from "./routes/quotationRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -179,7 +180,8 @@ app.use("/api/settings", siteSettingsRoutes);
 app.use("/api", TSCCEquipmentRoutes);
 // api TS ClientRoutes
 app.use("/api", TsClientRoutes);
-
+// quotationRoutes
+app.use("/api/quotation", quotationRoutes);
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
 });
