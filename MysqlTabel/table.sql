@@ -550,13 +550,15 @@ CREATE TABLE our_ad_services (
     description TEXT NOT NULL
 );
 
+
 CREATE TABLE footer (
     id INT PRIMARY KEY AUTO_INCREMENT,
     address1 TEXT NOT NULL,
     address2 TEXT,
     iso_image_url_1 VARCHAR(255) NULL,
     iso_image_url_2 VARCHAR(255) NULL,
-    iso_image_url_3 VARCHAR(255) NULL;
+    iso_image_url_3 VARCHAR(255) NULL,
+    payment_method_image_url VARCHAR(255) NULL,
     mailing_title VARCHAR(255) DEFAULT 'JOIN OUR MAILING LIST',
     mailing_text TEXT DEFAULT 'Signup for our newsletter to receive specials and up to date product news and releases.',
     bg_color VARCHAR(15) DEFAULT '#585c5d',

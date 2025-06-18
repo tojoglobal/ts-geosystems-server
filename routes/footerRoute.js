@@ -7,13 +7,14 @@ const footerRoute = express.Router();
 
 footerRoute.get("/footer", getFooter);
 
-// IMPORTANT: Use upload.fields to handle multiple distinct file input fields
+// Add payment_method_image field for upload.fields
 footerRoute.put(
   "/footer",
   upload.fields([
     { name: "iso_image_1", maxCount: 1 },
     { name: "iso_image_2", maxCount: 1 },
     { name: "iso_image_3", maxCount: 1 },
+    { name: "payment_method_image", maxCount: 1 },
   ]),
   verifyAdmin,
   updateFooter
