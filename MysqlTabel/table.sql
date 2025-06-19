@@ -631,16 +631,41 @@ CREATE TABLE dynamic_links (
 );
 
 
-
--- MySQL table for the given fields
+-- site_settings MySQL table for the new fields
 CREATE TABLE site_settings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     app_name VARCHAR(255) NOT NULL DEFAULT 'My App',
     home_title VARCHAR(255) NOT NULL DEFAULT 'Welcome to My App',
-    main_logo VARCHAR(255) NOT NULL DEFAULT '/uploads/default-logo.png', -- store file path or URL
-    favicon VARCHAR(255) NOT NULL DEFAULT '/uploads/default-favicon.ico', -- store file path or URL
+    main_logo VARCHAR(255) NOT NULL DEFAULT '/uploads/default-logo.png',
+    favicon VARCHAR(255) NOT NULL DEFAULT '/uploads/default-favicon.ico',
     meta_keywords JSON NOT NULL DEFAULT (JSON_ARRAY('app','website','react','business')),
     meta_description TEXT NOT NULL DEFAULT 'This is the default meta description of your site.',
+
+    -- New fields for extra features
+    decimal_separator_enable BOOLEAN NOT NULL DEFAULT 0,
+    decimal_separator VARCHAR(10) NOT NULL DEFAULT 'off',
+    currency_direction_enable BOOLEAN NOT NULL DEFAULT 0,
+    currency_direction VARCHAR(10) NOT NULL DEFAULT 'left',
+    decimal_separator_selector_enable BOOLEAN NOT NULL DEFAULT 0,
+    decimal_separator_selector VARCHAR(10) NOT NULL DEFAULT 'dot',
+    thousand_separator_enable BOOLEAN NOT NULL DEFAULT 0,
+    thousand_separator VARCHAR(10) NOT NULL DEFAULT 'dot',
+
+    -- Script tab fields
+    enable_google_analytics BOOLEAN NOT NULL DEFAULT 0,
+    google_analytics_code TEXT,
+    enable_google_adsense BOOLEAN NOT NULL DEFAULT 0,
+    google_adsense_code TEXT,
+    display_google_recaptcha BOOLEAN NOT NULL DEFAULT 0,
+    google_recaptcha_site_key VARCHAR(255),
+    google_recaptcha_secret_key VARCHAR(255),
+    display_facebook_pixel BOOLEAN NOT NULL DEFAULT 0,
+    facebook_pixel_code TEXT,
+    display_facebook_messenger BOOLEAN NOT NULL DEFAULT 0,
+    facebook_messenger_page_id VARCHAR(255),
+    display_disqus BOOLEAN NOT NULL DEFAULT 0,
+    disqus_link VARCHAR(255),
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

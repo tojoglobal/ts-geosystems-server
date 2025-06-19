@@ -10,10 +10,43 @@ export const getSettings = async (req, res) => {
   res.json(rows[0]);
 };
 
-// PUT update site settings (only text fields)
+// PUT update site settings (all fields)
 export const updateSettings = async (req, res) => {
-  let { appName, homeTitle, metaKeywords, metaDescription, mainLogo, favicon } =
-    req.body;
+  let {
+    appName,
+    homeTitle,
+    metaKeywords,
+    metaDescription,
+    mainLogo,
+    favicon,
+
+    // New extra fields
+    decimalSeparatorEnable,
+    decimalSeparator,
+    currencyDirectionEnable,
+    currencyDirection,
+    decimalSeparatorSelectorEnable,
+    decimalSeparatorSelector,
+    thousandSeparatorEnable,
+    thousandSeparator,
+
+    // Script tab fields
+    enableGoogleAnalytics,
+    googleAnalyticsCode,
+    enableGoogleAdsense,
+    googleAdsenseCode,
+    displayGoogleRecaptcha,
+    googleRecaptchaSiteKey,
+    googleRecaptchaSecretKey,
+    displayFacebookPixel,
+    facebookPixelCode,
+    displayFacebookMessenger,
+    facebookMessengerPageId,
+    displayDisqus,
+    disqusLink,
+  } = req.body;
+
+  console.log("appName", appName);
 
   // Get current row
   const [rows] = await db.query("SELECT * FROM site_settings LIMIT 1");
@@ -39,6 +72,30 @@ export const updateSettings = async (req, res) => {
       favicon = ?, 
       meta_keywords = ?, 
       meta_description = ?, 
+
+      decimal_separator_enable = ?, 
+      decimal_separator = ?, 
+      currency_direction_enable = ?, 
+      currency_direction = ?, 
+      decimal_separator_selector_enable = ?, 
+      decimal_separator_selector = ?, 
+      thousand_separator_enable = ?, 
+      thousand_separator = ?,
+
+      enable_google_analytics = ?,
+      google_analytics_code = ?,
+      enable_google_adsense = ?,
+      google_adsense_code = ?,
+      display_google_recaptcha = ?,
+      google_recaptcha_site_key = ?,
+      google_recaptcha_secret_key = ?,
+      display_facebook_pixel = ?,
+      facebook_pixel_code = ?,
+      display_facebook_messenger = ?,
+      facebook_messenger_page_id = ?,
+      display_disqus = ?,
+      disqus_link = ?,
+
       updated_at = NOW()
      WHERE id = ?`,
     [
@@ -48,6 +105,32 @@ export const updateSettings = async (req, res) => {
       favicon || settings.favicon,
       JSON.stringify(metaKeywords || []),
       metaDescription || settings.meta_description,
+
+      // New extra fields
+      Boolean(decimalSeparatorEnable),
+      decimalSeparator || "off",
+      Boolean(currencyDirectionEnable),
+      currencyDirection || "left",
+      Boolean(decimalSeparatorSelectorEnable),
+      decimalSeparatorSelector || "dot",
+      Boolean(thousandSeparatorEnable),
+      thousandSeparator || "dot",
+
+      // Script tab fields
+      Boolean(enableGoogleAnalytics),
+      googleAnalyticsCode || "",
+      Boolean(enableGoogleAdsense),
+      googleAdsenseCode || "",
+      Boolean(displayGoogleRecaptcha),
+      googleRecaptchaSiteKey || "",
+      googleRecaptchaSecretKey || "",
+      Boolean(displayFacebookPixel),
+      facebookPixelCode || "",
+      Boolean(displayFacebookMessenger),
+      facebookMessengerPageId || "",
+      Boolean(displayDisqus),
+      disqusLink || "",
+
       settings.id,
     ]
   );
