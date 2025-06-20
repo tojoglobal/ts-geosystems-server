@@ -51,6 +51,8 @@ import TsClientRoutes from "./routes/TsClientRoutes.js";
 import notificationsRoute from "./routes/notificationsRoute.js";
 import settingRoute from "./routes/settingRoute.js";
 import quotationRoutes from "./routes/quotationRoutes.js";
+import menuControllRoutes from "./routes/menuControllRoutes.js";
+import ShippingCostsRoutes from "./routes/shippingCostsRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -182,6 +184,10 @@ app.use("/api", TSCCEquipmentRoutes);
 app.use("/api", TsClientRoutes);
 // quotationRoutes
 app.use("/api/quotation", quotationRoutes);
+// menu contolls
+app.use("/api/menu-controll", menuControllRoutes);
+// shipping costs:
+app.use("/api", ShippingCostsRoutes);
 app.get("/", (req, res) => {
   return res.send(" <h1>Welcome to the TSGB Server Server</h1>");
 });
