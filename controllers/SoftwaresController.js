@@ -14,24 +14,36 @@ export const getSoftwares = async (req, res) => {
   }
 };
 
-// CREATE a new software
+const parsePriceShow = (v) => {
+  if (v === "1" || v === 1 || v === true || v === "true") return 1;
+  return 0;
+};
+
+// CREATE
 export const createSoftware = async (req, res) => {
   try {
-    const body = { ...req.body };
-    const { softwar_name, softwarlink } = body;
+    const { softwar_name, softwarlink, price, price_show } = req.body;
     const photo = req.file ? req.file.filename : null;
     const slug = softwar_name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    const sql = `
-      INSERT INTO softwares (softwar_name, slug, softwarlink, photo)
-      VALUES (?, ?, ?, ?)
-    `;
-    const values = [softwar_name, slug, softwarlink, photo];
+    const priceShowBool = parsePriceShow(price_show);
 
-    const [result] = await db.query(sql, values);
+    const sql = `
+      INSERT INTO softwares (softwar_name, slug, softwarlink, photo, price, price_show)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    const values = [
+      softwar_name,
+      slug,
+      softwarlink,
+      photo,
+      price || 0,
+      priceShowBool,
+    ];
+    await db.query(sql, values);
 
     res.status(200).json({ message: "Software created successfully" });
   } catch (error) {
@@ -39,16 +51,18 @@ export const createSoftware = async (req, res) => {
   }
 };
 
-// UPDATE a software
+// UPDATE
 export const updateSoftware = async (req, res) => {
   try {
     const { id } = req.params;
-    const { softwar_name, softwarlink } = req.body;
+    const { softwar_name, softwarlink, price, price_show } = req.body;
     const newPhoto = req.file ? req.file.filename : null;
     const slug = softwar_name
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
+
+    const priceShowBool = parsePriceShow(price_show);
 
     // Get old photo
     const [rows] = await db.query("SELECT photo FROM softwares WHERE id = ?", [
@@ -56,20 +70,25 @@ export const updateSoftware = async (req, res) => {
     ]);
     const oldPhoto = rows[0]?.photo;
 
-    let updateFields = "softwar_name=?, slug=?, softwarlink=?";
-    let values = [softwar_name, slug, softwarlink];
+    let updateFields = [
+      "softwar_name=?",
+      "slug=?",
+      "softwarlink=?",
+      "price=?",
+      "price_show=?",
+      "photo=?",
+    ];
+    let values = [
+      softwar_name,
+      slug,
+      softwarlink,
+      price || 0,
+      priceShowBool,
+      newPhoto ? newPhoto : oldPhoto,
+      id,
+    ];
 
-    if (newPhoto) {
-      updateFields += ", photo=?";
-      values.push(newPhoto);
-    } else {
-      updateFields += ", photo=?";
-      values.push(oldPhoto);
-    }
-
-    values.push(id);
-
-    const sql = `UPDATE softwares SET ${updateFields} WHERE id = ?`;
+    const sql = `UPDATE softwares SET ${updateFields.join(", ")} WHERE id = ?`;
     await db.query(sql, values);
 
     // If new photo uploaded, delete old photo
