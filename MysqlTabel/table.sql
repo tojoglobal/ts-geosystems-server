@@ -62,9 +62,12 @@ CREATE TABLE softwares (
   softwar_name VARCHAR(255) NOT NULL,
   slug VARCHAR(255) NOT NULL,
   softwarlink VARCHAR(255) NOT NULL,
-  photo VARCHAR(255), 
+  photo VARCHAR(255),
+  price DECIMAL(10,2) DEFAULT 0,
+  price_show BOOLEAN DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 /* user_manuals crete code */
 DROP TABLE user_manuals
 
