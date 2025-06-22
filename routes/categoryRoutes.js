@@ -4,6 +4,8 @@ import { upload } from "./../middleware/UploadFile.js";
 import {
   addCategory,
   addSubCategory,
+  deleteCategory,
+  deleteSubCategory,
   getCategory,
   getCateWithSubcateWithData,
   getSubcategory,
@@ -13,6 +15,7 @@ import {
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const categoryRoute = express.Router();
+
 categoryRoute.post(
   "/category",
   upload.single("photo"),
@@ -37,6 +40,10 @@ categoryRoute.put(
   verifyAdmin,
   updateSubCategory
 );
+
+categoryRoute.delete("/category/:id", verifyAdmin, deleteCategory);
+categoryRoute.delete("/subcategory/:id", verifyAdmin, deleteSubCategory);
+
 categoryRoute.get("/category", getCategory);
 categoryRoute.get("/subcategory", getSubcategory);
 categoryRoute.get(

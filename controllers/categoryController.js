@@ -1,7 +1,85 @@
 import db from "../Utils/db.js";
-
 import fs from "fs";
 import path from "path";
+
+export const deleteCategory = async (req, res) => {
+  const categoryId = req.params.id;
+  try {
+    const [subCountRows] = await db.query(
+      "SELECT COUNT(*) AS count FROM subcategories WHERE main_category_id = ?",
+      [categoryId]
+    );
+    if (subCountRows[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete category: It has subcategories under it.",
+      });
+    }
+
+    // 2. Get the photo filename if exists
+    const [[category]] = await db.query(
+      "SELECT photo FROM categories WHERE id = ?",
+      [categoryId]
+    );
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Category not found" });
+    }
+
+    // 3. Delete the category
+    await db.query("DELETE FROM categories WHERE id = ?", [categoryId]);
+
+    // 4. Delete the photo from disk if present
+    if (category.photo) {
+      const photoPath = path.join("uploads", category.photo);
+      fs.unlink(photoPath, (err) => {
+        if (err) {
+          // Don't fail on file error, just log it
+          console.error("Error deleting category photo:", err);
+        }
+      });
+    }
+
+    res.json({ success: true, message: "Category deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const deleteSubCategory = async (req, res) => {
+  const subCategoryId = req.params.id;
+  try {
+    // Get the photo filename if exists
+    const [[subcategory]] = await db.query(
+      "SELECT photo FROM subcategories WHERE id = ?",
+      [subCategoryId]
+    );
+    if (!subcategory) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Subcategory not found" });
+    }
+
+    // Delete the subcategory
+    await db.query("DELETE FROM subcategories WHERE id = ?", [subCategoryId]);
+
+    // Delete the photo from disk if present
+    if (subcategory.photo) {
+      const photoPath = path.join("uploads", subcategory.photo);
+      fs.unlink(photoPath, (err) => {
+        if (err) {
+          // Don't fail on file error, just log it
+          console.error("Error deleting subcategory photo:", err);
+        }
+      });
+    }
+
+    res.json({ success: true, message: "Subcategory deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 export const addCategory = async (req, res) => {
   try {
