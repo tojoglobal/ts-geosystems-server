@@ -62,9 +62,12 @@ CREATE TABLE softwares (
   softwar_name VARCHAR(255) NOT NULL,
   slug VARCHAR(255) NOT NULL,
   softwarlink VARCHAR(255) NOT NULL,
-  photo VARCHAR(255), 
+  photo VARCHAR(255),
+  price DECIMAL(10,2) DEFAULT 0,
+  price_show BOOLEAN DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 /* user_manuals crete code */
 DROP TABLE user_manuals
 
@@ -640,8 +643,6 @@ CREATE TABLE site_settings (
     favicon VARCHAR(255) NOT NULL DEFAULT '/uploads/default-favicon.ico',
     meta_keywords JSON NOT NULL DEFAULT (JSON_ARRAY('app','website','react','business')),
     meta_description TEXT NOT NULL DEFAULT 'This is the default meta description of your site.',
-
-    -- New fields for extra features
     decimal_separator_enable BOOLEAN NOT NULL DEFAULT 0,
     decimal_separator VARCHAR(10) NOT NULL DEFAULT 'off',
     currency_direction_enable BOOLEAN NOT NULL DEFAULT 0,
@@ -769,4 +770,20 @@ CREATE TABLE quotation_requests (
     product_name VARCHAR(255) NOT NULL,
     product_price DECIMAL(12,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+/* menu controlls table */
+CREATE TABLE menu_controll (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  menu_name VARCHAR(64) NOT NULL UNIQUE,
+  enabled BOOLEAN NOT NULL DEFAULT 1
+);
+
+CREATE TABLE shipping_costs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  status TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
