@@ -26,13 +26,19 @@ export const productAdd = async (req, res) => {
       flashSale,
       flashSaleEnd,
       sale,
+      metaKeywords,
+      metaDescription,
     } = req.body;
+    
     const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
+    
     const sql = `INSERT INTO products 
       (product_name, price, priceShowHide, category, sub_category, tax, sku, product_condition, 
        product_options, productOptionShowHide, software_options, brand_name, product_overview, 
-       video_urls, warranty_info, image_urls, clearance, isStock, sale, flash_sale, flash_sale_end)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+       video_urls, warranty_info, image_urls, clearance, isStock, sale, flash_sale, flash_sale_end,
+       meta_keywords, meta_description)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    
     const [result] = await db.query(sql, [
       productName,
       price,
@@ -55,13 +61,122 @@ export const productAdd = async (req, res) => {
       sale !== undefined ? sale : false,
       flashSale ? 1 : 0,
       flashSaleEnd ? new Date(flashSaleEnd) : null,
+      metaKeywords || "",
+      metaDescription || "",
     ]);
+    
     res.status(200).json({
       success: true,
       message: "Product saved successfully!",
     });
   } catch (error) {
+    console.error("Product add error:", error);
     res.status(500).send("Failed to upload product");
+  }
+};
+
+// Updated updateProductById function with meta fields
+export const updateProductById = async (req, res) => {
+  const { id } = req.params;
+  const {
+    productName,
+    price,
+    priceShowHide,
+    category,
+    subCategory,
+    condition,
+    tax,
+    sku,
+    productOptions,
+    productOptionShowHide,
+    softwareOptions,
+    brandName,
+    productOverview,
+    videoUrls,
+    warrantyInfo,
+    clearance,
+    isStock,
+    sale,
+    flashSale,
+    flashSaleEnd,
+    metaKeywords,
+    metaDescription,
+  } = req.body;
+
+  try {
+    // Convert string values to proper boolean values
+    const clearanceBool =
+      clearance === "1" || clearance === "true" || clearance === true;
+    const isStockBool =
+      isStock === "1" || isStock === "true" || isStock === true;
+    const saleBool = sale === "1" || sale === "true" || sale === true;
+    const flashSaleBool =
+      flashSale === "1" || flashSale === "true" || flashSale === true;
+
+    // Fetch existing product to get the old image URLs
+    const [existingRows] = await db.query(
+      "SELECT image_urls FROM products WHERE id = ?",
+      [id]
+    );
+    if (existingRows.length === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    const existingImageUrls = JSON.parse(existingRows[0].image_urls);
+
+    // Update product details
+    const sql = `
+      UPDATE products 
+      SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, 
+        product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
+        brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?,
+        isStock=?, sale=?, flash_sale=?, flash_sale_end=?, meta_keywords=?, meta_description=?
+      WHERE id=?`;
+
+    await db.query(sql, [
+      productName,
+      price,
+      priceShowHide,
+      category,
+      subCategory,
+      tax,
+      sku,
+      condition,
+      productOptions,
+      productOptionShowHide,
+      softwareOptions,
+      brandName,
+      productOverview,
+      videoUrls,
+      warrantyInfo,
+      clearanceBool ? 1 : 0,
+      isStockBool ? 1 : 0,
+      saleBool ? 1 : 0,
+      flashSaleBool ? 1 : 0,
+      flashSaleEnd ? new Date(flashSaleEnd) : null,
+      metaKeywords || "",
+      metaDescription || "",
+      id,
+    ]);
+
+    // Handle new images if provided
+    if (req.files && req.files.length > 0) {
+      const newImageUrls = req.files.map((file) => `/uploads/${file.filename}`);
+      const allImageUrls = [...existingImageUrls, ...newImageUrls];
+
+      // Update the image URLs in the database
+      await db.query("UPDATE products SET image_urls=? WHERE id=?", [
+        JSON.stringify(allImageUrls),
+        id,
+      ]);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Product updated successfully!",
+    });
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).send("Failed to update product");
   }
 };
 
@@ -235,107 +350,6 @@ export const deleteImage = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete image." });
-  }
-};
-
-// updatet product
-export const updateProductById = async (req, res) => {
-  const { id } = req.params;
-  const {
-    productName,
-    price,
-    priceShowHide,
-    category,
-    subCategory,
-    condition,
-    tax,
-    sku,
-    productOptions,
-    productOptionShowHide,
-    softwareOptions,
-    brandName,
-    productOverview,
-    videoUrls,
-    warrantyInfo,
-    clearance,
-    isStock,
-    sale,
-    flashSale,
-    flashSaleEnd,
-  } = req.body;
-
-  try {
-    // Convert string values to proper boolean values
-    const clearanceBool =
-      clearance === "1" || clearance === "true" || clearance === true;
-    const isStockBool =
-      isStock === "1" || isStock === "true" || isStock === true;
-    const saleBool = sale === "1" || sale === "true" || sale === true;
-    const flashSaleBool =
-      flashSale === "1" || flashSale === "true" || flashSale === true;
-
-    // Fetch existing product to get the old image URLs
-    const [existingRows] = await db.query(
-      "SELECT image_urls FROM products WHERE id = ?",
-      [id]
-    );
-    if (existingRows.length === 0) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    const existingImageUrls = JSON.parse(existingRows[0].image_urls);
-
-    // Update product details
-    const sql = `
-      UPDATE products 
-      SET product_name=?, price=?, priceShowHide=?, category=?, sub_category=?, tax=?, sku=?, 
-        product_condition=?, product_options=?, productOptionShowHide=?, software_options=?, 
-        brand_name=?, product_overview=?, video_urls=?, warranty_info=?, clearance=?,
-        isStock=?, sale=?, flash_sale=?, flash_sale_end=?
-      WHERE id=?`;
-
-    await db.query(sql, [
-      productName,
-      price,
-      priceShowHide,
-      category,
-      subCategory,
-      tax,
-      sku,
-      condition,
-      productOptions,
-      productOptionShowHide,
-      softwareOptions,
-      brandName,
-      productOverview,
-      videoUrls,
-      warrantyInfo,
-      clearanceBool ? 1 : 0,
-      isStockBool ? 1 : 0,
-      saleBool ? 1 : 0,
-      flashSaleBool ? 1 : 0,
-      flashSaleEnd ? new Date(flashSaleEnd) : null,
-      id,
-    ]);
-
-    // Handle new images if provided
-    if (req.files && req.files.length > 0) {
-      const newImageUrls = req.files.map((file) => `/uploads/${file.filename}`);
-      const allImageUrls = [...existingImageUrls, ...newImageUrls];
-
-      // Update the image URLs in the database
-      await db.query("UPDATE products SET image_urls=? WHERE id=?", [
-        JSON.stringify(allImageUrls),
-        id,
-      ]);
-    }
-
-    res.status(201).json({
-      success: true,
-      message: "Product updated successfully!",
-    });
-  } catch (error) {
-    console.error("Update error:", error);
-    res.status(500).send("Failed to update product");
   }
 };
 
