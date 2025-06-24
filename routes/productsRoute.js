@@ -19,6 +19,8 @@ import {
   getProductHighlights,
   getProductTable,
   getProductsByBrand,
+  getPopularSearches,
+  postPopularSearch,
 } from "../controllers/ProductsCont.js";
 import { upload } from "../middleware/UploadFile.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
@@ -69,6 +71,8 @@ ProductsRoute.get("/api/clearance", getClearanceProducts);
 
 // Add these new routes
 ProductsRoute.get("/api/search", searchProducts);
+ProductsRoute.post("/api/popular-searches", postPopularSearch);
+ProductsRoute.get("/api/popular-searches", getPopularSearches);
 ProductsRoute.get("/api/mobile-search", searchProductsMobile);
 ProductsRoute.get("/api/shop-all/product", getProductsForShopAll);
 // recent view

@@ -495,7 +495,40 @@ export const getClearanceProducts = async (req, res) => {
   }
 };
 
-// Add these new controller functions
+// POST: add or update a search term
+export const postPopularSearch = async (req, res) => {
+  try {
+    const { term } = req.body;
+    if (!term || typeof term !== "string" || !term.trim()) {
+      return res.status(400).json({ error: "Invalid search term." });
+    }
+    const cleanTerm = term.trim().toLowerCase();
+
+    // Insert or update count
+    await db.query(
+      "INSERT INTO popular_searches (term, count) VALUES (?, 1) ON DUPLICATE KEY UPDATE count = count + 1, last_searched = CURRENT_TIMESTAMP",
+      [cleanTerm]
+    );
+
+    res.json({ success: true, message: "Search term tracked.", term: cleanTerm });
+  } catch (error) {
+    console.error("postPopularSearch error:", error);
+    res.status(500).json({ error: "Server error saving popular search" });
+  }
+};
+// Get top N popular searches
+export const getPopularSearches = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const [rows] = await db.query(
+      "SELECT term FROM popular_searches ORDER BY count DESC, last_searched DESC LIMIT ?",
+      [limit]
+    );
+    res.json({ searches: rows.map((row) => row.term) });
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching popular searches" });
+  }
+};
 
 // Search products with filters
 export const searchProducts = async (req, res) => {
