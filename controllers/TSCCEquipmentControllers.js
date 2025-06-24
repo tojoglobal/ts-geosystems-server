@@ -31,26 +31,44 @@ export const postEquipment = async (req, res) => {
   }
 };
 
+// export const getEquipments = async (req, res) => {
+//   const { trackingNo, serialNo } = req.query;
+
+//   try {
+//     if (trackingNo && serialNo) {
+//       // If searching, return match only
+//       const [rows] = await db.query(
+//         "SELECT * FROM ts_cc_equipments WHERE trackingNo = ? AND serialNo = ?",
+//         [trackingNo, serialNo]
+//       );
+//       res.status(200).json(rows);
+//     } else {
+//       // If not searching, return all
+//       const [rows] = await db.query(
+//         "SELECT * FROM ts_cc_equipments ORDER BY id DESC"
+//       );
+//       res.status(200).json(rows);
+//     }
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
 export const getEquipments = async (req, res) => {
-  // Query params for search
   const { trackingNo, serialNo } = req.query;
-  console.log(trackingNo, serialNo);
 
   try {
-    if (trackingNo && serialNo) {
-      // If searching, return match only
-      const [rows] = await db.query(
-        "SELECT * FROM ts_cc_equipments WHERE trackingNo = ? AND serialNo = ?",
-        [trackingNo, serialNo]
-      );
-      res.status(200).json(rows);
-    } else {
-      // If not searching, return all
-      const [rows] = await db.query(
-        "SELECT * FROM ts_cc_equipments ORDER BY id DESC"
-      );
-      res.status(200).json(rows);
+    if (!trackingNo || !serialNo) {
+      return res
+        .status(400)
+        .json({ error: "Both trackingNo and serialNo are required." });
     }
+
+    const [rows] = await db.query(
+      "SELECT * FROM ts_cc_equipments WHERE trackingNo = ? AND serialNo = ?",
+      [trackingNo, serialNo]
+    );
+    res.status(200).json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
