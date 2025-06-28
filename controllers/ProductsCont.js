@@ -791,33 +791,44 @@ export const getViewedProducts = async (req, res) => {
 
 export const getRecommendedProducts = async (req, res) => {
   try {
-    // First get the recommended product IDs from recommended_products table
-    const [recommendedItems] = await db.query(
+    // 1. Get up to 10 recommended product IDs, most recent/popular first
+    const [recommendedRows] = await db.query(
       `SELECT product_id FROM recommended_products 
        ORDER BY product_count DESC, last_ordered_at DESC 
        LIMIT 10`
     );
+    const recommendedIds = recommendedRows.map((row) => row.product_id);
 
-    // Extract just the product IDs
-    const productIds = recommendedItems.map((item) => item.product_id);
+    let products = [];
 
-    if (productIds.length === 0) {
-      return res.status(200).json({
-        success: true,
-        products: [],
-      });
+    if (recommendedIds.length > 0) {
+      // 2. Get those products by ID (maintain order)
+      const placeholders = recommendedIds.map(() => "?").join(",");
+      const [recommendedProducts] = await db.query(
+        `SELECT * FROM products WHERE id IN (${placeholders}) 
+         ORDER BY FIELD(id, ${placeholders})`,
+        [...recommendedIds, ...recommendedIds]
+      );
+      products = recommendedProducts;
     }
 
-    // Get full product details for these IDs
-    const placeholders = productIds.map(() => "?").join(",");
-    const [products] = await db.query(
-      `SELECT * FROM products 
-       WHERE id IN (${placeholders}) 
-       ORDER BY FIELD(id, ${placeholders})`,
-      [...productIds, ...productIds] // Need to pass the IDs twice for FIELD() to work
-    );
+    // 3. If less than 10, fill up with latest (excluding already included)
+    if (products.length < 10) {
+      const excludeIds = products.map((p) => p.id);
+      let sql = `SELECT * FROM products `;
+      let params = [];
+      if (excludeIds.length) {
+        sql += `WHERE id NOT IN (${excludeIds.map(() => "?").join(",")}) `;
+        params = excludeIds;
+      }
+      sql += `ORDER BY id DESC LIMIT ?`;
+      params.push(10 - products.length);
 
-    res.status(200).json({
+      const [moreProducts] = await db.query(sql, params);
+      products = [...products, ...moreProducts];
+    }
+
+    return res.status(200).json({
       success: true,
       products,
     });
