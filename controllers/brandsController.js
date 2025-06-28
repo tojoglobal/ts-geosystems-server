@@ -126,7 +126,7 @@ export const deleteBrand = async (req, res) => {
 export const getPopularBrandPhoto = async (req, res) => {
   try {
     const [brands] = await db.query(
-      "SELECT photo FROM brands WHERE is_populer = 1 AND 	status = 1 ORDER BY id DESC "
+      "SELECT photo FROM brands WHERE is_populer = 1 AND status = 1 ORDER BY id DESC "
     );
 
     if (brands.length === 0) {
@@ -137,5 +137,27 @@ export const getPopularBrandPhoto = async (req, res) => {
     res.status(200).json({ photo: brands });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const getHomeBrandPhoto = async (req, res) => {
+  try {
+    const [brands] = await db.query(
+      "SELECT id, brands_name, slug, photo FROM brands WHERE home_page_show = 1 AND status = 1 ORDER BY id DESC"
+    );
+
+    if (!brands || brands.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No popular brand found" });
+    }
+
+    // Return list of brand objects with id, name, slug, and photo (for easy extension)
+    res.status(200).json({
+      success: true,
+      brands,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

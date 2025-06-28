@@ -6,6 +6,7 @@ import {
   updateBrand,
   deleteBrand,
   getPopularBrandPhoto,
+  getHomeBrandPhoto,
 } from "../controllers/brandsController.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
@@ -13,6 +14,7 @@ const brandsRoute = express.Router();
 
 brandsRoute.get("/brands", getBrands);
 brandsRoute.get("/brand/popular-photo", getPopularBrandPhoto);
+brandsRoute.get("/brand/home-photo", getHomeBrandPhoto);
 brandsRoute.post("/brands", upload.single("photo"), verifyAdmin, createBrand);
 brandsRoute.put(
   "/brands/:id",
