@@ -10,7 +10,7 @@ import categoryRoute from "./routes/categoryRoutes.js";
 import brandsRoute from "./routes/brandsRoutes.js";
 import SoftwareRoute from "./routes/SoftwareRoutes.js";
 import HomePageControlRoute from "./routes/HomepageRoute.js";
-import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
+// import SSLCommerzPaymentRoute from "./routes/sslcommerz.js";
 import ordersRoute from "./routes/ordersRoute.js";
 import promoRoutes from "./routes/promoRoutes.js";
 import TaxesRoutes from "./routes/taxesRoutes.js";
@@ -53,6 +53,7 @@ import settingRoute from "./routes/settingRoute.js";
 import quotationRoutes from "./routes/quotationRoutes.js";
 import menuControllRoutes from "./routes/menuControllRoutes.js";
 import ShippingCostsRoutes from "./routes/shippingCostsRoutes.js";
+import SSLCommerzPaymentRoute from "./routes/demoSslcommerz.js";
 
 dotenv.config();
 const app = express();

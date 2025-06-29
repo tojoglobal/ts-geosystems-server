@@ -5,18 +5,18 @@ export const postOrder = async (req, res) => {
   try {
     const {
       order_id,
-      email,
-      shippingName,
-      shippingAddress,
-      shippingCity,
-      shippingZip,
-      shippingPhone,
-      shippingComments,
       billingAddress,
+      coupon,
+      email,
+      items,
       paymentMethod,
       paymentStatus,
-      items,
-      coupon,
+      shippingAddress,
+      shippingCity,
+      shippingComments,
+      shippingName,
+      shippingPhone,
+      shippingZip,
       shipping_cost,
       total,
     } = req.body;
@@ -60,11 +60,25 @@ export const postOrder = async (req, res) => {
       } = item;
 
       // Parse category and sub_category JSON strings
-      const parsedCategory = JSON.parse(category);
-      const parsedSubCategory = JSON.parse(sub_category);
+      let parsedCategory = {};
+      let parsedSubCategory = {};
+      try {
+        parsedCategory =
+          category && category !== "undefined" ? JSON.parse(category) : {};
+      } catch {
+        parsedCategory = {};
+      }
+      try {
+        parsedSubCategory =
+          sub_category && sub_category !== "undefined"
+            ? JSON.parse(sub_category)
+            : {};
+      } catch {
+        parsedSubCategory = {};
+      }
 
-      const productCategory = parsedCategory.cat;
-      const productSubcategory = parsedSubCategory.slug;
+      const productCategory = parsedCategory.cat || "";
+      const productSubcategory = parsedSubCategory.slug || "";
 
       // Check if the product already exists in the recommended_products table
       const [existingProduct] = await db.query(

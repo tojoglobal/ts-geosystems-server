@@ -5,7 +5,7 @@ import db from "../Utils/db.js";
 import sendEmail from "../Utils/sendEmail.js";
 dotenv.config();
 
-// const SSLCommerzPaymentRoute = express.Router();
+const SSLCommerzPaymentRoute = express.Router();
 const store_id = process.env.store_id;
 const store_passwd = process.env.store_passwd;
 const is_live = false;
@@ -14,8 +14,6 @@ const redirect_url = process.env.FRONT_END_ORIGIN_URL;
 // Init payment
 SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
   const {
-    total_amount,
-    shippingCost,
     order_id,
     customer_name,
     customer_email,
@@ -25,18 +23,18 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
     shipping_zip,
     items,
     coupon,
-    vatEnabled,
+    shippingCost,
+    paymentMethod,
   } = req.body;
 
   try {
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "Items are required." });
     }
-    // Fetch product details
-    const productIdsArray = items.map((item) => item.id);
 
+    const productIdsArray = items.map((item) => item.id);
     const [products] = await db.query(
-      `SELECT id, price, tax , product_options FROM products WHERE id IN (?)`,
+      `SELECT id, price, tax, product_options FROM products WHERE id IN (?)`,
       [productIdsArray]
     );
 
@@ -44,14 +42,21 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
       return res.status(400).json({ message: "Some products are missing" });
     }
 
-    // Calculate subtotal, VAT, and total
     let subtotal = 0;
     let vat = 0;
+    // Fetch all option details in one go to optimize query
+    const optionIds = items.flatMap((item) => item.options.filter(Boolean));
+    let optionDetails = [];
+    if (optionIds.length > 0) {
+      const [options] = await db.query(
+        `SELECT id, price, tax FROM products WHERE id IN (?)`,
+        [optionIds]
+      );
+      optionDetails = options;
+    }
 
     items.forEach((item) => {
-      console.log(item);
       const product = products.find((p) => p.id === item.id);
-      console.log(product);
 
       if (!product) {
         return res
@@ -59,48 +64,41 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
           .json({ message: `Product with ID ${item.id} not found.` });
       }
 
-      const ProductPrice = product?.price;
-      const price = Number(ProductPrice.toString().replace(/,/g, ""));
-      let taxObj = product.tax;
-
-      if (typeof taxObj === "string") {
-        try {
-          taxObj = JSON.parse(taxObj);
-        } catch (e) {
-          return res.status(400).json({ message: "Invalid tax JSON format" });
-        }
-      }
-
+      const price = Number(product.price);
       let taxRate = 0;
-      if (taxObj && typeof taxObj === "object" && "value" in taxObj) {
-        const rawValue = taxObj.value;
-        taxRate = parseFloat(rawValue);
-        if (isNaN(taxRate)) {
-          return res.status(400).json({
-            message: `Invalid tax rate for product ${product.id || item.id}`,
-          });
-        }
-      }
+      try {
+        taxRate = product.tax ? JSON.parse(product?.tax).value : 0;
+      } catch (e) {}
 
       const quantity = item.quantity;
       const itemSubtotal = price * quantity;
-      let itemVat = 0;
-      if (vatEnabled !== false) {
-        // Default to true if undefined
-        itemVat = price * (taxRate / 100) * quantity;
-      }
+      const itemVat = price * (taxRate / 100) * quantity;
+
       subtotal += itemSubtotal;
       vat += itemVat;
+
+      // Add option prices
+      item.options.forEach((optionId) => {
+        const option = optionDetails.find((opt) => opt.id === optionId);
+        if (option) {
+          const optionPrice = Number(option.price);
+          let optionTaxRate = 0;
+          try {
+            optionTaxRate = option.tax ? JSON.parse(option.tax).value : 0;
+          } catch (e) {}
+
+          subtotal += optionPrice * quantity;
+          vat += optionPrice * (optionTaxRate / 100) * quantity;
+        }
+      });
     });
 
-    //✅ Handle discount if any
     let discount = 0;
-    if (coupon && coupon.code_name) {
+    if (coupon) {
       const [promo] = await db.query(
         `SELECT * FROM promo_codes WHERE code_name = ?`,
-        [coupon.code_name]
+        [coupon]
       );
-
       if (promo.length > 0) {
         const { type, discount: promoDiscount } = promo[0];
         if (type === "percentage") {
@@ -111,21 +109,11 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
       }
     }
 
-    // Calculate total
     const total = subtotal + vat + shippingCost - discount;
+    console.log(total);
 
-    // ✅ Check total match (allow 1 BDT difference due to float imprecision)
-    if (Math.abs(Number(total) - Number(total_amount)) > 1) {
-      return res.status(400).json({
-        message: "Total amount mismatch. Please refresh and try again.",
-        calculatedTotal: total,
-        clientTotal: total_amount,
-      });
-    }
-
-    // ✅ Proceed with payment
     const data = {
-      total_amount: Math.round(Number(total_amount)).toString(),
+      total_amount: Math.round(Number(total)).toString(),
       currency: "BDT",
       tran_id: order_id,
       success_url: `${process.env.BACKEND_URL}/api/ssl-payment/success`,
@@ -150,10 +138,10 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
       ship_country: "Bangladesh",
     };
 
-    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
-    sslcz.init(data).then((apiResponse) => {
-      res.json({ GatewayPageURL: apiResponse.GatewayPageURL });
-    });
+    // const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
+    // sslcz.init(data).then((apiResponse) => {
+    //   res.json({ GatewayPageURL: apiResponse.GatewayPageURL });
+    // });
   } catch (err) {
     res
       .status(500)
@@ -161,7 +149,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/init", async (req, res) => {
   }
 });
 
-// Success Route
 SSLCommerzPaymentRoute.post("/ssl-payment/success", async (req, res) => {
   const { tran_id, val_id, amount, card_type, status } = req.body;
 
@@ -214,7 +201,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/success", async (req, res) => {
   }
 });
 
-// Fail Route
 SSLCommerzPaymentRoute.post("/ssl-payment/fail", async (req, res) => {
   const { tran_id } = req.body;
   try {
@@ -226,7 +212,6 @@ SSLCommerzPaymentRoute.post("/ssl-payment/fail", async (req, res) => {
   }
 });
 
-// Cancel Route
 SSLCommerzPaymentRoute.post("/payment/ssl-payment/cancel", async (req, res) => {
   const { tran_id } = req.body;
 
@@ -239,7 +224,6 @@ SSLCommerzPaymentRoute.post("/payment/ssl-payment/cancel", async (req, res) => {
   }
 });
 
-// IPN Route
 SSLCommerzPaymentRoute.post("/payment/ssl-payment/ipn", async (req, res) => {
   const { status, tran_id } = req.body;
 
