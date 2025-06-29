@@ -381,3 +381,18 @@ export const getCateWithSubcateWithData = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// for home page top 5 categories
+export const getTopCategories = async (req, res) => {
+  try {
+    const sql = `SELECT * FROM categories ORDER BY serialNumber ASC LIMIT 5`;
+    const [categories] = await db.query(sql);
+
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

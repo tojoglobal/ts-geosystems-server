@@ -9,6 +9,7 @@ import {
   getCategory,
   getCateWithSubcateWithData,
   getSubcategory,
+  getTopCategories,
   updateCategory,
   updateSubCategory,
 } from "../controllers/categoryController.js";
@@ -50,5 +51,6 @@ categoryRoute.get(
   "/category-with-subcategories/:id",
   getCateWithSubcateWithData
 );
+categoryRoute.get("/top-categories", getTopCategories);
 
 export default categoryRoute;
