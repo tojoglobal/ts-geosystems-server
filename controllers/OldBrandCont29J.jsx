@@ -2,14 +2,6 @@ import fs from "fs/promises";
 import path from "path";
 import db from "../Utils/db.js";
 
-// Helper for slug
-function makeSlug(name) {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-}
-
 // GET all brands
 export const getBrands = async (req, res) => {
   try {
@@ -23,9 +15,13 @@ export const getBrands = async (req, res) => {
 // CREATE a new brand
 export const createBrand = async (req, res) => {
   try {
-    const { brands_name, status, is_populer, home_page_show } = req.body;
+    const body = { ...req.body };
+    const { brands_name, status, is_populer, home_page_show } = body;
     const photo = req.file ? req.file.filename : null;
-    const slug = makeSlug(brands_name);
+    const slug = brands_name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
 
     const sql = `
       INSERT INTO brands (brands_name, slug, photo, status, is_populer, home_page_show)
@@ -39,7 +35,8 @@ export const createBrand = async (req, res) => {
       is_populer,
       home_page_show,
     ];
-    await db.query(sql, values);
+
+    const [result] = await db.query(sql, values);
 
     res.json({ message: "Brand created successfully" });
   } catch (error) {
@@ -53,7 +50,10 @@ export const updateBrand = async (req, res) => {
     const { id } = req.params;
     const { brands_name, status, is_populer, home_page_show } = req.body;
     const newPhoto = req.file ? req.file.filename : null;
-    const slug = makeSlug(brands_name);
+    const slug = brands_name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
 
     // Get old photo
     const [rows] = await db.query("SELECT photo FROM brands WHERE id = ?", [
@@ -65,8 +65,14 @@ export const updateBrand = async (req, res) => {
       "brands_name=?, slug=?, status=?, is_populer=?, home_page_show=?";
     let values = [brands_name, slug, status, is_populer, home_page_show];
 
-    updateFields += ", photo=?";
-    values.push(newPhoto ? newPhoto : oldPhoto);
+    if (newPhoto) {
+      updateFields += ", photo=?";
+      values.push(newPhoto);
+    } else {
+      // If no new photo uploaded, keep the old photo
+      updateFields += ", photo=?";
+      values.push(oldPhoto);
+    }
 
     values.push(id);
 
@@ -82,6 +88,7 @@ export const updateBrand = async (req, res) => {
         console.error("Failed to delete old image:", err.message);
       }
     }
+
     res.json({ message: "Brand updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -115,33 +122,41 @@ export const deleteBrand = async (req, res) => {
   }
 };
 
-// For category product sidebar image as brand image
+// for only in category product sidebar image as brand image
 export const getPopularBrandPhoto = async (req, res) => {
   try {
     const [brands] = await db.query(
       "SELECT photo FROM brands WHERE is_populer = 1 AND status = 1 ORDER BY id DESC "
     );
-    if (!brands.length) {
+
+    if (brands.length === 0) {
       return res.status(404).json({ message: "No popular brand found" });
     }
-    res.status(200).json({ photos: brands.map((b) => b.photo) });
+
+    // Return just the photo URL
+    res.status(200).json({ photo: brands });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// For home page brand photos
 export const getHomeBrandPhoto = async (req, res) => {
   try {
     const [brands] = await db.query(
       "SELECT id, brands_name, slug, photo FROM brands WHERE home_page_show = 1 AND status = 1 ORDER BY id DESC"
     );
-    if (!brands.length) {
+
+    if (!brands || brands.length === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "No home brand found" });
+        .json({ success: false, message: "No popular brand found" });
     }
-    res.status(200).json({ success: true, brands });
+
+    // Return list of brand objects with id, name, slug, and photo (for easy extension)
+    res.status(200).json({
+      success: true,
+      brands,
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
