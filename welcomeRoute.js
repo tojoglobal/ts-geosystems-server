@@ -3,6 +3,7 @@ const welcomeRoute = express.Router();
 
 welcomeRoute.get("/", (req, res) => {
   const currentYear = new Date().getFullYear();
+
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -107,6 +108,13 @@ welcomeRoute.get("/", (req, res) => {
           color: #c2c4e1;
           margin-bottom: 1.2rem;
         }
+        .now-time {
+          font-size: 1.02rem;
+          color: #00dbde;
+          margin: 1.3rem 0 0.7rem 0;
+          font-weight: 600;
+          letter-spacing: 0.03em;
+        }
         .cta-row {
           display: flex;
           flex-direction: column;
@@ -135,12 +143,8 @@ welcomeRoute.get("/", (req, res) => {
           box-shadow: 0 8px 32px rgba(0,219,222,0.22);
         }
         .footer {
-          margin-top: 2.7rem;
-          font-size: 0.97rem;
-          color: #aaa;
-          letter-spacing: 0.13em;
-          font-weight: 700;
-          text-transform: uppercase;
+          margin-top: 2rem;
+          color: #c2c4e1;
         }
         .circles {
           position: absolute;
@@ -193,6 +197,7 @@ welcomeRoute.get("/", (req, res) => {
         <h1>TSGB API Server</h1>
         <div class="subtitle">Welcome to the Official Backend API of <b>TSGB</b></div>
         <div class="divider"></div>
+        <div class="now-time" id="now-time">Loading time...</div>
         <div class="info">
           Powering seamless digital experiences with robust RESTful APIs and secure authentication systems.<br>
           <span style="color:#00dbde;font-weight:600;">API is live &amp; healthy.</span>
@@ -202,6 +207,25 @@ welcomeRoute.get("/", (req, res) => {
         </div>
         <div class="footer">&copy; ${currentYear} TSGB. All rights reserved.</div>
       </div>
+      <script>
+        function updateTime() {
+          const options = {
+            timeZone: "Asia/Dhaka",
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          };
+          const now = new Date();
+          document.getElementById("now-time").textContent = now.toLocaleString("en-BD", options) + " (Asia/Dhaka)";
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+      </script>
     </body>
     </html>
   `);
