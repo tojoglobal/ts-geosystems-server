@@ -257,23 +257,22 @@ export const createServiceInquiry = async (req, res) => {
   }
 };
 
-
 // just EquipmentOptions
 export const getServiceEquipmentOptions = async (req, res) => {
   try {
     const [content] = await db.query("SELECT * FROM service_content LIMIT 1");
-    
+
     if (content.length === 0) {
       return res.status(200).json({
         success: true,
         data: {
-          equipment_options: []
-        }
+          equipment_options: [],
+        },
       });
     }
 
     const serviceContent = content[0];
-    
+
     // Parse JSON array
     try {
       serviceContent.equipment_options = JSON.parse(
@@ -286,8 +285,8 @@ export const getServiceEquipmentOptions = async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
-        equipment_options: serviceContent.equipment_options
-      }
+        equipment_options: serviceContent.equipment_options,
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -299,7 +298,7 @@ export const updateServiceEquipmentOptions = async (req, res) => {
     const { equipment_options } = req.body;
 
     const serviceData = {
-      equipment_options: JSON.stringify(equipment_options || [])
+      equipment_options: JSON.stringify(equipment_options || []),
     };
 
     const [existing] = await db.query("SELECT id FROM service_content LIMIT 1");
@@ -309,7 +308,7 @@ export const updateServiceEquipmentOptions = async (req, res) => {
     } else {
       await db.query("UPDATE service_content SET ? WHERE id = ?", [
         serviceData,
-        existing[0].id
+        existing[0].id,
       ]);
     }
 
@@ -322,5 +321,22 @@ export const updateServiceEquipmentOptions = async (req, res) => {
       success: false,
       error: error.message,
     });
+  }
+};
+
+// DELETE: Remove service inquiry by id
+export const deleteServiceInquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query(
+      "DELETE FROM service_inquiries WHERE id = ?",
+      [id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Service inquiry not found." });
+    }
+    res.status(200).json({ message: "Service inquiry deleted successfully." });
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting service inquiry." });
   }
 };

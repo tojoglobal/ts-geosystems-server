@@ -5,6 +5,7 @@ import {
   getTradeInData,
   getTradeInContent,
   updateTradeInContent,
+  deleteTradeInData,
 } from "../controllers/tradeInController.js";
 import { upload } from "../middleware/UploadFile.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
@@ -21,5 +22,6 @@ tradeInRoutes.get("/trade-in", getTradeInData);
 
 tradeInRoutes.get("/trade-in-content", getTradeInContent);
 tradeInRoutes.put("/trade-in-content", verifyAdmin, updateTradeInContent);
+tradeInRoutes.delete("/trade-in/:id", verifyAdmin, deleteTradeInData); 
 
 export default tradeInRoutes;

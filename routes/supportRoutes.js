@@ -2,6 +2,7 @@ import express from "express";
 
 import { upload } from "./../middleware/UploadFile.js";
 import {
+  deleteSupportRequest,
   getSupportContent,
   getSupportRequests,
   saveSupportRequest,
@@ -16,6 +17,7 @@ supportRoutes.post("/support", upload.array("files"), saveSupportRequest);
 // GET API to retrieve all support requests
 supportRoutes.get("/support", getSupportRequests);
 supportRoutes.get("/support-content", getSupportContent);
+supportRoutes.delete("/support/:id", verifyAdmin, deleteSupportRequest); 
 supportRoutes.put("/support-content", verifyAdmin, updateSupportContent);
 
 export default supportRoutes;

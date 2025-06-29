@@ -1,6 +1,6 @@
 import express from "express";
 import { upload } from "../middleware/UploadFile.js";
-import { getAllCreditAccountApplications, saveCreditAccountApplication } from "../controllers/creditAccountController.js";
+import { deleteCreditAccountApplication, getAllCreditAccountApplications, saveCreditAccountApplication } from "../controllers/creditAccountController.js";
 import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const creditAccountRoute = express.Router();
@@ -17,6 +17,12 @@ creditAccountRoute.get(
   "/credit-accounts",
   verifyAdmin,
   getAllCreditAccountApplications
+);
+
+creditAccountRoute.delete(
+  "/credit-accounts/:id",
+  verifyAdmin,
+  deleteCreditAccountApplication
 );
 
 export default creditAccountRoute;

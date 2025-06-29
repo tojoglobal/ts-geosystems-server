@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createServiceInquiry,
+  deleteServiceInquiry,
   getService,
   getServiceEquipmentOptions,
   getServiceImages,
@@ -46,6 +47,12 @@ serviceRoute.put(
   "/service-equipment-options",
   verifyAdmin,
   updateServiceEquipmentOptions
+);
+
+serviceRoute.delete(
+  "/service-inquiries/:id",
+  verifyAdmin,
+  deleteServiceInquiry
 );
 
 export default serviceRoute;
