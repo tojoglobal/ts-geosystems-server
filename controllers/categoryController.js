@@ -385,7 +385,8 @@ export const getCateWithSubcateWithData = async (req, res) => {
 // for home page top 5 categories
 export const getTopCategories = async (req, res) => {
   try {
-    const sql = `SELECT * FROM categories ORDER BY serialNumber ASC LIMIT 5`;
+    // Always get the 5 categories with the lowest serialNumbers (skipping gaps)
+    const sql = `SELECT * FROM categories WHERE status = 1 ORDER BY serialNumber ASC LIMIT 5`;
     const [categories] = await db.query(sql);
 
     res.status(200).json({
